@@ -138,61 +138,61 @@ const TransactionItem = ({ title, amount, color, showConfetti }) => (
 
 const Dashboard = () => {
   return (
-    // <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <View style={styles.fixedContent}>
+        <View style={styles.analyticsSection}>
+          <View style={styles.totalSavings}>
+            <Text style={styles.savingsLabel}>Total saving</Text>
+            <Text style={styles.savingsAmount}>KWD 24.44</Text>
+          </View>
+
+          <View style={styles.dateSelector}>
+            <TouchableOpacity style={styles.datePicker}>
+              <Text style={styles.dateText}>Date</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.chartContainer}>
+            <ChartComponent />
+          </View>
+        </View>
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Active Saving Goals</Text>
+          <Text style={styles.sectionSubtitle}>Track your progress</Text>
+        </View>
+      </View>
+
       <ScrollView style={styles.scrollView}>
-       
-
-        <View style={styles.totalSavings}>
-          <Text style={styles.savingsLabel}>Total saving</Text>
-          <Text style={styles.savingsAmount}>KWD 24.44</Text>
-        </View>
-
-        <View style={styles.dateSelector}>
-          <TouchableOpacity style={styles.datePicker}>
-            <Text style={styles.dateText}>Date</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.chartContainer}>
-          <ChartComponent />
-        </View>
-
         <View style={styles.transactionsList}>
           <TransactionItem
             title="Travel"
             amount="KWD 100"
             color="#37C4C6"
-            showConfetti={true}
           />
           <TransactionItem
             title="Kids"
             amount="KWD 24"
             color="#B537C6"
-            showConfetti={false}
           />
           <TransactionItem
             title="Rent"
             amount="KWD 24.44"
             color="#D8696B"
-            showConfetti={false}
           />
-            <TransactionItem
+          <TransactionItem
             title="Rent"
             amount="KWD 24.44"
             color="#D8696B"
-            showConfetti={false}
           />
-            <TransactionItem
+          <TransactionItem
             title="Rent"
             amount="KWD 24.44"
             color="#D8696B"
-            showConfetti={false}
           />
         </View>
       </ScrollView>
-
-      
-    // </SafeAreaView>
+    </View>
   );
 };
 
@@ -201,8 +201,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FEF7FF",
   },
+  container: {
+    flex: 1,
+    backgroundColor: "#FEF7FF",
+  },
+  fixedContent: {
+    backgroundColor: "#FEF7FF",
+  },
+  analyticsSection: {
+    backgroundColor: "#FEF7FF",
+    paddingTop: 10,
+  },
   scrollView: {
     flex: 1,
+    backgroundColor: "#FEF7FF",
+  },
+  sectionHeader: {
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#000",
+    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+  },
+  sectionSubtitle: {
+    fontSize: 14,
+    color: "#1e1e1e80",
+    marginTop: 4,
+    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
   },
   header: {
     height: 52,

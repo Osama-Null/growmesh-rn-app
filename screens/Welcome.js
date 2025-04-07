@@ -28,7 +28,7 @@ const Welcome = () => {
 
         <View style={styles.imageContainer}>
           <LottieView
-            source={require("/Users/baderalqallaf/growmesh/growmesh-rn-app/assets/Animation - 1743935031574.json")}
+            source={require("/Users/baderalqallaf/capstone /growmesh-rn-app/assets/Animation - 1743935031574.json")}
             autoPlay
             loop
             style={styles.lottieAnimation}
