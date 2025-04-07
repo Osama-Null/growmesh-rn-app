@@ -5,6 +5,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthNavigator from "./navigation/AuthNavigator";
 import Dashboard from "./screens/Dashboard";
 import NewGoal from "./screens/NewGoal";
+import FirstGoalScreen from "./screens/FirstGoalScreen";
 
 export default function App() {
   return (
@@ -14,8 +15,9 @@ export default function App() {
           <StatusBar style="auto" />
           {/* <AuthNavigator /> */}
           {/* <Dashboard /> */}
-          <NewGoal />
-          
+          {/* <NewGoal /> */}
+          <FirstGoalScreen />
+
         </SafeAreaView>
       </SafeAreaProvider>
     </NavigationContainer>
