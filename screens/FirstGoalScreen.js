@@ -21,7 +21,7 @@ const FirstGoalScreen = () => {
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
-          
+        
         </View>
 
         <View style={styles.titleContainer}>
@@ -39,10 +39,14 @@ const FirstGoalScreen = () => {
 
         <TouchableOpacity
           style={styles.startButton}
-          onPress={() => navigation.navigate("NewGoal")}
+          onPress={() => navigation.navigate("GoalType")}
         >
           <Text style={styles.startButtonText}>Start</Text>
         </TouchableOpacity>
+
+       
+
+      
       </View>
     </View>
   );
@@ -104,8 +108,10 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   lottieAnimation: {
-    width: Dimensions.get("window").width * 0.8,
-    height: Dimensions.get("window").width * 0.8,
+   width: Dimensions.get("window").width * 6,
+    height: Dimensions.get("window").width * 10,
+    //width : 1000,
+   // height : 200,
     maxWidth: 400,
     maxHeight: 400,
   },
