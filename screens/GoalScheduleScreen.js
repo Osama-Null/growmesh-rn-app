@@ -21,16 +21,19 @@ const GoalScheduleScreen = () => {
   const route = useRoute();
   const { goalType, amount, description } = route.params;
   const [selectedFrequency, setSelectedFrequency] = useState("monthly");
-  const [contribution, setContribution] = useState("");
+  const [makeInitialPayment, setMakeInitialPayment] = useState(null);
+  const [initialPayment, setInitialPayment] = useState("");
 
   const handleComplete = () => {
-    navigation.navigate("NewGoal", {
+    // Here you would typically save the goal data to your backend/storage
+    console.log("Saving goal:", {
       goalType,
       amount,
       description,
       frequency: selectedFrequency,
-      contribution,
     });
+
+    navigation.navigate("Dashboard");
   };
 
   return (
@@ -71,16 +74,64 @@ const GoalScheduleScreen = () => {
           ))}
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Contribution Amount</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="KWD 0.000"
-            value={contribution}
-            onChangeText={setContribution}
-            keyboardType="numeric"
-            placeholderTextColor="#1e1e1e80"
-          />
+        <View style={styles.initialPaymentContainer}>
+          <Text style={styles.label}>
+            Do you want to make first payment today?
+          </Text>
+          <View style={styles.optionsContainer}>
+            <TouchableOpacity
+              style={[
+                styles.optionButton,
+                makeInitialPayment === true && styles.selectedOption,
+              ]}
+              onPress={() => {
+                setMakeInitialPayment(true);
+                setInitialPayment("");
+              }}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  makeInitialPayment === true && styles.selectedOptionText,
+                ]}
+              >
+                Yes
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.optionButton,
+                makeInitialPayment === false && styles.selectedOption,
+              ]}
+              onPress={() => {
+                setMakeInitialPayment(false);
+                setInitialPayment("0");
+              }}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  makeInitialPayment === false && styles.selectedOptionText,
+                ]}
+              >
+                No
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {makeInitialPayment && (
+            <View style={styles.initialPaymentInputContainer}>
+              <Text style={styles.label}>Initial Payment Amount</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="KWD 0.000"
+                value={initialPayment}
+                onChangeText={setInitialPayment}
+                keyboardType="numeric"
+                placeholderTextColor="#1e1e1e80"
+              />
+            </View>
+          )}
         </View>
 
         <View style={styles.summaryContainer}>
@@ -91,6 +142,10 @@ const GoalScheduleScreen = () => {
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryLabel}>Target Amount</Text>
+            <Text style={styles.summaryValue}>KWD {initialPayment}</Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryLabel}>Initial Amount</Text>
             <Text style={styles.summaryValue}>KWD {amount}</Text>
           </View>
           <View style={styles.summaryItem}>
@@ -121,6 +176,36 @@ const GoalScheduleScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  initialPaymentContainer: {
+    marginTop: 24,
+    gap: 12,
+  },
+  optionsContainer: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  optionButton: {
+    flex: 1,
+    backgroundColor: "rgba(255,255,255,0.5)",
+    borderRadius: 14,
+    padding: 16,
+    alignItems: "center",
+  },
+  selectedOption: {
+    backgroundColor: "#2F3039",
+  },
+  optionText: {
+    fontSize: 16,
+    color: "#000",
+    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+  },
+  selectedOptionText: {
+    color: "#FFF",
+  },
+  initialPaymentInputContainer: {
+    marginTop: 16,
+    gap: 8,
+  },
   container: {
     flex: 1,
     backgroundColor: "#FEF7FF",

@@ -165,31 +165,11 @@ const Dashboard = () => {
 
       <ScrollView style={styles.scrollView}>
         <View style={styles.transactionsList}>
-          <TransactionItem
-            title="Travel"
-            amount="KWD 100"
-            color="#37C4C6"
-          />
-          <TransactionItem
-            title="Kids"
-            amount="KWD 24"
-            color="#B537C6"
-          />
-          <TransactionItem
-            title="Rent"
-            amount="KWD 24.44"
-            color="#D8696B"
-          />
-          <TransactionItem
-            title="Rent"
-            amount="KWD 24.44"
-            color="#D8696B"
-          />
-          <TransactionItem
-            title="Rent"
-            amount="KWD 24.44"
-            color="#D8696B"
-          />
+          <TransactionItem title="Travel" amount="KWD 100" color="#37C4C6" />
+          <TransactionItem title="Kids" amount="KWD 24" color="#B537C6" />
+          <TransactionItem title="Rent" amount="KWD 24.44" color="#D8696B" />
+          <TransactionItem title="Rent" amount="KWD 24.44" color="#D8696B" />
+          <TransactionItem title="Rent" amount="KWD 24.44" color="#D8696B" />
         </View>
       </ScrollView>
     </View>
@@ -197,10 +177,6 @@ const Dashboard = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FEF7FF",
-  },
   container: {
     flex: 1,
     backgroundColor: "#FEF7FF",
@@ -330,31 +306,6 @@ const styles = StyleSheet.create({
     right: 0,
     top: -8,
     flexDirection: "row",
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 67,
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    backgroundColor: "#FEF7FF",
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.1)",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  footerButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 37,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  footerButtonText: {
-    fontSize: 24,
-    color: "#000",
   },
 });
 

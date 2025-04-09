@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Platform,
   Dimensions,
+  TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import LottieView from "lottie-react-native";
@@ -21,6 +22,7 @@ const goalTypes = [
 
 const GoalTypeScreen = () => {
   const navigation = useNavigation();
+  const [customGoalType, setCustomGoalType] = useState("");
 
   return (
     <View style={styles.container}>
@@ -53,6 +55,37 @@ const GoalTypeScreen = () => {
         ))}
       </View>
 
+      <View style={styles.customGoalContainer}>
+        <Text style={styles.customGoalLabel}>Or create your own goal type</Text>
+        <View style={styles.customInputContainer}>
+          <TextInput
+            style={styles.customInput}
+            placeholder="Enter custom goal type"
+            value={customGoalType}
+            onChangeText={setCustomGoalType}
+            placeholderTextColor="#1e1e1e80"
+          />
+          <TouchableOpacity
+            style={[
+              styles.customGoalButton,
+              !customGoalType && styles.customGoalButtonDisabled,
+            ]}
+            disabled={!customGoalType}
+            onPress={() =>
+              navigation.navigate("GoalDetails", { goalType: customGoalType })
+            }
+          >
+            <Text
+              style={[
+                styles.customGoalButtonText,
+                !customGoalType && styles.customGoalButtonTextDisabled,
+              ]}
+            >
+              Use Custom Goal
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       <View style={styles.progressContainer}>
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: "33%" }]} />
@@ -64,6 +97,43 @@ const GoalTypeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  customGoalContainer: {
+    marginTop: 24,
+    padding: 16,
+  },
+  customGoalLabel: {
+    fontSize: 16,
+    color: "#1e1e1e80",
+    marginBottom: 12,
+    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+  },
+  customInputContainer: {
+    gap: 12,
+  },
+  customInput: {
+    backgroundColor: "rgba(255,255,255,0.5)",
+    borderRadius: 14,
+    padding: 16,
+    fontSize: 16,
+    color: "#1e1e1e",
+    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+  },
+  customGoalButton: {
+    backgroundColor: "#2F3039",
+    borderRadius: 39,
+    padding: 16,
+    alignItems: "center",
+  },
+  customGoalButtonDisabled: {
+    backgroundColor: "rgba(47, 48, 57, 0.5)",
+  },
+  customGoalButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+  },
+ 
   container: {
     flex: 1,
     backgroundColor: "#FEF7FF",
