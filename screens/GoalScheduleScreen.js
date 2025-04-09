@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -7,8 +7,10 @@ import {
   Platform,
   ScrollView,
   TextInput,
+  Dimensions,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import LottieView from "lottie-react-native";
 
 const frequencies = [
   { id: 1, title: "Weekly", value: "weekly" },
@@ -21,19 +23,27 @@ const GoalScheduleScreen = () => {
   const route = useRoute();
   const { goalType, amount, description } = route.params;
   const [selectedFrequency, setSelectedFrequency] = useState("monthly");
+  const [contribution, setContribution] = useState("");
   const [makeInitialPayment, setMakeInitialPayment] = useState(null);
   const [initialPayment, setInitialPayment] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const handleComplete = () => {
-    // Here you would typically save the goal data to your backend/storage
-    console.log("Saving goal:", {
-      goalType,
-      amount,
-      description,
-      frequency: selectedFrequency,
-    });
+    setIsAnimating(true);
 
-    navigation.navigate("Dashboard");
+    // Save goal data and navigate after animation
+    setTimeout(() => {
+      console.log("Saving goal:", {
+        goalType,
+        amount,
+        description,
+        frequency: selectedFrequency,
+        contribution,
+        initialPayment: makeInitialPayment ? initialPayment : "0",
+      });
+      setIsAnimating(false);
+      navigation.navigate("Dashboard");
+    }, 2500);
   };
 
   return (
@@ -72,6 +82,18 @@ const GoalScheduleScreen = () => {
               </Text>
             </TouchableOpacity>
           ))}
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Contribution Amount</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="KWD 0.000"
+            value={contribution}
+            onChangeText={setContribution}
+            keyboardType="numeric"
+            placeholderTextColor="#1e1e1e80"
+          />
         </View>
 
         <View style={styles.initialPaymentContainer}>
@@ -142,10 +164,6 @@ const GoalScheduleScreen = () => {
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryLabel}>Target Amount</Text>
-            <Text style={styles.summaryValue}>KWD {initialPayment}</Text>
-          </View>
-          <View style={styles.summaryItem}>
-            <Text style={styles.summaryLabel}>Initial Amount</Text>
             <Text style={styles.summaryValue}>KWD {amount}</Text>
           </View>
           <View style={styles.summaryItem}>
@@ -162,7 +180,7 @@ const GoalScheduleScreen = () => {
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: "100%" }]} />
         </View>
-        <Text style={styles.progressText}>Step 3 of 3</Text>
+        <Text style={styles.progressText}>Step 5 of 5</Text>
 
         <TouchableOpacity
           style={styles.completeButton}
@@ -171,41 +189,23 @@ const GoalScheduleScreen = () => {
           <Text style={styles.completeButtonText}>Complete Setup</Text>
         </TouchableOpacity>
       </View>
+
+      {isAnimating && (
+        <View style={styles.animationContainer}>
+          <LottieView
+            source={require("../assets/confetti.json")}
+            autoPlay
+            loop={false}
+            style={styles.animation}
+            speed={0.5}
+          />
+        </View>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  initialPaymentContainer: {
-    marginTop: 24,
-    gap: 12,
-  },
-  optionsContainer: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  optionButton: {
-    flex: 1,
-    backgroundColor: "rgba(255,255,255,0.5)",
-    borderRadius: 14,
-    padding: 16,
-    alignItems: "center",
-  },
-  selectedOption: {
-    backgroundColor: "#2F3039",
-  },
-  optionText: {
-    fontSize: 16,
-    color: "#000",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
-  },
-  selectedOptionText: {
-    color: "#FFF",
-  },
-  initialPaymentInputContainer: {
-    marginTop: 16,
-    gap: 8,
-  },
   container: {
     flex: 1,
     backgroundColor: "#FEF7FF",
@@ -281,11 +281,42 @@ const styles = StyleSheet.create({
     color: "#1e1e1e",
     fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
   },
+  initialPaymentContainer: {
+    marginTop: 24,
+    gap: 12,
+  },
+  optionsContainer: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  optionButton: {
+    flex: 1,
+    backgroundColor: "rgba(255,255,255,0.5)",
+    borderRadius: 14,
+    padding: 16,
+    alignItems: "center",
+  },
+  selectedOption: {
+    backgroundColor: "#2F3039",
+  },
+  optionText: {
+    fontSize: 16,
+    color: "#000",
+    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+  },
+  selectedOptionText: {
+    color: "#FFF",
+  },
+  initialPaymentInputContainer: {
+    marginTop: 16,
+    gap: 8,
+  },
   summaryContainer: {
     backgroundColor: "rgba(255,255,255,0.5)",
     borderRadius: 14,
     padding: 16,
     gap: 16,
+    marginTop: 32,
   },
   summaryTitle: {
     fontSize: 18,
@@ -345,6 +376,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+  },
+  animationContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(254, 247, 255, 0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999,
+  },
+  animation: {
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
   },
 });
 

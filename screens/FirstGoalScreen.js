@@ -11,7 +11,7 @@ import {
 import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import GoalLockScreen from "./GoalLockScreen";
 const { width } = Dimensions.get("window");
 
 const FirstGoalScreen = () => {
@@ -20,9 +20,6 @@ const FirstGoalScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.header}>
-        
-        </View>
 
         <View style={styles.titleContainer}>
           <Text style={styles.title}>LET'S CREATE A SAVINGS{"\n"}GOAL!</Text>
@@ -39,14 +36,10 @@ const FirstGoalScreen = () => {
 
         <TouchableOpacity
           style={styles.startButton}
-          onPress={() => navigation.navigate("GoalType")}
+          onPress={() => navigation.navigate("GoalLock")}
         >
           <Text style={styles.startButtonText}>Start</Text>
         </TouchableOpacity>
-
-       
-
-      
       </View>
     </View>
   );

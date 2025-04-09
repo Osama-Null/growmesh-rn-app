@@ -66,9 +66,9 @@ const GoalDetailsScreen = () => {
 
       <View style={styles.footer}>
         <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: "66%" }]} />
+          <View style={[styles.progressFill, { width: "75%" }]} />
         </View>
-        <Text style={styles.progressText}>Step 2 of 3</Text>
+        <Text style={styles.progressText}>Step 4 of 5</Text>
 
         <TouchableOpacity
           style={styles.nextButton}

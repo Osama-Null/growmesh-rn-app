@@ -87,11 +87,11 @@ const GoalTypeScreen = () => {
         </View>
       </View>
       <View style={styles.progressContainer}>
-        <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: "33%" }]} />
-        </View>
-        <Text style={styles.progressText}>Step 1 of 3</Text>
-      </View>
+              <View style={styles.progressBar}>
+                <View style={[styles.progressFill, { width: "50%" }]} />
+              </View>
+              <Text style={styles.progressText}>Step 3 of 5</Text>
+            </View>
     </View>
   );
 };
