@@ -7,13 +7,12 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { Svg, Path } from "react-native-svg";
 
-const EditProfile = ({ route }) => {
+const EditProfile = () => {
   const navigation = useNavigation();
   const [profile, setProfile] = useState({
     firstName: "Bader",
@@ -24,15 +23,34 @@ const EditProfile = ({ route }) => {
   });
 
   const handleSave = () => {
-    // Log the changes and go back
     console.log("Profile updated:", profile);
     navigation.goBack();
   };
 
   const handleImagePick = () => {
-    // Placeholder for image picking
     console.log("Image pick requested");
   };
+
+  const FormSection = ({
+    label,
+    value,
+    onChangeText,
+    placeholder,
+    keyboardType,
+  }) => (
+    <View style={styles.formSection}>
+      <Text style={styles.label}>{label}</Text>
+      <TextInput
+        style={styles.input}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor="rgba(30,30,30,0.5)"
+        keyboardType={keyboardType}
+        autoCapitalize={keyboardType === "email-address" ? "none" : "words"}
+      />
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -56,7 +74,6 @@ const EditProfile = ({ route }) => {
           style={styles.imagePickerContainer}
           onPress={handleImagePick}
         >
-          {/* Always show placeholder for now */}
           <View style={styles.placeholderImage}>
             <Svg width={40} height={40} viewBox="0 0 24 24" fill="none">
               <Path
@@ -65,63 +82,45 @@ const EditProfile = ({ route }) => {
               />
             </Svg>
           </View>
-          
           <Text style={styles.changePhotoText}>Change Profile Picture</Text>
         </TouchableOpacity>
 
-        <View style={styles.formSection}>
-          <Text style={styles.label}>First Name</Text>
-          <TextInput
-            style={styles.input}
-            value={profile.firstName}
-            onChangeText={(text) =>
-              setProfile((prev) => ({ ...prev, firstName: text }))
-            }
-            placeholder="Enter your first name"
-            placeholderTextColor="rgba(30,30,30,0.5)"
-          />
-        </View>
+        <FormSection
+          label="First Name"
+          value={profile.firstName}
+          onChangeText={(text) =>
+            setProfile((prev) => ({ ...prev, firstName: text }))
+          }
+          placeholder="Enter your first name"
+        />
 
-        <View style={styles.formSection}>
-          <Text style={styles.label}>Last Name</Text>
-          <TextInput
-            style={styles.input}
-            value={profile.lastName}
-            onChangeText={(text) =>
-              setProfile((prev) => ({ ...prev, lastName: text }))
-            }
-            placeholder="Enter your last name"
-            placeholderTextColor="rgba(30,30,30,0.5)"
-          />
-        </View>
+        <FormSection
+          label="Last Name"
+          value={profile.lastName}
+          onChangeText={(text) =>
+            setProfile((prev) => ({ ...prev, lastName: text }))
+          }
+          placeholder="Enter your last name"
+        />
 
-        <View style={styles.formSection}>
-          <Text style={styles.label}>Date of Birth</Text>
-          <TextInput
-            style={styles.input}
-            value={profile.dateOfBirth}
-            onChangeText={(text) =>
-              setProfile((prev) => ({ ...prev, dateOfBirth: text }))
-            }
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor="rgba(30,30,30,0.5)"
-          />
-        </View>
+        <FormSection
+          label="Date of Birth"
+          value={profile.dateOfBirth}
+          onChangeText={(text) =>
+            setProfile((prev) => ({ ...prev, dateOfBirth: text }))
+          }
+          placeholder="YYYY-MM-DD"
+        />
 
-        <View style={styles.formSection}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={profile.email}
-            onChangeText={(text) =>
-              setProfile((prev) => ({ ...prev, email: text }))
-            }
-            placeholder="Enter your email"
-            placeholderTextColor="rgba(30,30,30,0.5)"
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
+        <FormSection
+          label="Email"
+          value={profile.email}
+          onChangeText={(text) =>
+            setProfile((prev) => ({ ...prev, email: text }))
+          }
+          placeholder="Enter your email"
+          keyboardType="email-address"
+        />
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Save Changes</Text>
@@ -137,17 +136,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#FEF7FF",
   },
   header: {
-    width: "100%",
-    height: 52,
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingHorizontal: 24,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    backgroundColor: "#FEF7FF",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    height: 52,
+    paddingHorizontal: 24,
+    backgroundColor: "#FEF7FF",
   },
   backButton: {
     padding: 8,
@@ -157,10 +150,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     color: "#1D1B20",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
-    letterSpacing: 0.14,
-    flex: 1,
     marginLeft: 16,
+    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
   },
   content: {
     flex: 1,
@@ -170,12 +161,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 24,
     marginBottom: 24,
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 16,
   },
   placeholderImage: {
     width: 120,
