@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -7,8 +7,10 @@ import {
   Platform,
   ScrollView,
   TextInput,
+  Dimensions,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import LottieView from "lottie-react-native";
 
 const frequencies = [
   { id: 1, title: "Weekly", value: "weekly" },
@@ -22,15 +24,26 @@ const GoalScheduleScreen = () => {
   const { goalType, amount, description } = route.params;
   const [selectedFrequency, setSelectedFrequency] = useState("monthly");
   const [contribution, setContribution] = useState("");
+  const [makeInitialPayment, setMakeInitialPayment] = useState(null);
+  const [initialPayment, setInitialPayment] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const handleComplete = () => {
-    navigation.navigate("NewGoal", {
-      goalType,
-      amount,
-      description,
-      frequency: selectedFrequency,
-      contribution,
-    });
+    setIsAnimating(true);
+
+    // Save goal data and navigate after animation
+    setTimeout(() => {
+      console.log("Saving goal:", {
+        goalType,
+        amount,
+        description,
+        frequency: selectedFrequency,
+        contribution,
+        initialPayment: makeInitialPayment ? initialPayment : "0",
+      });
+      setIsAnimating(false);
+      navigation.navigate("Dashboard");
+    }, 2500);
   };
 
   return (
@@ -83,6 +96,66 @@ const GoalScheduleScreen = () => {
           />
         </View>
 
+        <View style={styles.initialPaymentContainer}>
+          <Text style={styles.label}>
+            Do you want to make first payment today?
+          </Text>
+          <View style={styles.optionsContainer}>
+            <TouchableOpacity
+              style={[
+                styles.optionButton,
+                makeInitialPayment === true && styles.selectedOption,
+              ]}
+              onPress={() => {
+                setMakeInitialPayment(true);
+                setInitialPayment("");
+              }}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  makeInitialPayment === true && styles.selectedOptionText,
+                ]}
+              >
+                Yes
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.optionButton,
+                makeInitialPayment === false && styles.selectedOption,
+              ]}
+              onPress={() => {
+                setMakeInitialPayment(false);
+                setInitialPayment("0");
+              }}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  makeInitialPayment === false && styles.selectedOptionText,
+                ]}
+              >
+                No
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {makeInitialPayment && (
+            <View style={styles.initialPaymentInputContainer}>
+              <Text style={styles.label}>Initial Payment Amount</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="KWD 0.000"
+                value={initialPayment}
+                onChangeText={setInitialPayment}
+                keyboardType="numeric"
+                placeholderTextColor="#1e1e1e80"
+              />
+            </View>
+          )}
+        </View>
+
         <View style={styles.summaryContainer}>
           <Text style={styles.summaryTitle}>Summary</Text>
           <View style={styles.summaryItem}>
@@ -107,7 +180,7 @@ const GoalScheduleScreen = () => {
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: "100%" }]} />
         </View>
-        <Text style={styles.progressText}>Step 3 of 3</Text>
+        <Text style={styles.progressText}>Step 5 of 5</Text>
 
         <TouchableOpacity
           style={styles.completeButton}
@@ -116,6 +189,18 @@ const GoalScheduleScreen = () => {
           <Text style={styles.completeButtonText}>Complete Setup</Text>
         </TouchableOpacity>
       </View>
+
+      {isAnimating && (
+        <View style={styles.animationContainer}>
+          <LottieView
+            source={require("../assets/confetti.json")}
+            autoPlay
+            loop={false}
+            style={styles.animation}
+            speed={0.5}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -196,11 +281,42 @@ const styles = StyleSheet.create({
     color: "#1e1e1e",
     fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
   },
+  initialPaymentContainer: {
+    marginTop: 24,
+    gap: 12,
+  },
+  optionsContainer: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  optionButton: {
+    flex: 1,
+    backgroundColor: "rgba(255,255,255,0.5)",
+    borderRadius: 14,
+    padding: 16,
+    alignItems: "center",
+  },
+  selectedOption: {
+    backgroundColor: "#2F3039",
+  },
+  optionText: {
+    fontSize: 16,
+    color: "#000",
+    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+  },
+  selectedOptionText: {
+    color: "#FFF",
+  },
+  initialPaymentInputContainer: {
+    marginTop: 16,
+    gap: 8,
+  },
   summaryContainer: {
     backgroundColor: "rgba(255,255,255,0.5)",
     borderRadius: 14,
     padding: 16,
     gap: 16,
+    marginTop: 32,
   },
   summaryTitle: {
     fontSize: 18,
@@ -260,6 +376,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+  },
+  animationContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(254, 247, 255, 0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999,
+  },
+  animation: {
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
   },
 });
 

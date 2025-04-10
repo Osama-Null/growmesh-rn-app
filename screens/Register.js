@@ -9,21 +9,10 @@ import {
 } from "react-native";
 import { Svg, Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
+import LottieView from "lottie-react-native";
 
 const Register = () => {
   const navigation = useNavigation();
-  const PencilIcon = () => (
-    <Svg width="118" height="114" viewBox="0 0 118 114" fill="none">
-      <Path
-        d="M83.5834 14.25C84.8747 13.0024 86.4077 12.0128 88.0949 11.3377C89.7822 10.6625 91.5905 10.315 93.4167 10.315C95.2429 10.315 97.0513 10.6625 98.7385 11.3377C100.426 12.0128 101.959 13.0024 103.25 14.25C104.541 15.4976 105.566 16.9786 106.265 18.6086C106.963 20.2387 107.323 21.9857 107.323 23.75C107.323 25.5143 106.963 27.2614 106.265 28.8914C105.566 30.5214 104.541 32.0024 103.25 33.25L36.875 97.375L9.83337 104.5L17.2084 78.375L83.5834 14.25Z"
-        stroke="#1E1E1E"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -72,18 +61,21 @@ const Register = () => {
               secureTextEntry
             />
           </View>
+          <View style={styles.imageContainer}>
+                 <LottieView
+                   source={require("/Users/baderalqallaf/capstone /growmesh-rn-app/assets/register.json")}
+                   autoPlay
+                   loop = {false}
+                   style={styles.lottieAnimation}
+                 />
+               </View>
+               
         </View>
-
-        <View style={styles.pencilContainer}>
-          <PencilIcon />
-        </View>
-
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Create account</Text>
         </TouchableOpacity>
       </View>
-
-     
+      
     </View>
   );
 };
@@ -162,6 +154,7 @@ const styles = StyleSheet.create({
   pencilContainer: {
     alignItems: "center",
     marginVertical: 35,
+    
   },
   button: {
     width: "100%",
@@ -170,7 +163,7 @@ const styles = StyleSheet.create({
     borderRadius: 39,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 88,
+    marginTop: 80,
   },
   buttonText: {
     color: "#FFF",
@@ -186,6 +179,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3EDF7",
     justifyContent: "center",
     alignItems: "center",
+  },imageContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 20,
+    marginTop:120,
+  },
+  lottieAnimation: {
+    width: Dimensions.get("window").width *0.9,
+   height: Dimensions.get("window").width *0.9,
+    maxWidth: 300,
+    maxHeight: 300,
   },
 });
 

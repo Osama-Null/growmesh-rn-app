@@ -3,8 +3,10 @@ import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthNavigator from "./navigation/AuthNavigator";
-import Dashboard from "./screens/Dashboard";
-import GoalNavigator from "./navigation/GoalNavigator";
+import TabNavigator from "./navigation/TabNavigator";
+import History from "./screens/History";
+import MainNavigator from "./navigation/MainNavigator";
+import LockScreen from "./screens/LockScreen";
 
 export default function App() {
   return (
@@ -13,8 +15,11 @@ export default function App() {
         <SafeAreaView style={styles.container}>
           <StatusBar style="auto" />
           {/* <AuthNavigator /> */}
-          {/* <Dashboard /> */}
-          <GoalNavigator />
+          {/* <TabNavigator /> */}
+          {/* <History /> */}
+          {/* <MainNavigator /> */}
+          <AuthNavigator />
+          {/* <LockScreen /> */}
         </SafeAreaView>
       </SafeAreaProvider>
     </NavigationContainer>
