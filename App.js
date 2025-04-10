@@ -7,6 +7,8 @@ import TabNavigator from "./navigation/TabNavigator";
 import History from "./screens/History";
 import MainNavigator from "./navigation/MainNavigator";
 import LockScreen from "./screens/LockScreen";
+import GoalNavigator from "./navigation/GoalNavigator";
+import Profile from "./screens/Profile";
 
 export default function App() {
   return (
@@ -18,8 +20,10 @@ export default function App() {
           {/* <TabNavigator /> */}
           {/* <History /> */}
           {/* <MainNavigator /> */}
-          <AuthNavigator />
+          {/* <AuthNavigator /> */}
           {/* <LockScreen /> */}
+          {/* <GoalNavigator /> */}
+          <Profile />
         </SafeAreaView>
       </SafeAreaProvider>
     </NavigationContainer>
