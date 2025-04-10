@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     borderRadius: 39,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 150,
+    marginTop: 80,
   },
   buttonText: {
     color: "#FFF",
@@ -184,12 +184,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 20,
+    marginTop:120,
   },
   lottieAnimation: {
     width: Dimensions.get("window").width *0.9,
    height: Dimensions.get("window").width *0.9,
-    maxWidth: 400,
-    maxHeight: 400,
+    maxWidth: 300,
+    maxHeight: 300,
   },
 });
 

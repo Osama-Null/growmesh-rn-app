@@ -6,6 +6,7 @@ import AuthNavigator from "./navigation/AuthNavigator";
 import TabNavigator from "./navigation/TabNavigator";
 import History from "./screens/History";
 import MainNavigator from "./navigation/MainNavigator";
+import LockScreen from "./screens/LockScreen";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           {/* <History /> */}
           {/* <MainNavigator /> */}
           <AuthNavigator />
+          {/* <LockScreen /> */}
         </SafeAreaView>
       </SafeAreaProvider>
     </NavigationContainer>
