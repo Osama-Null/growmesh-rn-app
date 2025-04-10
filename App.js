@@ -4,6 +4,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthNavigator from "./navigation/AuthNavigator";
 import TabNavigator from "./navigation/TabNavigator";
+import History from "./screens/History";
+import MainNavigator from "./navigation/MainNavigator";
 
 export default function App() {
   return (
@@ -12,7 +14,10 @@ export default function App() {
         <SafeAreaView style={styles.container}>
           <StatusBar style="auto" />
           {/* <AuthNavigator /> */}
-          <TabNavigator />
+          {/* <TabNavigator /> */}
+          {/* <History /> */}
+          {/* <MainNavigator /> */}
+          <AuthNavigator />
         </SafeAreaView>
       </SafeAreaProvider>
     </NavigationContainer>
