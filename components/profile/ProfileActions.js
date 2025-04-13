@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontWeight: "700",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   logoutButton: {
     backgroundColor: "rgba(216, 105, 107, 0.1)",
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     color: "#D8696B",
     fontSize: 16,
     fontWeight: "700",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
 });
 

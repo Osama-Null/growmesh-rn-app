@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Platform } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ChartSection from "../components/dashboard/ChartSection";
 import TransactionList from "../components/dashboard/TransactionList";
@@ -35,13 +35,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     color: "#000",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
   sectionSubtitle: {
     fontSize: 14,
     color: "#1e1e1e80",
     marginTop: 4,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
 });
 

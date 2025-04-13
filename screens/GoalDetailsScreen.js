@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     marginLeft: 16,
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   content: {
     padding: 16,
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     color: "#000",
     marginBottom: 32,
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily: "Roboto",
   },
   inputGroup: {
     gap: 8,
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     color: "#000",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily: "Roboto",
   },
   input: {
     backgroundColor: "rgba(255,255,255,0.5)",
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     color: "#1e1e1e",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily: "Roboto",
   },
   textArea: {
     height: 120,
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     color: "#1e1e1e80",
     textAlign: "center",
     marginBottom: 16,
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   nextButton: {
     backgroundColor: "#2F3039",
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontWeight: "700",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
 });
 

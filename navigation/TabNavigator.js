@@ -1,6 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, Text, Platform } from "react-native";
+import { View, Text } from "react-native";
 import { Svg, Path } from "react-native-svg";
 import Dashboard from "../screens/Dashboard";
 import GoalNavigator from "./GoalNavigator";
@@ -67,7 +67,7 @@ const TabNavigator = () => {
         },
         tabBarLabelStyle: {
           fontSize: 12,
-          fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+          fontFamily: "Roboto",
           fontWeight: "500",
         },
         tabBarActiveTintColor: "#2F3039",

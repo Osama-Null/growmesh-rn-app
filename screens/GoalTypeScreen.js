@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Platform,
   Dimensions,
   TextInput,
 } from "react-native";
@@ -105,7 +104,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#1e1e1e80",
     marginBottom: 12,
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily: "Roboto",
   },
   customInputContainer: {
     gap: 12,
@@ -116,7 +115,7 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     color: "#1e1e1e",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   customGoalButton: {
     backgroundColor: "#2F3039",
@@ -131,7 +130,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontWeight: "600",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily: "Roboto",
   },
  
   container: {
@@ -156,13 +155,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     marginLeft: 16,
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   subtitle: {
     fontSize: 16,
     color: "#1e1e1e80",
     marginBottom: 32,
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   goalsGrid: {
     flexDirection: "row",
@@ -182,12 +181,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 8,
     color: "#000",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   goalDescription: {
     fontSize: 14,
     color: "#1e1e1e80",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily: "Roboto",
   },
   progressContainer: {
     position: "absolute",
@@ -210,7 +209,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#1e1e1e80",
     textAlign: "center",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
 });
 

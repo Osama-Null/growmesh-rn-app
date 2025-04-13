@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     marginLeft: 16,
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   content: {
     flex: 1,
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#000",
     marginBottom: 24,
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   frequencyContainer: {
     flexDirection: "row",
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   frequencyText: {
     fontSize: 16,
     color: "#000",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily: "Roboto",
   },
   selectedFrequencyText: {
     color: "#FFF",
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     color: "#000",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   input: {
     backgroundColor: "rgba(255,255,255,0.5)",
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     color: "#1e1e1e",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   initialPaymentContainer: {
     marginTop: 24,
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     color: "#000",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily: "Roboto",
   },
   selectedOptionText: {
     color: "#FFF",
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#000",
     marginBottom: 8,
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   summaryItem: {
     flexDirection: "row",
@@ -333,13 +333,13 @@ const styles = StyleSheet.create({
   summaryLabel: {
     fontSize: 16,
     color: "#1e1e1e80",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   summaryValue: {
     fontSize: 16,
     color: "#000",
     fontWeight: "500",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   footer: {
     padding: 16,
@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
     color: "#1e1e1e80",
     textAlign: "center",
     marginBottom: 16,
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   completeButton: {
     backgroundColor: "#2F3039",
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontWeight: "700",
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
   },
   animationContainer: {
     ...StyleSheet.absoluteFillObject,

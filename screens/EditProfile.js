@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Platform,
   TextInput,
   TouchableOpacity,
   ScrollView,
@@ -151,7 +150,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#1D1B20",
     marginLeft: 16,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   content: {
     flex: 1,
@@ -175,7 +174,7 @@ const styles = StyleSheet.create({
     color: "#2F3039",
     fontSize: 16,
     fontWeight: "600",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   formSection: {
     marginBottom: 24,
@@ -184,7 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#1D1B20",
     marginBottom: 8,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   input: {
     backgroundColor: "rgba(255,255,255,0.5)",
@@ -192,7 +191,7 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     color: "#1D1B20",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   saveButton: {
     backgroundColor: "#2F3039",
@@ -206,7 +205,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontWeight: "700",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
 });
 

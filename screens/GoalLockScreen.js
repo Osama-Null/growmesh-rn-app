@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Platform,
   Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -106,7 +105,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginLeft: 16,
     color: "#1D1B20",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   content: {
     flex: 1,
@@ -117,14 +116,14 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     color: "#000",
     marginBottom: 12,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   subtitle: {
     fontSize: 16,
     color: "#1D1B20",
     opacity: 0.6,
     marginBottom: 32,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   optionsContainer: {
     gap: 16,
@@ -149,13 +148,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#1D1B20",
     marginBottom: 8,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
   optionDescription: {
     fontSize: 14,
     color: "#1D1B20",
     opacity: 0.6,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   progressContainer: {
     padding: 16,
@@ -177,7 +176,7 @@ const styles = StyleSheet.create({
     color: "#1D1B20",
     opacity: 0.6,
     textAlign: "center",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
 });
 
