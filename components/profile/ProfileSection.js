@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Platform } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 const ProfileSection = ({ title, value }) => (
   <View style={styles.profileSection}>
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     color: "#1D1B20",
     opacity: 0.6,
     marginBottom: 8,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:"Roboto",
   },
   sectionContent: {
     backgroundColor: "rgba(255, 255, 255, 0.5)",
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   sectionValue: {
     fontSize: 16,
     color: "#1D1B20",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
 });
 

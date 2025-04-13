@@ -9,6 +9,8 @@ import MainNavigator from "./navigation/MainNavigator";
 import LockScreen from "./screens/LockScreen";
 import GoalNavigator from "./navigation/GoalNavigator";
 import Profile from "./screens/Profile";
+import EditProfile from "./screens/EditProfile";
+import GoalDetails from "./screens/GoalDetails";
 
 export default function App() {
   return (
@@ -23,7 +25,10 @@ export default function App() {
           {/* <AuthNavigator /> */}
           {/* <LockScreen /> */}
           {/* <GoalNavigator /> */}
-          <Profile />
+          {/*  add shadow to lock your goal to show that it is pressable */}
+          {/* <Profile /> */}
+          {/* <EditProfile /> */}
+          <GoalDetails />
         </SafeAreaView>
       </SafeAreaProvider>
     </NavigationContainer>

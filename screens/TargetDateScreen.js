@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginLeft: 16,
     color: "#1D1B20",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
   content: {
     flex: 1,
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     color: "#1D1B20",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
   weekDays: {
     flexDirection: "row",
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#1D1B20",
     opacity: 0.6,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   calendar: {
     flexDirection: "row",
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   dayText: {
     fontSize: 16,
     color: "#1D1B20",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   selectedDayText: {
     color: "#FFF",
@@ -268,13 +268,13 @@ const styles = StyleSheet.create({
     color: "#1D1B20",
     opacity: 0.6,
     marginBottom: 8,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
   selectedDateValue: {
     fontSize: 18,
     fontWeight: "700",
     color: "#1D1B20",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   footer: {
     padding: 16,
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontWeight: "700",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
   progressContainer: {
     marginTop: 8,
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     color: "#1D1B20",
     opacity: 0.6,
     textAlign: "center",
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
 });
 

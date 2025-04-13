@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  Platform,
   Dimensions,
 } from "react-native";
 import LottieView from "lottie-react-native";
@@ -68,7 +67,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   timeText: {
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
     fontSize: 14,
     fontWeight: "500",
     color: "#1d1b20",
@@ -89,7 +88,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 25,
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily: "Roboto",
     fontWeight: "900",
     color: "#000",
     lineHeight: 35,
@@ -118,7 +117,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   startButtonText: {
-    fontFamily: Platform.OS === "ios" ? "Inter" : "Roboto",
+    fontFamily:  "Roboto",
     fontSize: 16,
     color: "#FFF",
     fontWeight: "700",
