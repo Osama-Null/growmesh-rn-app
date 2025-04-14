@@ -29,7 +29,7 @@ const LockScreen = () => {
         <TouchableOpacity onPress={handleTap} activeOpacity={0.8}>
           <LottieView
             ref={animationRef}
-            source={require('/Users/baderalqallaf/capstone /growmesh-rn-app/assets/lock-breaking.json')} // Adjust path to your file
+            source={require('../assets/lock-breaking.json')} // Adjust path to your file
             style={styles.lottie}
             loop={false}
             autoPlay={false}
