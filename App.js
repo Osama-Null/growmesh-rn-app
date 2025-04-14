@@ -2,30 +2,35 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import AuthNavigator from "./navigation/AuthNavigator";
-import TabNavigator from "./navigation/TabNavigator";
-import History from "./screens/History";
-import MainNavigator from "./navigation/MainNavigator";
-import LockScreen from "./screens/LockScreen";
-import GoalNavigator from "./navigation/GoalNavigator";
-import Profile from "./screens/Profile";
+import AuthNavigation from "./src/navigations/AuthNavigation/AuthNavigation";
+import { useEffect, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import UserContext from "./src/context/UserContext";
+import MainNavigation from "./src/navigations/MainNavigation/MainNavigation";
 
 export default function App() {
+  const queryClient = new QueryClient();
+  const [isAuth, setIsAuth] = useState(false);
+
+  const checkToken = async () => {
+    // get the token
+    const token = await getToken();
+    if (token) {
+      // token ? setIsAuth(true) :
+      setIsAuth(true);
+    }
+  };
+  useEffect(() => {
+    checkToken();
+  });
+
   return (
     <NavigationContainer>
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
-          <StatusBar style="auto" />
-          {/* <AuthNavigator /> */}
-          {/* <TabNavigator /> */}
-          {/* <History /> */}
-          {/* <MainNavigator /> */}
-          {/* <AuthNavigator /> */}
-          {/* <LockScreen /> */}
-          {/* <GoalNavigator /> */}
-          <Profile />
-        </SafeAreaView>
-      </SafeAreaProvider>
+     <QueryClientProvider client={queryClient}>
+        <UserContext.Provider value={{ isAuth, setIsAuth }}>
+          {isAuth ? <MainNavigation /> : <AuthNavigation />}
+        </UserContext.Provider>
+      </QueryClientProvider>
     </NavigationContainer>
   );
 }

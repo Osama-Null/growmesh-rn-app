@@ -3,7 +3,8 @@ import { setToken } from "./storage";
 
 // Login function
 const login = async (userInfo) => {
-  const response = await instance.post("/login", {...userInfo});
+  const response = await instance.post("/auth/login", {...userInfo});
+  console.log("LOGIN TOKEN", response.data.token);
   setToken(response.data.token);
   return response.data;
 };
@@ -15,7 +16,7 @@ const register = async (userInfo) => {
       formData.append(key, userInfo[key]);
     });
   
-    const response = await instance.post("/Auth/register", formData, {
+    const response = await instance.post("/auth/register", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
