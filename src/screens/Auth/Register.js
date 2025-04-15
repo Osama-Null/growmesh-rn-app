@@ -363,7 +363,6 @@ const Register = () => {
 
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShowDatePicker(Platform.OS === "ios");
     setDate(currentDate);
 
     const formattedDate = `${currentDate.getFullYear()}-${String(
@@ -501,6 +500,7 @@ const Register = () => {
                     Upload Profile Image
                   </Text>
                 </TouchableOpacity>
+              
                 {image && (
                   <Image source={{ uri: image }} style={styles.profileImage} />
                 )}
@@ -537,15 +537,6 @@ const Register = () => {
               </TouchableOpacity>
             )}
           </View>
-
-          <View style={styles.imageContainer}>
-            <LottieView
-              source={require("../../../assets/register.json")}
-              autoPlay
-              loop={false}
-              style={styles.lottieAnimation}
-            />
-          </View>
         </View>
       </ScrollView>
     </GestureHandlerRootView>
@@ -563,7 +554,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    backgroundColor: "#FEF7FF",
+    backgroundColor: 'White',
     maxWidth: Dimensions.get("window").width,
   },
   content: {
@@ -598,8 +589,14 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 16,
+    fontWeight: "500",
     color: "#1E1E1E",
     lineHeight: 60,
+    width: "100%",
+    height: 60,
+    backgroundColor: "white",
+    borderRadius: 14,
+
   },
   uploadButton: {
     width: "100%",
@@ -620,7 +617,7 @@ const styles = StyleSheet.create({
     height: 200,
     alignSelf: "center",
     marginTop: 20,
-    borderRadius: 10,
+    borderRadius: 100,
   },
   buttonContainer: {
     flexDirection: "row",

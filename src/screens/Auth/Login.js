@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     },
     container: {
       flex: 1,
-      backgroundColor: "#FEF7FF",
+     // backgroundColor: 'white',
       maxWidth: Dimensions.get("window").width,
     },
     backButton: {
@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
       height: 24,
     },
     content: {
+      marginTop : 20,
       paddingTop: 80,
       paddingHorizontal: 16,
       flex: 1,
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
       justifyContent: "center",
       gap: 11,
       marginBottom: 16,
-      backgroundColor: "#FEF7FF",
+      backgroundColor: "#E9EAEC",
     },
     socialButtonText: {
       fontSize: 16,
