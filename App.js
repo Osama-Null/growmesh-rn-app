@@ -26,10 +26,14 @@ export default function App() {
 
   return (
     <NavigationContainer>
-     <QueryClientProvider client={queryClient}>
-        <UserContext.Provider value={{ isAuth, setIsAuth }}>
-          {isAuth ? <MainNavigation /> : <AuthNavigation />}
-        </UserContext.Provider>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.container}>
+            <UserContext.Provider value={{ isAuth, setIsAuth }}>
+              {isAuth ? <MainNavigation /> : <AuthNavigation />}
+            </UserContext.Provider>
+          </SafeAreaView>
+        </SafeAreaProvider>
       </QueryClientProvider>
     </NavigationContainer>
   );

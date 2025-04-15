@@ -3,10 +3,11 @@ import React, { useContext } from 'react'
 import UserContext from '../../context/UserContext';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import HomeNavigation from '../HomeNavigation/HomeNavigation';
 import AddNavigation from '../AddNavigation/AddNavigation';
-import FaqNavigation from '../FaqNavigation/FaqNavigation';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import HistoryNavigation from '../HistoryNavigation/HistoryNavigation';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,13 +20,14 @@ const MainNavigation = () => {
         tabBarStyle: {
           borderTopWidth: 0,
         },
+        headerShown: false,
+        headerBackButtonMenuEnabled:"false"
       }}
     >
         <Tab.Screen
             name="Home"
             component={HomeNavigation}
             options={{
-              headerShown: false,
               tabBarIcon: ({ color }) => (
                 <Feather name="home" size={24} color={color} />
               ),
@@ -35,19 +37,17 @@ const MainNavigation = () => {
             name="Add"
             component={AddNavigation}
             options={{
-              headerShown: false,
               tabBarIcon: ({ color }) => (
                 <FontAwesome6 name="add" size={24} color={color} />
               ),
             }}
         />
         <Tab.Screen
-            name="FAQ"
-            component={FaqNavigation}
+            name="History"
+            component={HistoryNavigation}
             options={{
-              headerShown: false,
               tabBarIcon: ({ color }) => (
-                <FontAwesome6 name="question" size={24} color={color} />
+                <FontAwesome5 name="history" size={24} color={color} />
               ),
             }}
         />

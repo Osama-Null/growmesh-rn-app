@@ -6,17 +6,18 @@ const Stack = createNativeStackNavigator();
 
 const AddNavigation = () => {
   return (
-    // <Stack.Navigator>
-    //   <Stack.Screen
-    //     name="Add"
-    //     component={Add}
-    //     headerBackButtonMenuEnabled="false"
-    //     options={{ headerShown: false }}
-    //   />
-    // </Stack.Navigator>
-    <View>
-      <Text>AddNavigation</Text>
-    </View>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        headerBackButtonMenuEnabled:"false"
+      }}
+    >
+      <Stack.Screen
+        name="Add"
+        component={Add}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
   )
 }
 
