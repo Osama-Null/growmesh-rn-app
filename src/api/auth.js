@@ -8,21 +8,24 @@ const login = async (userInfo) => {
   setToken(response.data.token);
   return response.data;
 };
+const register = async (userInfo, image) => {
+  const formData = new FormData();
 
-// Register function
-const register = async (userInfo) => {
-    const formData = new FormData();
-    Object.keys(userInfo).forEach((key) => {
-      formData.append(key, userInfo[key]);
-    });
-  
-    const response = await instance.post("/auth/register", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    setToken(response.data.token);
-    return response.data;
-  };
-  
-  export { login, register };
+  for (key in userInfo) {
+    formData.append(key, userInfo[key]);
+  }  formData.append("ProfilePicture", {
+    name: "image.jpeg",
+    type: "image/jpeg",
+    uri: image,
+  });
+
+ 
+  const res = await instance.post("/auth/register", formData);
+
+  console.log(res);
+
+  setToken(res.data.token);
+
+  return res.data;
+};
+export {login, register};

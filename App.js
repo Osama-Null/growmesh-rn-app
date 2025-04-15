@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import UserContext from "./src/context/UserContext";
 import MainNavigation from "./src/navigations/MainNavigation/MainNavigation";
+import Register from "./src/screens/Auth/Register";
 
 export default function App() {
   const queryClient = new QueryClient();
