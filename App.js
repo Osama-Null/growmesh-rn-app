@@ -11,7 +11,8 @@ import GoalNavigator from "./navigation/GoalNavigator";
 import Profile from "./screens/Profile";
 import EditProfile from "./screens/EditProfile";
 import GoalDetails from "./screens/GoalDetails";
-
+import GoalChart from "./components/goals/GoalChart";
+import BreakGoal from "./screens/Breakgoal";
 export default function App() {
   return (
     <NavigationContainer>
@@ -28,7 +29,9 @@ export default function App() {
           {/*  add shadow to lock your goal to show that it is pressable */}
           {/* <Profile /> */}
           {/* <EditProfile /> */}
-          <GoalDetails />
+          {/* <GoalDetails /> */}
+          {/* <GoalChart /> */}
+          <BreakGoal />
         </SafeAreaView>
       </SafeAreaProvider>
     </NavigationContainer>

@@ -63,7 +63,7 @@ const Register = () => {
           </View>
           <View style={styles.imageContainer}>
                  <LottieView
-                   source={require("/Users/baderalqallaf/capstone /growmesh-rn-app/assets/register.json")}
+                   source={require("../assets/register.json")}
                    autoPlay
                    loop = {false}
                    style={styles.lottieAnimation}

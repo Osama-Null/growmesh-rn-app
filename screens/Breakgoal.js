@@ -26,7 +26,7 @@ export default function BreakGoalScreen() {
     <View style={styles.container}>
       <Text style={styles.amountText}>KWD 100 / 100</Text>
       <LottieView
-        source={require("../assets/lottie/break.json")}
+        source={require("../assets/lock-breaking.json")}
         autoPlay
         loop
         style={styles.lottie}
