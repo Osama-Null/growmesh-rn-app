@@ -294,6 +294,7 @@
 
 //  export default Register;
 
+
 import React, { useContext, useState } from "react";
 import {
   View,
@@ -305,6 +306,7 @@ import {
   Platform,
   Image,
 } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { Svg, Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import LottieView from "lottie-react-native";
@@ -365,7 +367,7 @@ const Register = () => {
     setDate(currentDate);
 
     const formattedDate = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
+      currentDate.getMonth() + 1,
     ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
     setUserInfo({ ...userInfo, DateOfBirth: formattedDate });
   };
@@ -432,14 +434,35 @@ const Register = () => {
                     {userInfo.DateOfBirth || "Select Date of Birth"}
                   </Text>
                 </TouchableOpacity>
-                {showDatePicker && (
+                {showDatePicker && Platform.OS === "android" && (
                   <DateTimePicker
                     value={date}
                     mode="date"
                     display="default"
-                    onChange={onDateChange}
+                    onChange={(event, selectedDate) => {
+                      setShowDatePicker(false);
+                      onDateChange(event, selectedDate);
+                    }}
                     maximumDate={new Date()}
                   />
+                )}
+                {showDatePicker && Platform.OS === "ios" && (
+                  <View style={styles.iosPickerContainer}>
+                    <DateTimePicker
+                      value={date}
+                      mode="date"
+                      display="spinner"
+                      onChange={onDateChange}
+                      maximumDate={new Date()}
+                      style={styles.iosPicker}
+                    />
+                    <TouchableOpacity
+                      style={styles.iosPickerButton}
+                      onPress={() => setShowDatePicker(false)}
+                    >
+                      <Text style={styles.iosPickerButtonText}>Done</Text>
+                    </TouchableOpacity>
+                  </View>
                 )}
               </>
             )}
@@ -499,7 +522,7 @@ const Register = () => {
                     Upload Profile Image
                   </Text>
                 </TouchableOpacity>
-              
+
                 {image && (
                   <Image source={{ uri: image }} style={styles.profileImage} />
                 )}
@@ -528,10 +551,12 @@ const Register = () => {
                 <Text style={styles.buttonText}>Next</Text>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity
-                style={[styles.button, { backgroundColor: "#2F3039" }]}
-                onPress={() => mutate()}
-              >
+              <TouchableOpacity style={styles.button}
+                        onPress={() => {
+                          console.log(userInfo);
+                          mutate();
+                        }}
+                      >
                 <Text style={styles.buttonText}>Create account</Text>
               </TouchableOpacity>
             )}
@@ -553,7 +578,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    backgroundColor: 'White',
+    backgroundColor: "White",
     maxWidth: Dimensions.get("window").width,
   },
   content: {
@@ -595,7 +620,28 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: "white",
     borderRadius: 14,
-
+    paddingHorizontal: 14,
+  },
+  iosPickerContainer: {
+    backgroundColor: "white",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+  },
+  iosPicker: {
+    height: 200,
+  },
+  iosPickerButton: {
+    padding: 16,
+    backgroundColor: "#2F3039",
+    alignItems: "center",
+  },
+  iosPickerButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
   uploadButton: {
     width: "100%",
