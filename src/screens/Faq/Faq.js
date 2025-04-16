@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Svg, Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
-import faqs from "../../../data/questions";
+import faqs from "../../data/questions";
 
 const Faq = () => {
   const navigation = useNavigation();
@@ -35,7 +35,9 @@ const Faq = () => {
 
       <View style={styles.content}>
         <Text style={styles.title}>Frequently Asked Questions</Text>
-        <Text style={styles.subtitle}>Find answers to common questions below.</Text>
+        <Text style={styles.subtitle}>
+          Find answers to common questions below.
+        </Text>
 
         {faqs.map((faq, index) => (
           <View key={index} style={styles.faqItem}>
@@ -71,7 +73,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   content: {
-    marginTop : 20,
+    marginTop: 20,
     paddingHorizontal: 16,
     paddingTop: 85,
     paddingBottom: 20,

@@ -3,16 +3,16 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "../../screens/Auth/Login";
 import Register from "../../screens/Auth/Register";
 import Welcome from "../../screens/Auth/Welcome";
-import Faq from "../../screens/Auth/Faq/Faq";
+import Faq from "../../screens/Faq/Faq";
 
 const Stack = createNativeStackNavigator();
 
 const AuthNavigator = () => {
   return (
-    <Stack.Navigator 
+    <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        headerBackButtonMenuEnabled:"false"
+        headerBackButtonMenuEnabled: "false",
       }}
     >
       <Stack.Screen name="Welcome" component={Welcome} />
@@ -23,4 +23,3 @@ const AuthNavigator = () => {
 };
 
 export default AuthNavigator;
-
