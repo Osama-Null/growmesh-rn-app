@@ -13,7 +13,6 @@ import LottieView from "lottie-react-native";
 const Welcome = () => {
   const navigation = useNavigation();
   return (
-    <SafeAreaView style={{flex:1}}>
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.brandContainer}>
@@ -49,14 +48,13 @@ const Welcome = () => {
         </View>
       </View>
     </View>
-    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  //  backgroundColor: 'white',
+    backgroundColor:"white"
   },
   header: {
    // marginTop: 20,
@@ -139,18 +137,6 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: "#1E1E1E",
     fontSize: 16,
-  },
-  footer: {
-    height: 24,
-    backgroundColor: "#F3EDF7",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  footerLine: {
-    width: 108,
-    height: 4,
-    borderRadius: 12,
-    backgroundColor: "#1D1B20",
   },
 });
 

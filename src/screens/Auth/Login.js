@@ -45,9 +45,11 @@ const Login = () => {
             </TouchableOpacity>
       
             <View style={styles.content}>
-              <Text style={styles.title}>Welcome back</Text>
+              <View>
+                <Text style={styles.title}>Welcome back</Text>
               <Text style={styles.subtitle}>Sign in to your account below.</Text>
-      
+              </View>
+              
               <View style={styles.inputContainer}>
                 <TextInput
                   style={styles.input}
@@ -78,19 +80,19 @@ const Login = () => {
                   </TouchableOpacity>
                   {error && <Text style={styles.errorText}>{error}</Text>}
                 </View>
-              </View>
-      
-              <View style={styles.rememberContainer}>
-                <TouchableOpacity
-                  style={styles.checkboxContainer}
-                  onPress={() => setRememberMe(!rememberMe)}
-                >
-                  <CheckboxIcon checked={rememberMe} />
-                  <Text style={styles.rememberText}>Remember me</Text>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <Text style={styles.forgotText}>Forgot password?</Text>
-                </TouchableOpacity>
+
+                <View style={styles.rememberContainer}>
+                  <TouchableOpacity
+                    style={styles.checkboxContainer}
+                    onPress={() => setRememberMe(!rememberMe)}
+                  >
+                    <CheckboxIcon checked={rememberMe} />
+                    <Text style={styles.rememberText}>Remember me</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <Text style={styles.forgotText}>Forgot password?</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
       
               <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
@@ -118,49 +120,37 @@ const Login = () => {
 }
 
 const styles = StyleSheet.create({
-    backButton: {
-      position: "absolute",
-      left: 16,
-      top: 20,
-      width: 44,
-      height: 44,
-      zIndex: 1,
-      padding: 10,
-    },
     container: {
       flex: 1,
-     // backgroundColor: 'white',
+      backgroundColor: 'white',
       maxWidth: Dimensions.get("window").width,
     },
     backButton: {
       position: "absolute",
       left: 16,
-      top: 53,
+      top: 20,
       width: 24,
       height: 24,
     },
     content: {
-      marginTop : 20,
-      paddingTop: 80,
+      paddingTop: 55,
       paddingHorizontal: 16,
       flex: 1,
       justifyContent: "space-between",
       paddingBottom: 32,
     },
     title: {
-      fontSize: 25,
+      fontSize: 35,
       fontWeight: "900",
       color: "#000",
-      marginBottom: 8,
     },
     subtitle: {
-      fontSize: 16,
+      fontSize: 20,
       color: "#000",
-      marginBottom: 32,
+      marginBottom: 10,
     },
     inputContainer: {
       gap: 16,
-      marginBottom: 32,
     },
     input: {
       height: 60,
@@ -168,7 +158,7 @@ const styles = StyleSheet.create({
       borderRadius: 14,
       paddingHorizontal: 15,
       fontSize: 16,
-      backgroundColor: "white",
+      backgroundColor: "#f2effd",
       color: "#1E1E1E",
     },
     passwordContainer: {
@@ -183,7 +173,7 @@ const styles = StyleSheet.create({
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 32,
+      marginTop: 10
     },
     checkboxContainer: {
       flexDirection: "row",
@@ -206,6 +196,7 @@ const styles = StyleSheet.create({
       justifyContent: "center",
       alignItems: "center",
       marginBottom: 42,
+      marginTop: 20
     },
     loginButtonText: {
       color: "#FFF",
@@ -231,14 +222,11 @@ const styles = StyleSheet.create({
       width: "100%",
       height: 60,
       borderRadius: 39,
-      borderWidth: 1,
-      borderColor: "rgba(0,0,0,0.1)",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
       gap: 11,
       marginBottom: 16,
-      backgroundColor: "#E9EAEC",
     },
     socialButtonText: {
       fontSize: 16,
