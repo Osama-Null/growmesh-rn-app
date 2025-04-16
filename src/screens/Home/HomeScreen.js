@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
 	},
 	column3: {
 		alignItems: "flex-start",
-		backgroundColor: "#00000026",
+		backgroundColor: "#f2effd",
 		borderRadius: 14,
 		paddingVertical: 23,
 	},
