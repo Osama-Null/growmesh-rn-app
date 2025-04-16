@@ -48,7 +48,7 @@ const CreateGoalScreen = () => {
         });
       } else {
         alert("Savings goal created successfully!");
-        navigation.navigate("Dashboard");
+        navigation.navigate("HomeNav", { screen: "HomeScreen" });
       }
     },
     onError: (error) => {
@@ -70,13 +70,13 @@ const CreateGoalScreen = () => {
     mutationFn: ({ id, depositInfo }) => depositToSavingsGoal(id, depositInfo),
     onSuccess: () => {
       alert("Savings goal created and initial deposit made successfully!");
-      navigation.navigate("Dashboard");
+      navigation.navigate("HomeNav", { screen: "HomeScreen" });
     },
     onError: (error) => {
       const errorMessage =
         error.response?.data?.message || "Error making initial deposit.";
       alert(`Goal created, but ${errorMessage.toLowerCase()}`);
-      navigation.navigate("Dashboard");
+      navigation.navigate("HomeNav", { screen: "HomeScreen" });
     },
   });
 

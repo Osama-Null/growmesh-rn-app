@@ -135,8 +135,6 @@ const TargetDateStep = ({ onNext, onBack, setTargetDate }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-<<<<<<< HEAD:components/goal/TargetDateStep.js
-=======
     backgroundColor: "#FEF7FF",
   },
   header: {
@@ -158,7 +156,6 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     color: "#1D1B20",
     fontFamily: "Roboto",
->>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/TargetDateScreen.js
   },
   content: {
     flex: 1,
@@ -193,11 +190,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#1D1B20",
     opacity: 0.6,
-<<<<<<< HEAD:components/goal/TargetDateStep.js
     fontFamily: "Roboto",
-=======
-    fontFamily:  "Roboto",
->>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/TargetDateScreen.js
   },
   calendar: {
     flexDirection: "row",
@@ -221,11 +214,7 @@ const styles = StyleSheet.create({
   dayText: {
     fontSize: 16,
     color: "#1D1B20",
-<<<<<<< HEAD:components/goal/TargetDateStep.js
     fontFamily: "Roboto",
-=======
-    fontFamily:  "Roboto",
->>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/TargetDateScreen.js
   },
   selectedDayText: {
     color: "#FFF",
@@ -250,11 +239,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     color: "#1D1B20",
-<<<<<<< HEAD:components/goal/TargetDateStep.js
     fontFamily: "Roboto",
-=======
-    fontFamily:  "Roboto",
->>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/TargetDateScreen.js
   },
   buttonContainer: {
     flexDirection: "row",
@@ -272,30 +257,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     fontFamily: "Roboto",
-<<<<<<< HEAD:components/goal/TargetDateStep.js
-=======
-  },
-  progressContainer: {
-    marginTop: 8,
-  },
-  progressBar: {
-    height: 4,
-    backgroundColor: "rgba(0,0,0,0.1)",
-    borderRadius: 2,
-    marginBottom: 8,
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: "#2F3039",
-    borderRadius: 2,
-  },
-  progressText: {
-    fontSize: 14,
-    color: "#1D1B20",
-    opacity: 0.6,
-    textAlign: "center",
-    fontFamily:  "Roboto",
->>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/TargetDateScreen.js
   },
 });
 

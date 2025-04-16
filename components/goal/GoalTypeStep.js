@@ -3,10 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-<<<<<<< HEAD:components/goal/GoalTypeStep.js
-=======
-  Dimensions,
->>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/GoalTypeScreen.js
   TextInput,
   StyleSheet,
   Dimensions,
@@ -145,11 +141,7 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     color: "#1e1e1e",
-<<<<<<< HEAD:components/goal/GoalTypeStep.js
-    fontFamily: "Roboto",
-=======
     fontFamily:  "Roboto",
->>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/GoalTypeScreen.js
   },
   customGoalButton: {
     backgroundColor: "#2F3039",
@@ -165,11 +157,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     fontFamily: "Roboto",
-<<<<<<< HEAD:components/goal/GoalTypeStep.js
-  },
-  customGoalButtonTextDisabled: {
-    color: "#FFF",
-=======
   },
  
   container: {
@@ -201,14 +188,11 @@ const styles = StyleSheet.create({
     color: "#1e1e1e80",
     marginBottom: 32,
     fontFamily:  "Roboto",
->>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/GoalTypeScreen.js
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 16,
-<<<<<<< HEAD:components/goal/GoalTypeStep.js
-=======
     minHeight: 120,
   },
   goalTitle: {
@@ -234,7 +218,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.1)",
     borderRadius: 2,
     marginBottom: 8,
->>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/GoalTypeScreen.js
   },
   button: {
     width: "45%",
@@ -242,19 +225,11 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: "center",
   },
-<<<<<<< HEAD:components/goal/GoalTypeStep.js
-  buttonText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "700",
-    fontFamily: "Roboto",
-=======
   progressText: {
     fontSize: 14,
     color: "#1e1e1e80",
     textAlign: "center",
     fontFamily:  "Roboto",
->>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/GoalTypeScreen.js
   },
 });
 
