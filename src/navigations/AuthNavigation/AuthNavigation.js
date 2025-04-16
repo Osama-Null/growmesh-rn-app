@@ -16,9 +16,9 @@ const AuthNavigator = () => {
         headerBackButtonMenuEnabled: "false",
       }}
     >
+      
       <Stack.Screen name="Welcome" component={Welcome} />
       <Stack.Screen name="Login" component={Login} />
-      {/* <Stack.Screen name="CreateGoal" component={CreateGoalScreen} /> */}
       <Stack.Screen name="Register" component={Register} />
     </Stack.Navigator>
   );

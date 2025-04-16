@@ -306,7 +306,7 @@ import {
   Platform,
   Image,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+//import DateTimePicker from "@react-native-community/datetimepicker";
 import { Svg, Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import LottieView from "lottie-react-native";
