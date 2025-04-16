@@ -2,39 +2,29 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
+<<<<<<< HEAD:components/goal/GoalTypeStep.js
+=======
   Dimensions,
+>>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/GoalTypeScreen.js
   TextInput,
+  StyleSheet,
+  Dimensions,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import LottieView from "lottie-react-native";
+import goalTypes from "../../src/data/goalTypes";
 
 const { width } = Dimensions.get("window");
 
-const goalTypes = [
-  { id: 1, title: "Travel", description: "Save for your next adventure" },
-  { id: 2, title: "Emergency", description: "Build your safety net" },
-  { id: 3, title: "Education", description: "Invest in your future" },
-  { id: 4, title: "Home", description: "Save for your dream home" },
-];
-
-const GoalTypeScreen = () => {
-  const navigation = useNavigation();
+const GoalTypeStep = ({ onNext, onBack, setGoalType }) => {
   const [customGoalType, setCustomGoalType] = useState("");
+
+  const handleSelectGoal = (type) => {
+    setGoalType(type);
+    onNext();
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Choose Goal Type</Text>
-      </View>
-
       <Text style={styles.subtitle}>
         Select the type of goal you want to achieve
       </Text>
@@ -44,9 +34,7 @@ const GoalTypeScreen = () => {
           <TouchableOpacity
             key={goal.id}
             style={styles.goalCard}
-            onPress={() =>
-              navigation.navigate("GoalDetails", { goalType: goal.title })
-            }
+            onPress={() => handleSelectGoal(goal.title)}
           >
             <Text style={styles.goalTitle}>{goal.title}</Text>
             <Text style={styles.goalDescription}>{goal.description}</Text>
@@ -70,9 +58,7 @@ const GoalTypeScreen = () => {
               !customGoalType && styles.customGoalButtonDisabled,
             ]}
             disabled={!customGoalType}
-            onPress={() =>
-              navigation.navigate("GoalDetails", { goalType: customGoalType })
-            }
+            onPress={() => handleSelectGoal(customGoalType)}
           >
             <Text
               style={[
@@ -85,17 +71,61 @@ const GoalTypeScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.progressContainer}>
-              <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: "50%" }]} />
-              </View>
-              <Text style={styles.progressText}>Step 3 of 5</Text>
-            </View>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: "#A0A0A0" }]}
+          onPress={onBack}
+        >
+          <Text style={styles.buttonText}>Back</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: "#2F3039", opacity: 0.5 }]}
+          disabled
+        >
+          <Text style={styles.buttonText}>Next</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#1e1e1e80",
+    marginBottom: 32,
+    fontFamily: "Roboto",
+  },
+  goalsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: 16,
+  },
+  goalCard: {
+    width: (width - 48) / 2,
+    backgroundColor: "rgba(255,255,255,0.5)",
+    borderRadius: 14,
+    padding: 16,
+    minHeight: 120,
+  },
+  goalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 8,
+    color: "#000",
+    fontFamily: "Roboto",
+  },
+  goalDescription: {
+    fontSize: 14,
+    color: "#1e1e1e80",
+    fontFamily: "Roboto",
+  },
   customGoalContainer: {
     marginTop: 24,
     padding: 16,
@@ -115,7 +145,11 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     color: "#1e1e1e",
+<<<<<<< HEAD:components/goal/GoalTypeStep.js
+    fontFamily: "Roboto",
+=======
     fontFamily:  "Roboto",
+>>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/GoalTypeScreen.js
   },
   customGoalButton: {
     backgroundColor: "#2F3039",
@@ -131,6 +165,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     fontFamily: "Roboto",
+<<<<<<< HEAD:components/goal/GoalTypeStep.js
+  },
+  customGoalButtonTextDisabled: {
+    color: "#FFF",
+=======
   },
  
   container: {
@@ -162,18 +201,14 @@ const styles = StyleSheet.create({
     color: "#1e1e1e80",
     marginBottom: 32,
     fontFamily:  "Roboto",
+>>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/GoalTypeScreen.js
   },
-  goalsGrid: {
+  buttonContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
     justifyContent: "space-between",
-    gap: 16,
-  },
-  goalCard: {
-    width: (width - 48) / 2,
-    backgroundColor: "rgba(255,255,255,0.5)",
-    borderRadius: 14,
     padding: 16,
+<<<<<<< HEAD:components/goal/GoalTypeStep.js
+=======
     minHeight: 120,
   },
   goalTitle: {
@@ -199,18 +234,28 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.1)",
     borderRadius: 2,
     marginBottom: 8,
+>>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/GoalTypeScreen.js
   },
-  progressFill: {
-    height: "100%",
-    backgroundColor: "#2F3039",
-    borderRadius: 2,
+  button: {
+    width: "45%",
+    borderRadius: 39,
+    paddingVertical: 16,
+    alignItems: "center",
   },
+<<<<<<< HEAD:components/goal/GoalTypeStep.js
+  buttonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "700",
+    fontFamily: "Roboto",
+=======
   progressText: {
     fontSize: 14,
     color: "#1e1e1e80",
     textAlign: "center",
     fontFamily:  "Roboto",
+>>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/GoalTypeScreen.js
   },
 });
 
-export default GoalTypeScreen;
+export default GoalTypeStep;

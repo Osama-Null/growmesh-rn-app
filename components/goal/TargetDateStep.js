@@ -2,21 +2,18 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
-  Platform,
+  StyleSheet,
   Dimensions,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Svg, Path } from "react-native-svg";
 
 const { width } = Dimensions.get("window");
 
-const TargetDateScreen = ({ navigation }) => {
+const TargetDateStep = ({ onNext, onBack, setTargetDate }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const currentDate = new Date();
 
-  // Generate calendar days
   const getDaysInMonth = (year, month) => {
     return new Date(year, month + 1, 0).getDate();
   };
@@ -26,8 +23,8 @@ const TargetDateScreen = ({ navigation }) => {
     const month = selectedDate.getMonth();
     const daysInMonth = getDaysInMonth(year, month);
     const firstDay = new Date(year, month, 1).getDay();
-
     const days = [];
+
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
@@ -40,18 +37,8 @@ const TargetDateScreen = ({ navigation }) => {
   };
 
   const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
   ];
 
   const handleDateSelect = (date) => {
@@ -60,36 +47,19 @@ const TargetDateScreen = ({ navigation }) => {
     }
   };
 
-  const handleContinue = () => {
-    navigation.navigate("GoalType", {
-      lockType: "date",
-      targetDate: selectedDate.toISOString(),
-    });
-  };
-
   const changeMonth = (increment) => {
     const newDate = new Date(selectedDate);
     newDate.setMonth(newDate.getMonth() + increment);
     setSelectedDate(newDate);
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
-            <Path
-              d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
-              fill="#1D1B20"
-            />
-          </Svg>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Choose Target Date</Text>
-      </View>
+  const handleContinue = () => {
+    setTargetDate(selectedDate.toISOString());
+    onNext();
+  };
 
+  return (
+    <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.calendarHeader}>
           <TouchableOpacity onPress={() => changeMonth(-1)}>
@@ -117,9 +87,7 @@ const TargetDateScreen = ({ navigation }) => {
               key={index}
               style={[
                 styles.dayButton,
-                date &&
-                  date.toDateString() === selectedDate.toDateString() &&
-                  styles.selectedDay,
+                date && date.toDateString() === selectedDate.toDateString() && styles.selectedDay,
                 date && date <= currentDate && styles.disabledDay,
               ]}
               onPress={() => date && handleDateSelect(date)}
@@ -128,9 +96,7 @@ const TargetDateScreen = ({ navigation }) => {
               <Text
                 style={[
                   styles.dayText,
-                  date &&
-                    date.toDateString() === selectedDate.toDateString() &&
-                    styles.selectedDayText,
+                  date && date.toDateString() === selectedDate.toDateString() && styles.selectedDayText,
                   date && date <= currentDate && styles.disabledDayText,
                 ]}
               >
@@ -148,28 +114,29 @@ const TargetDateScreen = ({ navigation }) => {
         </View>
       </View>
 
-      <View style={styles.footer}>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.continueButton}
+          style={[styles.button, { backgroundColor: "#A0A0A0" }]}
+          onPress={onBack}
+        >
+          <Text style={styles.buttonText}>Back</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: "#2F3039" }]}
           onPress={handleContinue}
         >
-          <Text style={styles.continueButtonText}>Continue</Text>
+          <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
-
-        <View style={styles.progressContainer}>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: "40%" }]} />
-          </View>
-          <Text style={styles.progressText}>Step 2 of 5</Text>
-        </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+<<<<<<< HEAD:components/goal/TargetDateStep.js
+=======
     backgroundColor: "#FEF7FF",
   },
   header: {
@@ -191,6 +158,7 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     color: "#1D1B20",
     fontFamily: "Roboto",
+>>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/TargetDateScreen.js
   },
   content: {
     flex: 1,
@@ -225,7 +193,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#1D1B20",
     opacity: 0.6,
+<<<<<<< HEAD:components/goal/TargetDateStep.js
+    fontFamily: "Roboto",
+=======
     fontFamily:  "Roboto",
+>>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/TargetDateScreen.js
   },
   calendar: {
     flexDirection: "row",
@@ -249,7 +221,11 @@ const styles = StyleSheet.create({
   dayText: {
     fontSize: 16,
     color: "#1D1B20",
+<<<<<<< HEAD:components/goal/TargetDateStep.js
+    fontFamily: "Roboto",
+=======
     fontFamily:  "Roboto",
+>>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/TargetDateScreen.js
   },
   selectedDayText: {
     color: "#FFF",
@@ -274,23 +250,30 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     color: "#1D1B20",
+<<<<<<< HEAD:components/goal/TargetDateStep.js
+    fontFamily: "Roboto",
+=======
     fontFamily:  "Roboto",
+>>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/TargetDateScreen.js
   },
-  footer: {
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     padding: 16,
   },
-  continueButton: {
-    backgroundColor: "#2F3039",
+  button: {
+    width: "45%",
     borderRadius: 39,
     paddingVertical: 16,
     alignItems: "center",
-    marginBottom: 16,
   },
-  continueButtonText: {
+  buttonText: {
     color: "#FFF",
     fontSize: 16,
     fontWeight: "700",
     fontFamily: "Roboto",
+<<<<<<< HEAD:components/goal/TargetDateStep.js
+=======
   },
   progressContainer: {
     marginTop: 8,
@@ -312,7 +295,8 @@ const styles = StyleSheet.create({
     opacity: 0.6,
     textAlign: "center",
     fontFamily:  "Roboto",
+>>>>>>> 033155daca6119198d03542e07007f9139d50a02:screens/TargetDateScreen.js
   },
 });
 
-export default TargetDateScreen;
+export default TargetDateStep;

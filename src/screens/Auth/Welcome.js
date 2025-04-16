@@ -14,10 +14,6 @@ const Welcome = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        {/* <Text style={styles.timeText}>9:30</Text> */}
-      </View>
-
       <View style={styles.content}>
         <View style={styles.brandContainer}>
           <Text style={styles.brandLetter}>G</Text>
@@ -28,7 +24,7 @@ const Welcome = () => {
 
         <View style={styles.imageContainer}>
           <LottieView
-            source={require("/Users/baderalqallaf/capstone /growmesh-rn-app/assets/Animation - 1743935031574.json")}
+            source={require("../../../assets/Animation - 1743935031574.json")}
             autoPlay
             loop
             style={styles.lottieAnimation}
@@ -58,9 +54,10 @@ const Welcome = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FEF7FF",
+    backgroundColor:"white"
   },
   header: {
+   // marginTop: 20,
     height: 52,
     paddingHorizontal: 24,
     paddingVertical: 10,
@@ -133,25 +130,13 @@ const styles = StyleSheet.create({
   loginButton: {
     height: 60,
     borderRadius: 39,
-    backgroundColor: "#FEF7FF",
+    backgroundColor: "#E9EAEC",
     justifyContent: "center",
     alignItems: "center",
   },
   loginButtonText: {
     color: "#1E1E1E",
     fontSize: 16,
-  },
-  footer: {
-    height: 24,
-    backgroundColor: "#F3EDF7",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  footerLine: {
-    width: 108,
-    height: 4,
-    borderRadius: 12,
-    backgroundColor: "#1D1B20",
   },
 });
 
