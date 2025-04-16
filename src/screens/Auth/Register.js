@@ -311,6 +311,8 @@ import LottieView from "lottie-react-native";
 import UserContext from "../../context/UserContext";
 import { useMutation } from "@tanstack/react-query";
 import { register } from "../../api/auth";
+import DateTimePicker from "@react-native-community/datetimepicker"
+
 import {
   GestureHandlerRootView,
   ScrollView,
