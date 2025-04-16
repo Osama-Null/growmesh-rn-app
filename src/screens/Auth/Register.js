@@ -294,7 +294,6 @@
 
 //  export default Register;
 
-
 import React, { useContext, useState } from "react";
 import {
   View,
@@ -306,7 +305,7 @@ import {
   Platform,
   Image,
 } from "react-native";
-//import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { Svg, Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import LottieView from "lottie-react-native";
@@ -367,7 +366,7 @@ const Register = () => {
     setDate(currentDate);
 
     const formattedDate = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1,
+      currentDate.getMonth() + 1
     ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
     setUserInfo({ ...userInfo, DateOfBirth: formattedDate });
   };
@@ -551,12 +550,13 @@ const Register = () => {
                 <Text style={styles.buttonText}>Next</Text>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity style={styles.button}
-                        onPress={() => {
-                          console.log(userInfo);
-                          mutate();
-                        }}
-                      >
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  console.log(userInfo);
+                  mutate();
+                }}
+              >
                 <Text style={styles.buttonText}>Create account</Text>
               </TouchableOpacity>
             )}

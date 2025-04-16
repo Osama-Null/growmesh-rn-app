@@ -4,7 +4,6 @@ import Login from "../../screens/Auth/Login";
 import Register from "../../screens/Auth/Register";
 import Welcome from "../../screens/Auth/Welcome";
 import Faq from "../../screens/Faq/Faq";
-import CreateGoalScreen from "../../screens/Add/CreateGoalScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -13,13 +12,13 @@ const AuthNavigator = () => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        headerBackButtonMenuEnabled: "false",
+        headerBackButtonMenuEnabled: false,
       }}
     >
-      
       <Stack.Screen name="Welcome" component={Welcome} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Register" component={Register} />
+      <Stack.Screen name="Faq" component={Faq} />
     </Stack.Navigator>
   );
 };
