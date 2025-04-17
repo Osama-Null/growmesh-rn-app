@@ -16,6 +16,8 @@ const getAllSavingsGoals = async () => {
 const getSavingsGoal = async (id) => {
   const response = await instance.get(`/SavingsGoal/get/${id}`);
   return response.data;
+  console.log(response?.data);
+  
 };
 
 // Update a savings goal

@@ -4,6 +4,7 @@ import Login from "../../screens/Auth/Login";
 import Register from "../../screens/Auth/Register";
 import Welcome from "../../screens/Auth/Welcome";
 import Faq from "../../screens/Faq/Faq";
+import HomeScreen from "../../screens/Home/HomeScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -12,7 +13,7 @@ const AuthNavigator = () => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        headerBackButtonMenuEnabled: false,
+        headerBackButtonMenuEnabled:  false,,
       }}
     >
       <Stack.Screen name="Welcome" component={Welcome} />

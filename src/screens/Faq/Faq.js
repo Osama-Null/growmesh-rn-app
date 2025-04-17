@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import { Svg, Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
+import faqs from "../../../data/questions";
+import { SafeAreaView } from "react-native-safe-area-context";
 import faqs from "../../data/questions";
 
 const Faq = () => {
@@ -20,18 +22,19 @@ const Faq = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <Path
-            d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z"
-            fill="#1D1B20"
-          />
-        </Svg>
-      </TouchableOpacity>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <Path
+              d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z"
+              fill="#1D1B20"
+            />
+          </Svg>
+        </TouchableOpacity>
 
       <View style={styles.content}>
         <Text style={styles.title}>Frequently Asked Questions</Text>
@@ -39,30 +42,35 @@ const Faq = () => {
           Find answers to common questions below.
         </Text>
 
-        {faqs.map((faq, index) => (
-          <View key={index} style={styles.faqItem}>
-            <TouchableOpacity
-              style={styles.questionContainer}
-              onPress={() => toggleExpand(index)}
-            >
-              <Text style={styles.question}>{faq.question}</Text>
-              <Text style={styles.arrow}>{expanded === index ? "−" : "+"}</Text>
-            </TouchableOpacity>
-            {expanded === index && (
-              <Text style={styles.answer}>{faq.answer}</Text>
-            )}
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+          {faqs.map((faq, index) => (
+            <View key={index} style={styles.faqItem}>
+              <TouchableOpacity
+                style={styles.questionContainer}
+                onPress={() => toggleExpand(index)}
+              >
+                <Text style={styles.question}>{faq.question}</Text>
+                <Text style={styles.arrow}>
+                  {expanded === index ? "−" : "+"}
+                </Text>
+              </TouchableOpacity>
+              {expanded === index && (
+                <Text style={styles.answer}>{faq.answer}</Text>
+              )}
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#FEF7FF",
+  },
   container: {
     flexGrow: 1,
-    backgroundColor: "#white",
-    maxWidth: Dimensions.get("window").width,
   },
   backButton: {
     position: "absolute",

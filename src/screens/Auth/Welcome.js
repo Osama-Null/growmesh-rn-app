@@ -13,51 +13,56 @@ import LottieView from "lottie-react-native";
 const Welcome = () => {
   const navigation = useNavigation();
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <View style={styles.brandContainer}>
-          <Text style={styles.brandLetter}>G</Text>
-          <Text style={styles.brandText}>Welcome to GrowMesh</Text>
-        </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <View style={styles.brandContainer}>
+            <Text style={styles.brandLetter}>G</Text>
+            <Text style={styles.brandText}>Welcome to GrowMesh</Text>
+          </View>
 
-        <Text style={styles.title}>A NETWORK OF GOALS COMING TOGETHER</Text>
+          <Text style={styles.title}>A NETWORK OF GOALS COMING TOGETHER</Text>
 
-        <View style={styles.imageContainer}>
-          <LottieView
-            source={require("../../../assets/Animation - 1743935031574.json")}
-            autoPlay
-            loop
-            style={styles.lottieAnimation}
-          />
-        </View>
+          <View style={styles.imageContainer}>
+            <LottieView
+              source={require("../../../assets/Animation - 1743935031574.json")}
+              autoPlay
+              loop
+              style={styles.lottieAnimation}
+            />
+          </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.createButton}
-            onPress={() => navigation.navigate("Register")}
-          >
-            <Text style={styles.createButtonText}>Create account</Text>
-          </TouchableOpacity>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.createButton}
+              onPress={() => navigation.navigate("Register")}
+            >
+              <Text style={styles.createButtonText}>Create account</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={() => navigation.navigate("Login")}
-          >
-            <Text style={styles.loginButtonText}>Login</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={() => navigation.navigate("Login")}
+            >
+              <Text style={styles.loginButtonText}>Login</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#FEF7FF",
+  },
   container: {
     flex: 1,
-    backgroundColor:"white"
   },
   header: {
-   // marginTop: 20,
+    // marginTop: 20,
     height: 52,
     paddingHorizontal: 24,
     paddingVertical: 10,
