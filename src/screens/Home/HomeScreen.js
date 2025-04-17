@@ -19,8 +19,12 @@ import * as Progress from "react-native-progress";
 import EmojiPicker from "rn-emoji-keyboard";
 import { useQuery } from "@tanstack/react-query";
 import { getAllSavingsGoals } from "../../api/savingsGoal";
+import { useNavigation } from "@react-navigation/native";
+import SavingsGoalDetails from "./SavingsGoalDetails";
 
 const HomeScreen = ({ navigation }) => {
+  // const navigation = useNavigation();
+
   // API
   const { data, isLoading, isError } = useQuery({
     queryKey: ["fetchAllSavingsGoals"],
@@ -64,7 +68,7 @@ const HomeScreen = ({ navigation }) => {
       onPanResponderRelease: () => {
         setTooltip({ ...tooltip, visible: false });
       },
-    })
+    }),
   ).current;
 
   // Handle loading and error states
@@ -94,14 +98,14 @@ const HomeScreen = ({ navigation }) => {
       "\n︵︵︵︵︵︵︵︵︵︵︵︵︵︵︵︵",
       "\n🔴 From API ❌",
       data,
-      "\n︶︶︶︶︶︶︶︶︶︶︶︶︶︶︶︶\n"
+      "\n︶︶︶︶︶︶︶︶︶︶︶︶︶︶︶︶\n",
     );
   }
   console.log(
     "\n︵︵︵︵︵︵︵︵︵︵︵︵︵︵︵︵",
     "\n🟢 From API ✔️ ",
     data,
-    "\n︶︶︶︶︶︶︶︶︶︶︶︶︶︶︶︶\n"
+    "\n︶︶︶︶︶︶︶︶︶︶︶︶︶︶︶︶\n",
   );
 
   const Goals = data || [];
@@ -180,11 +184,14 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.scrollView}>
+      {/* <ScrollView style={styles.scrollView}> */}
         <View style={styles.row}>
-          <View style={styles.image}>
+          <TouchableOpacity style={styles.image}
+ onPress={() =>
+  navigation.navigate("Profile")
+}          >
             <MaterialIcons name="account-circle" size={45} color="black" />
-          </View>
+          </TouchableOpacity>
           {/* notification icon */}
           <Image
             source={{
@@ -258,7 +265,11 @@ const HomeScreen = ({ navigation }) => {
                 <React.Fragment key={goal.savingsGoalId}>
                   <TouchableOpacity
                     style={index === 2 ? styles.row4 : styles.row2}
-                    onPress={() => alert(`Pressed ${goal.savingsGoalName}`)}
+                    onPress={() => {
+                      navigation.navigate("SavingsGoalDetails", {
+                        goalId: goal.savingsGoalId,
+                      });
+                    }}
                   >
                     {goal.emoji ? (
                       <Text style={styles.emoji}>{goal.emoji}</Text>
@@ -308,7 +319,7 @@ const HomeScreen = ({ navigation }) => {
             />
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };
