@@ -1,31 +1,34 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 
-const ProfileHeader = ({ profile }) => (
-  <View style={styles.profileHeader}>
-    <View style={styles.profileImageContainer}>
-      <View style={styles.profileImageWrapper}>
-        {profile.profilePicture ? (
+
+const ProfileHeader = ({ profile }) => {
+  const firstName = profile?.firstName || "Unknown";
+  const lastName = profile?.lastName || "User";
+  const email = profile?.email || "No email provided";
+
+  return (
+    <View style={styles.profileHeader}>
+      <View style={styles.profileImageContainer}>
+        <View style={styles.profileImageWrapper}>
           <Image
-            source={{ uri: profile.profilePicture }}
+            source={profile.profilePictureUrl
+              ? {uri : profile.profilePictureUrl}
+               : {uri : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuNhTZJTtkR6b-ADMhmzPvVwaLuLdz273wvQ&s"}
+            }
             style={styles.profileImage}
+            resizeMode="cover"
+            onError={(e) =>
+              console.log("Image load error:", e.nativeEvent.error)
+            }
           />
-        ) : (
-          <Image
-            source={{
-              uri: "https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg",
-            }}
-            style={styles.profileImage}
-          />
-        )}
+        </View>
+        <Text style={styles.profileName}>{`${firstName} ${lastName}`}</Text>
+        <Text style={styles.profileEmail}>{email}</Text>
       </View>
-      <Text
-        style={styles.profileName}
-      >{`${profile.firstName} ${profile.lastName}`}</Text>
-      <Text style={styles.profileEmail}>{profile.email}</Text>
     </View>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   profileHeader: {

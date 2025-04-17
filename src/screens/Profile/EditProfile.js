@@ -6,28 +6,120 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Svg, Path } from "react-native-svg";
+import * as ImagePicker from "expo-image-picker";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { editProfile } from "../../api/user";
 
 const EditProfile = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const queryClient = useQueryClient();
+  const initialProfile = route.params?.profile || {};
+
   const [profile, setProfile] = useState({
-    firstName: "Bader",
-    lastName: "Alqallaf",
-    dateOfBirth: "1990-01-01",
-    email: "bderalq@gmail.com",
-    profilePicture: null,
+    firstName: initialProfile.firstName || "",
+    lastName: initialProfile.lastName || "",
+    dateOfBirth: initialProfile.dateOfBirth || "",
+    email: initialProfile.email || "",
+    profilePictureUrl: initialProfile.profilePictureUrl || null,
+  });
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const updateProfileMutation = useMutation({
+    mutationFn: ({ userInfo, image }) => editProfile(userInfo, image),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["profile"]);
+      Alert.alert("Success", "Profile updated successfully");
+      navigation.goBack();
+    },
+    onError: (error) => {
+      Alert.alert("Error", error?.message || "Failed to update profile");
+    },
   });
 
-  const handleSave = () => {
-    console.log("Profile updated:", profile);
-    navigation.goBack();
+  const handleImagePick = async () => {
+    try {
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permissionResult.granted) {
+        Alert.alert(
+          "Permission Required",
+          "Please allow access to your photo library",
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+        allowsMultipleSelection: false,
+        presentationStyle: "fullScreen",
+      });
+
+      if (!result.canceled) {
+        setSelectedImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to pick image");
+    }
   };
 
-  const handleImagePick = () => {
-    console.log("Image pick requested");
+  const validateForm = () => {
+    if (!profile.firstName.trim()) {
+      Alert.alert("Error", "First name is required");
+      return false;
+    }
+    if (!profile.lastName.trim()) {
+      Alert.alert("Error", "Last name is required");
+      return false;
+    }
+    if (!profile.email.trim()) {
+      Alert.alert("Error", "Email is required");
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(profile.email)) {
+      Alert.alert("Error", "Please enter a valid email");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSave = () => {
+    if (!validateForm()) return;
+
+    const userInfo = {
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      dateOfBirth: profile.dateOfBirth,
+      email: profile.email,
+    };
+
+    updateProfileMutation.mutate(
+      {
+        userInfo,
+        image: selectedImage,
+      },
+      {
+        onSuccess: (data) => {
+          queryClient.setQueryData(["profile"], data);
+          Alert.alert("Success", "Profile updated successfully");
+          navigation.goBack();
+        },
+        onError: (error) => {
+          Alert.alert("Error", error?.message || "Failed to update profile");
+        },
+      },
+    );
   };
 
   const FormSection = ({
@@ -74,12 +166,19 @@ const EditProfile = () => {
           onPress={handleImagePick}
         >
           <View style={styles.placeholderImage}>
-            <Svg width={40} height={40} viewBox="0 0 24 24" fill="none">
-              <Path
-                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                fill="#FEF7FF"
+            {selectedImage ? (
+              <Image
+                source={{ uri: selectedImage }}
+                style={styles.profileImage}
               />
-            </Svg>
+            ) : (
+              <Svg width={40} height={40} viewBox="0 0 24 24" fill="none">
+                <Path
+                  d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                  fill="#FEF7FF"
+                />
+              </Svg>
+            )}
           </View>
           <Text style={styles.changePhotoText}>Change Profile Picture</Text>
         </TouchableOpacity>
@@ -121,8 +220,19 @@ const EditProfile = () => {
           keyboardType="email-address"
         />
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>Save Changes</Text>
+        <TouchableOpacity
+          style={[
+            styles.saveButton,
+            updateProfileMutation.isPending && styles.saveButtonDisabled,
+          ]}
+          onPress={handleSave}
+          disabled={updateProfileMutation.isPending}
+        >
+          {updateProfileMutation.isPending ? (
+            <ActivityIndicator color="#FFF" />
+          ) : (
+            <Text style={styles.saveButtonText}>Save Changes</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -169,6 +279,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
+    overflow: "hidden",
+  },
+  profileImage: {
+    width: "100%",
+    height: "100%",
   },
   changePhotoText: {
     color: "#2F3039",
@@ -200,6 +315,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 32,
     marginBottom: 24,
+  },
+  saveButtonDisabled: {
+    opacity: 0.7,
   },
   saveButtonText: {
     color: "#FFF",
