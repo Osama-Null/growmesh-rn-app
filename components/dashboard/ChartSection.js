@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Platform,
 } from "react-native";
 import ChartComponent from "./ChartComponent";
 
@@ -51,14 +50,14 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   savingsLabel: {
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
     fontSize: 14,
     color: "#1E1E1E",
     opacity: 0.6,
     marginBottom: 8,
   },
   savingsAmount: {
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
     fontSize: 32,
     fontWeight: "800",
     color: "#1E1E1E",
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
   dateText: {
     color: "#fff",
     fontSize: 16,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
   },
   chartContainer: {
     marginHorizontal: 16,

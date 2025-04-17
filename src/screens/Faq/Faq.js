@@ -11,6 +11,7 @@ import { Svg, Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import faqs from "../../../data/questions";
 import { SafeAreaView } from "react-native-safe-area-context";
+import faqs from "../../data/questions";
 
 const Faq = () => {
   const navigation = useNavigation();
@@ -35,11 +36,11 @@ const Faq = () => {
           </Svg>
         </TouchableOpacity>
 
-        <View style={styles.content}>
-          <Text style={styles.title}>Frequently Asked Questions</Text>
-          <Text style={styles.subtitle}>
-            Find answers to common questions below.
-          </Text>
+      <View style={styles.content}>
+        <Text style={styles.title}>Frequently Asked Questions</Text>
+        <Text style={styles.subtitle}>
+          Find answers to common questions below.
+        </Text>
 
           {faqs.map((faq, index) => (
             <View key={index} style={styles.faqItem}>

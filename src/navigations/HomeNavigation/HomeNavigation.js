@@ -1,8 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from '../../screens/Home/HomeScreen';
-import { Header } from '@react-navigation/elements';
+import HomeScreen from "../../screens/Home/HomeScreen";
+import CreateGoalScreen from "../../screens/Add/CreateGoalScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -11,17 +10,13 @@ const HomeNavigation = () => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        headerBackButtonMenuEnabled:"false"
+        headerBackButtonMenuEnabled: false,
       }}
     >
-      <Stack.Screen
-        name="HomeScreen"
-        component={HomeScreen}
-      />
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="CreateGoal" component={CreateGoalScreen} />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
-export default HomeNavigation
-
-const styles = StyleSheet.create({})
+export default HomeNavigation;

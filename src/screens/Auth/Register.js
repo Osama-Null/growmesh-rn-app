@@ -305,6 +305,7 @@ import {
   Platform,
   Image,
 } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { Svg, Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import LottieView from "lottie-react-native";
@@ -436,16 +437,37 @@ const Register = () => {
                       {userInfo.DateOfBirth || "Select Date of Birth"}
                     </Text>
                   </TouchableOpacity>
-                  {showDatePicker && (
+                  {showDatePicker && Platform.OS === "android" && (
                     <DateTimePicker
                       value={date}
                       mode="date"
                       display="default"
-                      onChange={onDateChange}
+                      onChange={(event, selectedDate) => {
+                      setShowDatePicker(false);
+                      onDateChange(event, selectedDate);
+                    }}
                       maximumDate={new Date()}
                     />
                   )}
-                </>
+                  {showDatePicker && Platform.OS === "ios" && (
+                  <View style={styles.iosPickerContainer}>
+                    <DateTimePicker
+                      value={date}
+                      mode="date"
+                      display="spinner"
+                      onChange={onDateChange}
+                      maximumDate={new Date()}
+                      style={styles.iosPicker}
+                    />
+                    <TouchableOpacity
+                      style={styles.iosPickerButton}
+                      onPress={() => setShowDatePicker(false)}
+                    >
+                      <Text style={styles.iosPickerButtonText}>Done</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </>
               )}
 
               {step === 2 && (
@@ -566,6 +588,11 @@ const styles = StyleSheet.create({
     height: 24,
     zIndex: 1,
   },
+  container: {
+    flexGrow: 1,
+    backgroundColor: "White",
+    maxWidth: Dimensions.get("window").width,
+  },
   content: {
     paddingHorizontal: 16,
     paddingTop: 85,
@@ -605,6 +632,28 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: "white",
     borderRadius: 14,
+    paddingHorizontal: 14,
+  },
+  iosPickerContainer: {
+    backgroundColor: "white",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+  },
+  iosPicker: {
+    height: 200,
+  },
+  iosPickerButton: {
+    padding: 16,
+    backgroundColor: "#2F3039",
+    alignItems: "center",
+  },
+  iosPickerButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
   uploadButton: {
     width: "100%",

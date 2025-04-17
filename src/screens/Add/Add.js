@@ -1,33 +1,32 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { useNavigation } from "@react-navigation/native";
-import LottieView from "lottie-react-native";
+// import { StyleSheet, Text, View } from "react-native";
+// import React from "react";
+// import { useNavigation } from "@react-navigation/native";
+// import LottieView from "lottie-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const { width } = Dimensions.get("window");
+// const { width } = Dimensions.get("window");
 
-const Add = () => {
-  const navigation = useNavigation();
+// const Add = () => {
+//   const navigation = useNavigation();
 
-  return (
+//   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Initial */}
-        {/* {showInitial && (
-            <View style={styles.content}>
+  //     <View style={styles.container}>
+//         {showInitial && (
+//             <View style={styles.content}>
 
-            <View style={styles.titleContainer}>
-              <Text style={styles.title}>LET'S CREATE A SAVINGS{"\n"}GOAL!</Text>
-            </View>
+//             <View style={styles.titleContainer}>
+//               <Text style={styles.title}>LET'S CREATE A SAVINGS{"\n"}GOAL!</Text>
+//             </View>
     
-            <View style={styles.imageContainer}>
-              <LottieView
-                source={require("../assets/savinggoal.json")}
-                autoPlay
-                loop
-                style={styles.lottieAnimation}
-              />
-            </View>
+//             <View style={styles.imageContainer}>
+//               <LottieView
+//                 source={require("../assets/savinggoal.json")}
+//                 autoPlay
+//                 loop
+//                 style={styles.lottieAnimation}
+//               />
+//             </View>
     
             <TouchableOpacity
               style={styles.startButton}
