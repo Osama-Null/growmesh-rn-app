@@ -4,7 +4,7 @@ import HomeScreen from "../../screens/Home/HomeScreen";
 import CreateGoalScreen from "../../screens/Add/CreateGoalScreen";
 import SavingsGoalDetails from "../../screens/Home/SavingsGoalDetails";
 import EditGoalScreen from "../../screens/Add/EditGoalScreen";
-
+import Profile from "../../screens/Profile/Profile"
 const Stack = createNativeStackNavigator();
 
 const HomeNavigation = () => {
@@ -19,7 +19,8 @@ const HomeNavigation = () => {
       <Stack.Screen name="CreateGoal" component={CreateGoalScreen} />
       <Stack.Screen name="SavingsGoalDetails" component={SavingsGoalDetails} />
       <Stack.Screen name="EditGoal" component={EditGoalScreen} />
-    </Stack.Navigator>
+      <Stack.Screen name="Profile" component={Profile} />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               </Stack.Navigator>
   );
 };
 

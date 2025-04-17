@@ -1,27 +1,66 @@
-import React, { useState } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import React from "react";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import ProfileHeader from "../components/profile/ProfileHeader";
-import ProfileSection from "../components/profile/ProfileSection";
-import ProfileActions from "../components/profile/ProfileActions";
-
-const hardcodedProfile = {
-  firstName: "Bader ",
-  lastName: "Alqallaf",
-  dateOfBirth: "1990-01-01",
-  email: "bderalq@gmail.com",
-  profilePicture: null,
-};
+import { useQuery } from "@tanstack/react-query";
+import * as SecureStore from "expo-secure-store";
+import ProfileHeader from "../../../components/profile/ProfileHeader";
+import ProfileSection from "../../../components/profile/ProfileSection";
+import ProfileActions from "../../../components/profile/ProfileActions";
+import { getProfile } from "../../api/user";
 
 export default function Profile() {
   const navigation = useNavigation();
-  const [profile] = useState(hardcodedProfile);
 
-  const handleLogout = () => {
-    // Implement logout logic
-    console.log("Logout pressed");
+  const {
+    data: profile,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["profile"],
+    queryFn: getProfile,
+  });
+
+  const handleLogout = async () => {
+    try {
+      await SecureStore.deleteItemAsync("userToken");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Auth" }],
+      });
+    } catch (error) {
+      Alert.alert("Error", "Failed to logout. Please try again.");
+    }
   };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2F3039" />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (isError) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.contentContainer}>
+          <Text style={styles.errorText}>
+            {error?.message || "Failed to load profile. Please try again."}
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,7 +80,7 @@ export default function Profile() {
           <ProfileSection title="Email" value={profile.email} />
 
           <ProfileActions
-            onEditPress={() => navigation.navigate("EditProfile")}
+            onEditPress={() => navigation.navigate("EditProfile", { profile })}
             onLogout={handleLogout}
           />
         </View>
@@ -60,5 +99,16 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "#D8696B",
+    textAlign: "center",
+    fontSize: 16,
+    fontFamily: "Roboto",
   },
 });

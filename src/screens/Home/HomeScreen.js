@@ -184,11 +184,14 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.scrollView}>
+      {/* <ScrollView style={styles.scrollView}> */}
         <View style={styles.row}>
-          <View style={styles.image}>
+          <TouchableOpacity style={styles.image}
+ onPress={() =>
+  navigation.navigate("Profile")
+}          >
             <MaterialIcons name="account-circle" size={45} color="black" />
-          </View>
+          </TouchableOpacity>
           {/* notification icon */}
           <Image
             source={{
@@ -314,7 +317,7 @@ const HomeScreen = ({ navigation }) => {
             style={styles.absoluteImage}
           />
         </View>
-      </ScrollView>
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };

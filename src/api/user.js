@@ -9,15 +9,32 @@ const getProfile = async () => {
 // EDIT USER PROFILE
 const editProfile = async (userInfo, image) => {
   const formData = new FormData();
-  for (key in userInfo) {
-    formData.append(key, userInfo[key]);
-  }
-  formData.append("ProfilePicture", {
-    name: "image.jpeg",
-    type: "image/jpeg",
-    uri: image,
+
+  // Add user info to form data
+  Object.keys(userInfo).forEach((key) => {
+    if (userInfo[key] !== null && userInfo[key] !== undefined) {
+      formData.append(key, userInfo[key]);
+    }
   });
-  const response = await instance.put("/User/profile");
+
+  // Add image if provided
+  if (image) {
+    const imageFileName = image.split("/").pop();
+    const match = /\.(\w+)$/.exec(imageFileName);
+    const imageType = match ? `image/${match[1]}` : "image/jpeg";
+
+    formData.append("ProfilePicture", {
+      uri: Platform.OS === "ios" ? image.replace("file://", "") : image,
+      name: imageFileName || "profile.jpg",
+      type: imageType,
+    });
+  }
+
+  const response = await instance.put("/User/profile", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };
 
@@ -27,7 +44,7 @@ const changePassword = async (userInfo) => {
   for (key in userInfo) {
     formData.append(key, userInfo[key]);
   }
-  const response = await instance.put("/User/chamge-password");
+  const response = await instance.put("/User/change-password", formData);
   return response.data;
 };
 
