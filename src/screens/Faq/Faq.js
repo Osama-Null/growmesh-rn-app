@@ -9,10 +9,8 @@ import {
 } from "react-native";
 import { Svg, Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
-import faqs from "../../../data/questions";
 import { SafeAreaView } from "react-native-safe-area-context";
-import faqs from "../../data/questions";
-
+import faqs from "../../../src/data/questions"
 const Faq = () => {
   const navigation = useNavigation();
   const [expanded, setExpanded] = useState(null);

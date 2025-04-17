@@ -89,6 +89,7 @@ const MainNavigation = () => {
           ),
         }}
       />
+   
     </Tab.Navigator>
   );
 };

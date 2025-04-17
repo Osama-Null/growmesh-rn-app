@@ -13,7 +13,7 @@ const AuthNavigator = () => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        headerBackButtonMenuEnabled:  false,,
+        headerBackButtonMenuEnabled:  false,
       }}
     >
       <Stack.Screen name="Welcome" component={Welcome} />
