@@ -277,7 +277,7 @@ const HomeScreen = ({ navigation }) => {
                       <MaterialCommunityIcons
                         name="bullseye-arrow"
                         size={40}
-                        color="black"
+                        color="rgba(21, 254, 211, 1)"
                       />
                     )}
                     <View style={styles.column4}>
@@ -303,19 +303,21 @@ const HomeScreen = ({ navigation }) => {
               );
             })}
             <TouchableOpacity
-              onPress={() => navigation.navigate("SavingsGoalsList")}
+              onPress={() => navigation.navigate("AllSavingsGoals")}
               style={styles.seeAll}
             >
               <Text style={styles.text10}>{"See All"}</Text>
             </TouchableOpacity>
           </View>
-          <Image
-            source={{
-              uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/em1sgz79_expires_30_days.png",
-            }}
-            resizeMode={"stretch"}
-            style={styles.absoluteImage}
-          />
+          <TouchableOpacity>
+            <Image
+              source={{
+                uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/em1sgz79_expires_30_days.png",
+              }}
+              resizeMode={"stretch"}
+              style={styles.absoluteImage}
+            />
+          </TouchableOpacity>
         </View>
       {/* </ScrollView> */}
     </SafeAreaView>
@@ -331,10 +333,10 @@ const styles = StyleSheet.create({
   },
   absoluteImage: {
     position: "absolute",
-    bottom: -47,
+    bottom: 0,
     right: 0,
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
   },
   box2: {
     width: 287,

@@ -2,7 +2,10 @@ import instance from ".";
 
 // Create a savings goal
 const createSavingsGoal = async (savingsGoalInfo) => {
-  const response = await instance.post("/SavingsGoal/create", savingsGoalInfo);
+
+  const response = await instance.post("/SavingsGoal/create", {
+    ...savingsGoalInfo,
+  });
   return response.data;
 };
 
@@ -17,7 +20,6 @@ const getSavingsGoal = async (id) => {
   const response = await instance.get(`/SavingsGoal/get/${id}`);
   return response.data;
   console.log(response?.data);
-  
 };
 
 // Update a savings goal
