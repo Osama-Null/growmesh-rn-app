@@ -7,13 +7,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const { width } = Dimensions.get("window");
 
 const Add = () => {
-  const navigation = useNavigation();
+const navigation = useNavigation();
 
-  return (
+return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Initial */}
-        {/* {showInitial && (
+       <View style={styles.container}>
+         {showInitial && (
             <View style={styles.content}>
 
             <View style={styles.titleContainer}>
@@ -38,12 +37,12 @@ const Add = () => {
           </View>
         )}
         {showStep1 && (<View></View>)}
-        {showStep2 && (<View></View>)} */}
+        {showStep2 && (<View></View>)} 
         <Text>Hi</Text>
       </View>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 export default Add;
 

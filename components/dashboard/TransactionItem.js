@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Platform } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Svg, Path } from "react-native-svg";
 
 const TransactionItem = ({ title, amount, color, progress, icon }) => (
@@ -71,13 +71,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   transactionTitle: {
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
     fontWeight: "600",
     fontSize: 16,
     color: "#1E1E1E",
   },
   transactionAmount: {
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
     fontSize: 16,
     fontWeight: "700",
     color: "#1E1E1E",
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#1E1E1E",
     opacity: 0.6,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily:  "Roboto",
     width: 40,
   },
 });

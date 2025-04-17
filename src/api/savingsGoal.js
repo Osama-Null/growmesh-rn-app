@@ -2,6 +2,7 @@ import instance from ".";
 
 // Create a savings goal
 const createSavingsGoal = async (savingsGoalInfo) => {
+
   const response = await instance.post("/SavingsGoal/create", {
     ...savingsGoalInfo,
   });

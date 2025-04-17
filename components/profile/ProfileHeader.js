@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, Platform } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 
 const ProfileHeader = ({ profile }) => (
   <View style={styles.profileHeader}>
@@ -55,13 +55,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#1D1B20",
     marginBottom: 8,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
   profileEmail: {
     fontSize: 16,
     color: "#1D1B20",
     opacity: 0.6,
-    fontFamily: Platform.OS === "ios" ? "System" : "Roboto",
+    fontFamily: "Roboto",
   },
 });
 
