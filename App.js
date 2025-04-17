@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthNavigation from "./src/navigations/AuthNavigation/AuthNavigation";
@@ -29,8 +29,9 @@ export default function App() {
     <NavigationContainer>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          <SafeAreaView style={styles.container}>
+          <SafeAreaView style={styles.safeArea}>
             <UserContext.Provider value={{ isAuth, setIsAuth }}>
+              <StatusBar translucent />
               {isAuth ? <MainNavigation /> : <AuthNavigation />}
             </UserContext.Provider>
           </SafeAreaView>
@@ -41,8 +42,8 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#FEF7FF",
   },
 });

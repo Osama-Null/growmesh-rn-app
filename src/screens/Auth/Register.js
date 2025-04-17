@@ -311,7 +311,8 @@ import LottieView from "lottie-react-native";
 import UserContext from "../../context/UserContext";
 import { useMutation } from "@tanstack/react-query";
 import { register } from "../../api/auth";
-import DateTimePicker from "@react-native-community/datetimepicker"
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
   GestureHandlerRootView,
@@ -385,166 +386,178 @@ const Register = () => {
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <Path
-              d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z"
-              fill="#1D1B20"
-            />
-          </Svg>
-        </TouchableOpacity>
+    <SafeAreaView style={styles.safeArea}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.container}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <Path
+                d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z"
+                fill="#1D1B20"
+              />
+            </Svg>
+          </TouchableOpacity>
 
-        <View style={styles.content}>
-          <Text style={styles.title}>Let's get started!</Text>
-          <Text style={styles.subtitle}>
-            Step {step} of {totalSteps}: Create your account
-          </Text>
+          <View style={styles.content}>
+            <Text style={styles.title}>Let's get started!</Text>
+            <Text style={styles.subtitle}>
+              Step {step} of {totalSteps}: Create your account
+            </Text>
 
-          <View style={styles.inputContainer}>
-            {step === 1 && (
-              <>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your First name"
-                  placeholderTextColor="rgba(30,30,30,0.27)"
-                  onChangeText={(value) =>
-                    setUserInfo({ ...userInfo, FirstName: value })
-                  }
-                  value={userInfo.FirstName}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your Last name"
-                  placeholderTextColor="rgba(30,30,30,0.27)"
-                  onChangeText={(value) =>
-                    setUserInfo({ ...userInfo, LastName: value })
-                  }
-                  value={userInfo.LastName}
-                />
-                <TouchableOpacity
-                  style={styles.input}
-                  onPress={() => setShowDatePicker(true)}
-                >
-                  <Text style={styles.dateText}>
-                    {userInfo.DateOfBirth || "Select Date of Birth"}
-                  </Text>
-                </TouchableOpacity>
-                {showDatePicker && (
-                  <DateTimePicker
-                    value={date}
-                    mode="date"
-                    display="default"
-                    onChange={onDateChange}
-                    maximumDate={new Date()}
+            <View style={styles.inputContainer}>
+              {step === 1 && (
+                <>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your First name"
+                    placeholderTextColor="rgba(30,30,30,0.27)"
+                    onChangeText={(value) =>
+                      setUserInfo({ ...userInfo, FirstName: value })
+                    }
+                    value={userInfo.FirstName}
                   />
-                )}
-              </>
-            )}
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your Last name"
+                    placeholderTextColor="rgba(30,30,30,0.27)"
+                    onChangeText={(value) =>
+                      setUserInfo({ ...userInfo, LastName: value })
+                    }
+                    value={userInfo.LastName}
+                  />
+                  <TouchableOpacity
+                    style={styles.input}
+                    onPress={() => setShowDatePicker(true)}
+                  >
+                    <Text style={styles.dateText}>
+                      {userInfo.DateOfBirth || "Select Date of Birth"}
+                    </Text>
+                  </TouchableOpacity>
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={date}
+                      mode="date"
+                      display="default"
+                      onChange={onDateChange}
+                      maximumDate={new Date()}
+                    />
+                  )}
+                </>
+              )}
 
-            {step === 2 && (
-              <>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your email"
-                  placeholderTextColor="rgba(30,30,30,0.27)"
-                  keyboardType="email-address"
-                  onChangeText={(value) =>
-                    setUserInfo({ ...userInfo, Email: value })
-                  }
-                  value={userInfo.Email}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your Phone Number"
-                  placeholderTextColor="rgba(30,30,30,0.27)"
-                  keyboardType="phone-pad"
-                  onChangeText={(value) =>
-                    setUserInfo({ ...userInfo, Phone: value })
-                  }
-                  value={userInfo.Phone}
-                />
-              </>
-            )}
+              {step === 2 && (
+                <>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your email"
+                    placeholderTextColor="rgba(30,30,30,0.27)"
+                    keyboardType="email-address"
+                    onChangeText={(value) =>
+                      setUserInfo({ ...userInfo, Email: value })
+                    }
+                    value={userInfo.Email}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your Phone Number"
+                    placeholderTextColor="rgba(30,30,30,0.27)"
+                    keyboardType="phone-pad"
+                    onChangeText={(value) =>
+                      setUserInfo({ ...userInfo, Phone: value })
+                    }
+                    value={userInfo.Phone}
+                  />
+                </>
+              )}
 
-            {step === 3 && (
-              <>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your password"
-                  placeholderTextColor="rgba(30,30,30,0.27)"
-                  secureTextEntry
-                  onChangeText={(value) =>
-                    setUserInfo({ ...userInfo, Password: value })
-                  }
-                  value={userInfo.Password}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Confirm your password"
-                  placeholderTextColor="rgba(30,30,30,0.27)"
-                  secureTextEntry
-                  onChangeText={(value) =>
-                    setUserInfo({ ...userInfo, ConfirmPassword: value })
-                  }
-                  value={userInfo.ConfirmPassword}
-                />
+              {step === 3 && (
+                <>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your password"
+                    placeholderTextColor="rgba(30,30,30,0.27)"
+                    secureTextEntry
+                    onChangeText={(value) =>
+                      setUserInfo({ ...userInfo, Password: value })
+                    }
+                    value={userInfo.Password}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Confirm your password"
+                    placeholderTextColor="rgba(30,30,30,0.27)"
+                    secureTextEntry
+                    onChangeText={(value) =>
+                      setUserInfo({ ...userInfo, ConfirmPassword: value })
+                    }
+                    value={userInfo.ConfirmPassword}
+                  />
+                  <TouchableOpacity
+                    style={styles.uploadButton}
+                    onPress={pickImage}
+                  >
+                    <Text style={styles.uploadButtonText}>
+                      Upload Profile Image
+                    </Text>
+                  </TouchableOpacity>
+
+                  {image && (
+                    <Image
+                      source={{ uri: image }}
+                      style={styles.profileImage}
+                    />
+                  )}
+                </>
+              )}
+            </View>
+
+            <View style={styles.buttonContainer}>
+              {step > 1 && (
                 <TouchableOpacity
-                  style={styles.uploadButton}
-                  onPress={pickImage}
+                  style={[styles.button, { backgroundColor: "#A0A0A0" }]}
+                  onPress={handleBack}
                 >
-                  <Text style={styles.uploadButtonText}>
-                    Upload Profile Image
-                  </Text>
+                  <Text style={styles.buttonText}>Back</Text>
                 </TouchableOpacity>
-              
-                {image && (
-                  <Image source={{ uri: image }} style={styles.profileImage} />
-                )}
-              </>
-            )}
+              )}
+              {step < totalSteps ? (
+                <TouchableOpacity
+                  style={[
+                    styles.button,
+                    { backgroundColor: "#2F3039" },
+                    step === 1 && { width: "100%" },
+                  ]}
+                  onPress={handleNext}
+                >
+                  <Text style={styles.buttonText}>Next</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.button, { backgroundColor: "#2F3039" }]}
+                  onPress={() => mutate()}
+                >
+                  <Text style={styles.buttonText}>Create account</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
-
-          <View style={styles.buttonContainer}>
-            {step > 1 && (
-              <TouchableOpacity
-                style={[styles.button, { backgroundColor: "#A0A0A0" }]}
-                onPress={handleBack}
-              >
-                <Text style={styles.buttonText}>Back</Text>
-              </TouchableOpacity>
-            )}
-            {step < totalSteps ? (
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  { backgroundColor: "#2F3039" },
-                  step === 1 && { width: "100%" },
-                ]}
-                onPress={handleNext}
-              >
-                <Text style={styles.buttonText}>Next</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={[styles.button, { backgroundColor: "#2F3039" }]}
-                onPress={() => mutate()}
-              >
-                <Text style={styles.buttonText}>Create account</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      </ScrollView>
-    </GestureHandlerRootView>
+        </ScrollView>
+      </GestureHandlerRootView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#FEF7FF",
+  },
+  container: {
+    flexGrow: 1,
+  },
   backButton: {
     position: "absolute",
     left: 16,
@@ -552,11 +565,6 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     zIndex: 1,
-  },
-  container: {
-    flexGrow: 1,
-    backgroundColor: 'White',
-    maxWidth: Dimensions.get("window").width,
   },
   content: {
     paddingHorizontal: 16,
@@ -597,7 +605,6 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: "white",
     borderRadius: 14,
-
   },
   uploadButton: {
     width: "100%",
