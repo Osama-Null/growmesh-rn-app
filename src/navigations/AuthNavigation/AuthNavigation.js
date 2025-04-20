@@ -6,6 +6,7 @@ import Welcome from "../../screens/Auth/Welcome";
 import Faq from "../../screens/Faq/Faq";
 import HomeScreen from "../../screens/Home/HomeScreen";
 import SavingsGoalDetails from "../../screens/Home/SavingsGoalDetails";
+import test from "../../screens/Home/test";
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,7 @@ const AuthNavigator = () => {
         headerBackButtonMenuEnabled: false,
       }}
     >
+      {/* <Stack.Screen name="test" component={test} /> */}
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SavingsGoalDetails" component={SavingsGoalDetails} />
       <Stack.Screen name="Welcome" component={Welcome} />

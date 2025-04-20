@@ -175,7 +175,6 @@ const TransactionList = ({ transactions }) => {
 
 const SavingsGoalDetails = ({ navigation, route }) => {
   const { goalId } = route.params;
-  const [isVisible, setIsVisible] = useState(false);
 
   // State for toggling between General and History views
   const [activeTab, setActiveTab] = useState("General");
@@ -309,70 +308,8 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     setUnlockPopupVisible(false);
   };
 
-  const toggleVisibility = () => {
-    setIsVisible(!isVisible);
-  };
-
   return (
     <SafeAreaView style={styles.safeArea}>
-      {isVisible && (
-        <View
-          style={{
-            position: "absolute",
-            backgroundColor: "rgba(30, 30, 30, 0.32)",
-            height: "100%",
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
-          }}
-        >
-          <View
-            style={{
-              width: "60%",
-              gap: 20,
-              backgroundColor: "rgba(255, 255, 255, 0.7)",
-              borderRadius: 15,
-              padding: 10,
-            }}
-          >
-            <Text>Are you sure you want to unlock this goal?</Text>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  borderRadius: 10,
-                  backgroundColor: "rgba(30, 30, 30, 0.31)",
-                  width: "45%",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                onPress={toggleVisibility}
-              >
-                <Text>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => alert("Goal Unlocked")}
-                style={{
-                  borderRadius: 10,
-                  backgroundColor: "red",
-                  width: "45%",
-                  height: "40",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text>Unlock</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      )}
-
       <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
         <Image
           source={{
@@ -478,23 +415,55 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 <Feather name="edit" size={24} color="black" />
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.icon} onPress={toggleVisibility}>
+              <TouchableOpacity
+                style={styles.icon}
+                onPress={() => setUnlockPopupVisible(true)}
+              >
                 <FontAwesome name="unlock-alt" size={24} color="red" />
               </TouchableOpacity>
+
+              {/* Transfer Modal for Deposit/Withdraw */}
+              <TransferModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                goalId={goalId}
+                actionType={actionType}
+              />
+
+              {/* Unlock Confirmation Pop-up */}
+              <Modal
+                transparent={true}
+                visible={unlockPopupVisible}
+                onRequestClose={() => setUnlockPopupVisible(false)}
+              >
+                <View style={styles.popupContainer}>
+                  <View style={styles.popupContent}>
+                    <Text style={styles.popupText}>
+                      Are you sure you want to unlock this goal?
+                    </Text>
+                    <View style={styles.popupButtons}>
+                      <TouchableOpacity
+                        style={[styles.popupButton, styles.cancelButton]}
+                        onPress={() => setUnlockPopupVisible(false)}
+                      >
+                        <Text style={styles.popupButtonText}>Cancel</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.popupButton, styles.confirmButton]}
+                        onPress={handleUnlockConfirm}
+                      >
+                        <Text style={styles.popupButtonText}>Confirm</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </Modal>
             </View>
           </>
         ) : (
           <TransactionList transactions={transactions} />
         )}
       </View>
-
-      {/* Transfer Modal for Deposit/Withdraw */}
-      <TransferModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        goalId={goalId}
-        actionType={actionType}
-      />
     </SafeAreaView>
   );
 };
@@ -675,6 +644,12 @@ const styles = StyleSheet.create({
     height: 30,
     width: 30,
   },
+  popupContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
   popupContent: {
     backgroundColor: "#FEF7FF",
     padding: 20,
@@ -711,10 +686,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#000",
-  },
-  unlock: {
-    position: "absolute",
-    top: 400,
   },
 });
 
