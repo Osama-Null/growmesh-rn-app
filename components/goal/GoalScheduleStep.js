@@ -534,6 +534,8 @@ const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) =
               />
             </View>
           )}
+
+          
         </View>
 
         {error ? <Text style={styles.error}>{error}</Text> : null}

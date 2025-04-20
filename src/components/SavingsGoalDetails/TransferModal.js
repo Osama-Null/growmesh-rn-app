@@ -1,135 +1,131 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
+  Modal,
   View,
   Text,
   TextInput,
-  StyleSheet,
   TouchableOpacity,
-  Dimensions,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
-import Ionicons from "@expo/vector-icons/Ionicons";
 
-const { width, height } = Dimensions.get("window"); // Get screen dimensions
-
-const TransferModal = ({ visible, onClose, goalId, actionType }) => {
+const TransferModal = ({ visible, onClose, onSubmit, actionType }) => {
   const [amount, setAmount] = useState("");
 
-  // Animation setup
-  const translateY = useSharedValue(height); // Start off-screen (bottom)
-
-  useEffect(() => {
-    // Animate in when visible, animate out when not visible
-    translateY.value = withTiming(visible ? 0 : height, { duration: 300 });
-  }, [visible, translateY]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: translateY.value }],
-    };
-  });
-
   const handleSubmit = () => {
-    if (!amount || isNaN(amount) || Number(amount) <= 0) {
-      alert("Please enter a valid amount.");
+    if (!amount) {
+      alert("Please enter an amount");
       return;
     }
-    alert(
-      `${actionType === "deposit" ? "Deposited" : "Withdrawn"} KWD ${Number(
-        amount
-      ).toFixed(3)} to/from Goal ID: ${goalId}`
-    );
-    setAmount("");
-    onClose();
+    onSubmit(amount);
+    setAmount(""); // Reset amount after submission
   };
 
-  if (!visible && translateY.value === height) return null; // Don't render when fully off-screen
-
-  const title =
-    actionType === "deposit" ? "Deposit to Goal" : "Withdraw from Goal";
-  const buttonText = actionType === "deposit" ? "Deposit" : "Withdraw";
-  const placeholder = `Enter amount to ${
-    actionType === "deposit" ? "deposit" : "withdraw"
-  } (KWD)`;
-
   return (
-    <View style={styles.modalContainer}>
-      <Animated.View style={[styles.modalContent, animatedStyle]}>
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Ionicons name="close" size={28} color="#000" />
-        </TouchableOpacity>
-        <Text style={styles.modalTitle}>{title}</Text>
-        <TextInput
-          style={styles.amountInput}
-          placeholder={placeholder}
-          placeholderTextColor="#7E8D85"
-          value={amount}
-          onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ""))}
-          keyboardType="numeric"
-        />
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>{buttonText}</Text>
-        </TouchableOpacity>
-      </Animated.View>
-    </View>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.modalContainer}
+      >
+        <View style={styles.modalContent}>
+          <Text style={styles.title}>
+            {actionType === "deposit" ? "Deposit Amount" : "Withdraw Amount"}
+          </Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder="KWD 0.000"
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+            placeholderTextColor="#1e1e1e80"
+            autoFocus
+          />
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, styles.cancelButton]}
+              onPress={() => {
+                setAmount("");
+                onClose();
+              }}
+            >
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.button, styles.submitButton]}
+              onPress={handleSubmit}
+            >
+              <Text style={styles.buttonText}>Confirm</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
   );
 };
 
-export default TransferModal;
-
 const styles = StyleSheet.create({
   modalContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
-    zIndex: 2000, // Ensure it overlays other elements
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    position: "absolute",
-    bottom: 0, // Anchor to the bottom
     backgroundColor: "#FEF7FF",
+    borderRadius: 20,
     padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    width: width, // Full screen width
-    minHeight: 300, // Minimum height for visibility
+    width: "90%",
+    maxWidth: 400,
   },
-  closeButton: {
-    alignSelf: "flex-end",
-  },
-  modalTitle: {
+  title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "700",
     color: "#000",
     marginBottom: 20,
     textAlign: "center",
+    fontFamily: "Roboto",
   },
-  amountInput: {
-    backgroundColor: "#F0F0F0",
-    color: "#000",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 20,
+  input: {
+    backgroundColor: "rgba(255,255,255,0.5)",
+    borderRadius: 14,
+    padding: 16,
     fontSize: 16,
-    width: "100%", // Full width of modal content
+    color: "#1e1e1e",
+    marginBottom: 20,
+    fontFamily: "Roboto",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+  },
+  button: {
+    flex: 1,
+    borderRadius: 39,
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  cancelButton: {
+    backgroundColor: "#A0A0A0",
   },
   submitButton: {
-    backgroundColor: "#00F8BE",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    width: "100%", // Full width of modal content
+    backgroundColor: "#2F3039",
   },
-  submitButtonText: {
-    color: "#000",
+  buttonText: {
+    color: "#FFF",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "700",
+    fontFamily: "Roboto",
   },
 });
+
+export default TransferModal;

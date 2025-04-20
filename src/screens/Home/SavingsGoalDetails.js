@@ -22,6 +22,7 @@ import Feather from "@expo/vector-icons/Feather";
 import Octicons from "@expo/vector-icons/Octicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import TransferModal from "../../components/SavingsGoalDetails/TransferModal";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 // Mock API function (replace with actual API call)
 const getSavingsGoalDetails = async (goalId) => {
@@ -312,9 +313,12 @@ const SavingsGoalDetails = ({ navigation, route }) => {
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
-
+  const handleTransferPress = () => {
+    console.log("Transfer pressed, setting modalVisible to true");
+    setModalVisible(true);
+  };
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       {isVisible && (
         <View
           style={{
@@ -460,14 +464,26 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 marginTop: -30,
               }}
             >
-              <TouchableOpacity style={styles.icon} onPress={handleDeposit}>
+              <TouchableOpacity
+                style={styles.icon}
+                onPress={() => {
+              <TouchableOpacity
+                style={styles.icon}
+                onPress={() => {
+                  setActionType("withdraw");
+                  setModalVisible(true);
+                }}
+              >
                 <Image
                   source={require("../../../assets/app/depositDark.png")}
                   style={styles.img}
                 />
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.icon} onPress={handleWithdraw}>
+              <TouchableOpacity
+                style={styles.icon}
+                onPress={handleTransferPress}
+              >
                 <Image
                   source={require("../../../assets/app/withdrawDark.png")}
                   style={styles.img}
@@ -488,18 +504,37 @@ const SavingsGoalDetails = ({ navigation, route }) => {
         )}
       </View>
 
-      {/* Transfer Modal for Deposit/Withdraw */}
       <TransferModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        goalId={goalId}
+        onSubmit={(amount) => {
+          console.log("Transfer amount:", amount, "Action type:", actionType);
+          // Handle the transfer here
+          setModalVisible(false);
+        }}
         actionType={actionType}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+  },
+  modalContent: {
+    backgroundColor: "#FEF7FF", // Match the app's background or use a distinct color
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    minHeight: 300, // Ensure the modal has enough height to be visible
+  },
+  closeButton: {
+    alignSelf: "flex-end",
+    padding: 10, // Make the close button easier to tap
+  },
   safeArea: {
     flex: 1,
     backgroundColor: "#FEF7FF",
