@@ -6,8 +6,8 @@ import { Header } from "@react-navigation/elements";
 import AllSavingsGoals from "../../screens/Home/AllSavingsGoals";
 import CreateGoalScreen from "../../screens/Add/CreateGoalScreen";
 import SavingsGoalDetails from "../../screens/Home/SavingsGoalDetails";
-import EditGoalScreen from "../../screens/Add/EditGoalScreen";
-import Profile from "../../screens/Profile/Profile"
+import Profile from "../../screens/Profile/Profile";
+import EditSavingsGoal from "../../screens/Home/EditSavingsGoal";
 
 const Stack = createNativeStackNavigator();
 
@@ -20,11 +20,17 @@ const HomeNavigation = () => {
       }}
     >
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
-      <Stack.Screen name="AllSavingsGoals" component={AllSavingsGoals} /> 
-      <Stack.Screen name="CreateGoal" component={CreateGoalScreen} />
-      <Stack.Screen name="SavingsGoalDetails" component={SavingsGoalDetails} />
-      <Stack.Screen name="EditGoal" component={EditGoalScreen} />
+      <Stack.Screen
+        name="SavingsGoalDetails"
+        component={SavingsGoalDetails}
+        options={{
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Stack.Screen name="EditSavingsGoal" component={EditSavingsGoal} />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="AllSavingsGoals" component={AllSavingsGoals} />
+      <Stack.Screen name="CreateGoal" component={CreateGoalScreen} />
     </Stack.Navigator>
   );
 };

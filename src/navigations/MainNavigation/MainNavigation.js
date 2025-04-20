@@ -11,6 +11,28 @@ import HistoryNavigation from "../HistoryNavigation/HistoryNavigation";
 const Tab = createBottomTabNavigator();
 
 const CustomTabBar = ({ state, descriptors, navigation }) => {
+  const hiddenScreens = [
+    "SavingsGoalDetails",
+    "EditGoal",
+    "CreateGoal",
+    // Add more screen names here as needed
+  ];
+
+  const isHiddenScreen = navigation
+    .getState()
+    ?.routes.find((route) => route.name === "HomeNav")
+    ?.state?.routes?.some((route) => hiddenScreens.includes(route.name));
+
+  // To hide from other nav but add || :
+  // navigation
+  // .getState()
+  // ?.routes.find((route) => route.name === "AddNav")
+  // ?.state?.routes?.some((route) => hiddenScreens.includes(route.name)) ||
+
+  if (isHiddenScreen) {
+    return null;
+  }
+
   return (
     <View style={styles.tabBar}>
       {state.routes.map((route, index) => {
@@ -89,7 +111,6 @@ const MainNavigation = () => {
           ),
         }}
       />
-   
     </Tab.Navigator>
   );
 };

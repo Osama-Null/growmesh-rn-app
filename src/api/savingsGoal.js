@@ -2,10 +2,7 @@ import instance from ".";
 
 // Create a savings goal
 const createSavingsGoal = async (savingsGoalInfo) => {
-
-  const response = await instance.post("/SavingsGoal/create", {
-    ...savingsGoalInfo,
-  });
+  const response = await instance.post("/SavingsGoal/create", savingsGoalInfo);
   return response.data;
 };
 
@@ -19,14 +16,14 @@ const getAllSavingsGoals = async () => {
 const getSavingsGoal = async (id) => {
   const response = await instance.get(`/SavingsGoal/get/${id}`);
   return response.data;
-  console.log(response?.data);
 };
 
 // Update a savings goal
 const updateSavingsGoal = async (id, savingsGoalInfo) => {
-  const response = await instance.put(`/SavingsGoal/update/${id}`, {
-    ...savingsGoalInfo,
-  });
+  const response = await instance.put(
+    `/SavingsGoal/update/${id}`,
+    savingsGoalInfo
+  );
   return response.data;
 };
 
@@ -38,23 +35,39 @@ const deleteSavingsGoal = async (id) => {
 
 // Deposit to a savings goal
 const depositToSavingsGoal = async (id, depositInfo) => {
-  const response = await instance.post(`/SavingsGoal/deposit/${id}`, {
-    ...depositInfo,
-  });
+  const response = await instance.post(
+    `/SavingsGoal/deposit/${id}`,
+    depositInfo
+  );
   return response.data;
 };
 
 // Withdraw from a savings goal
 const withdrawFromSavingsGoal = async (id, withdrawInfo) => {
-  const response = await instance.post(`/SavingsGoal/withdraw/${id}`, {
-    ...withdrawInfo,
-  });
+  const response = await instance.post(
+    `/SavingsGoal/withdraw/${id}`,
+    withdrawInfo
+  );
   return response.data;
 };
 
 // Unlock a savings goal
 const unlockSavingsGoal = async (id) => {
   const response = await instance.post(`/SavingsGoal/unlock/${id}`);
+  return response.data;
+};
+
+// Get savings trend
+const getSavingsTrend = async (periodType, periods = 7) => {
+  const response = await instance.get("/SavingsGoal/get-savings-trend", {
+    params: { periodType, periods },
+  });
+  return response.data;
+};
+
+// Mark a savings goal as done
+const markSavingsGoalAsDone = async (id) => {
+  const response = await instance.post(`/SavingsGoal/mark-as-done/${id}`);
   return response.data;
 };
 
@@ -67,4 +80,6 @@ export {
   depositToSavingsGoal,
   withdrawFromSavingsGoal,
   unlockSavingsGoal,
+  getSavingsTrend,
+  markSavingsGoalAsDone,
 };

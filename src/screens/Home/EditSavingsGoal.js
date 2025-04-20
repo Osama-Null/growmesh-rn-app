@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const EditGoalScreen = () => {
+const EditSavingsGoal = () => {
   return (
     <View>
-      <Text>EditGoalScreen</Text>
+      <Text>EditSavingsGoal</Text>
     </View>
   )
 }
 
-export default EditGoalScreen
+export default EditSavingsGoal
 
 const styles = StyleSheet.create({})

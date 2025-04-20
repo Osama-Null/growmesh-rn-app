@@ -3,7 +3,7 @@ import { setToken } from "./storage";
 
 // Login function
 const login = async (userInfo) => {
-  const response = await instance.post("/auth/login", {...userInfo});
+  const response = await instance.post("/auth/login", { ...userInfo });
   console.log("LOGIN TOKEN", response.data.token);
   setToken(response.data.token);
   return response.data;
@@ -11,21 +11,28 @@ const login = async (userInfo) => {
 const register = async (userInfo, image) => {
   const formData = new FormData();
 
-  for (key in userInfo) {
+  // Append user info fields
+  for (const key in userInfo) {
     formData.append(key, userInfo[key]);
-  }  formData.append("ProfilePicture", {
-    name: "image.jpeg",
-    type: "image/jpeg",
-    uri: image,
+  }
+
+  if (image) {
+    const fileExtension = image.split(".").pop().toLowerCase();
+    const mimeType = fileExtension === "png" ? "image/png" : "image/jpeg";
+    formData.append("ProfilePicture", {
+      name: `profile.${fileExtension}`,
+      type: mimeType,
+      uri: image,
+    });
+  }
+
+  const res = await instance.post("/Auth/register", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 
- 
-  const res = await instance.post("/auth/register", formData);
-
-  console.log(res);
-
-  setToken(res.data.token);
-
+  await setToken(res.data.token);
   return res.data;
 };
-export {login, register};
+export { login, register };
