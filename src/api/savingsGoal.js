@@ -6,13 +6,13 @@ const createSavingsGoal = async (savingsGoalInfo) => {
   return response.data;
 };
 
-// Get all savings goals
+// Get all savings goals details
 const getAllSavingsGoals = async () => {
   const response = await instance.get("/SavingsGoal/get-all");
   return response.data;
 };
 
-// Get a specific savings goal by ID
+// Get a specific savings goal details by ID
 const getSavingsGoal = async (id) => {
   const response = await instance.get(`/SavingsGoal/get/${id}`);
   return response.data;
@@ -71,6 +71,14 @@ const markSavingsGoalAsDone = async (id) => {
   return response.data;
 };
 
+// Get savings trend for a specific goal (NEW FUNCTION)
+const getSavingsGoalTrend = async (id, periods = 7) => {
+  const response = await instance.get(`/SavingsGoal/get-trend/${id}`, {
+    params: { periods },
+  });
+  return response.data;
+};
+
 export {
   createSavingsGoal,
   getAllSavingsGoals,
@@ -82,4 +90,5 @@ export {
   unlockSavingsGoal,
   getSavingsTrend,
   markSavingsGoalAsDone,
+  getSavingsGoalTrend,
 };

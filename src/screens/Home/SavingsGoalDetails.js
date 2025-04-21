@@ -3,14 +3,13 @@ import {
   View,
   ScrollView,
   Image,
-  TouchableOpacity,
   Text,
+  TouchableOpacity,
   StyleSheet,
   Dimensions,
   Modal,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useQuery } from "@tanstack/react-query";
 import Animated, {
   useSharedValue,
@@ -19,29 +18,11 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
 import Feather from "@expo/vector-icons/Feather";
-import Octicons from "@expo/vector-icons/Octicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import TransferModal from "../../components/SavingsGoalDetails/TransferModal";
-
-// Mock API function (replace with actual API call)
-const getSavingsGoalDetails = async (goalId) => {
-  return {
-    savingsGoalId: goalId,
-    savingsGoalName: "KIDS",
-    goalType: "AmountBased",
-    currentAmount: 24,
-    targetAmount: 25,
-    startDate: "2025-01-01T00:00:00Z",
-    endDate: "2025-06-30T23:59:59Z",
-    transactions: [
-      { date: "2025-01-01T10:00:00Z", amount: 5, type: "deposit" },
-      { date: "2025-02-01T10:00:00Z", amount: 5, type: "deposit" },
-      { date: "2025-03-01T10:00:00Z", amount: 5, type: "deposit" },
-      { date: "2025-04-01T10:00:00Z", amount: 5, type: "deposit" },
-      { date: "2025-04-10T10:00:00Z", amount: 4, type: "deposit" },
-    ],
-  };
-};
+import { getSavingsGoal, getSavingsGoalTrend } from "../../api/savingsGoal";
+import { getTransactionsBySavingsGoal } from "../../api/transaction";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 // Animated Donut Component
 const AnimatedDonut = ({ progress, size, thickness, color }) => {
@@ -53,11 +34,9 @@ const AnimatedDonut = ({ progress, size, thickness, color }) => {
     strokeDashoffset.value = withTiming(dashoffset, { duration: 1000 });
   }, [progress, circumference]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      strokeDashoffset: strokeDashoffset.value,
-    };
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    strokeDashoffset: strokeDashoffset.value,
+  }));
 
   return (
     <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
@@ -91,16 +70,14 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedBar = ({ value, label, maxValue, difference }) => {
   const height = useSharedValue(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const calculatedHeight = value === 0 ? 5 : (value / maxValue) * 150;
     height.value = withTiming(calculatedHeight, { duration: 1000 });
   }, [value, maxValue]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      height: height.value,
-    };
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    height: height.value,
+  }));
 
   const barColor =
     difference > 0
@@ -118,7 +95,7 @@ const AnimatedBar = ({ value, label, maxValue, difference }) => {
             { color: difference > 0 ? "#00FF00" : "#FF0000" },
           ]}
         >
-          {difference > 0 ? `+${difference.toFixed(3)}` : difference.toFixed(3)}
+          {difference > 0 ? `+${difference}` : difference}
         </Text>
       )}
       <Animated.View
@@ -152,20 +129,25 @@ const TransactionList = ({ transactions }) => {
   return (
     <ScrollView style={styles.transactionList}>
       {transactions.map((transaction, index) => {
-        const date = new Date(transaction.date);
+        const date = new Date(transaction.transactionDate);
         const formattedDate = date.toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
           year: "numeric",
         });
         return (
-          <View key={index} style={styles.transactionItem}>
+          <View
+            key={transaction.transactionId || index}
+            style={styles.transactionItem}
+          >
             <Text style={styles.transactionText}>{formattedDate}</Text>
             <Text style={styles.transactionText}>
-              {transaction.type === "deposit" ? "+" : "-"}KWD{" "}
-              {transaction.amount.toFixed(3)}
+              {transaction.transactionType === "deposit" ? "+" : "-"}KWD{" "}
+              {transaction.amount}
             </Text>
-            <Text style={styles.transactionText}>{transaction.type}</Text>
+            <Text style={styles.transactionText}>
+              {transaction.transactionType}
+            </Text>
           </View>
         );
       })}
@@ -176,68 +158,88 @@ const TransactionList = ({ transactions }) => {
 const SavingsGoalDetails = ({ navigation, route }) => {
   const { goalId } = route.params;
 
-  // State for toggling between General and History views
   const [activeTab, setActiveTab] = useState("General");
-
-  // State for TransferModal
   const [modalVisible, setModalVisible] = useState(false);
   const [actionType, setActionType] = useState("deposit");
-
-  // State for Unlock confirmation pop-up
   const [unlockPopupVisible, setUnlockPopupVisible] = useState(false);
 
   // Fetch goal details
   const {
     data: goalData,
-    isLoading,
-    isError,
-    error,
+    isLoading: goalLoading,
+    isError: goalError,
+    error: goalErrorDetails,
   } = useQuery({
     queryKey: ["fetchSavingsGoalDetails", goalId],
-    queryFn: () => getSavingsGoalDetails(goalId),
+    queryFn: () => getSavingsGoal(goalId),
     refetchOnMount: "always",
   });
 
-  if (isLoading) {
+  // Fetch transactions
+  const {
+    data: transactionsData,
+    isLoading: transactionsLoading,
+    isError: transactionsError,
+    error: transactionsErrorDetails,
+  } = useQuery({
+    queryKey: ["fetchTransactionsBySavingsGoal", goalId],
+    queryFn: () => getTransactionsBySavingsGoal(goalId),
+    refetchOnMount: "always",
+  });
+
+  // Fetch trend data (7 bars)
+  const {
+    data: trendResponse,
+    isLoading: trendLoading,
+    isError: trendError,
+    error: trendErrorDetails,
+  } = useQuery({
+    queryKey: ["fetchSavingsGoalTrend", goalId],
+    queryFn: () => getSavingsGoalTrend(goalId, 7),
+    refetchOnMount: "always",
+  });
+
+  if (goalLoading || transactionsLoading || trendLoading) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading...</Text>
-        </View>
+        <Text style={styles.loadingText}>Loading...</Text>
       </SafeAreaView>
     );
   }
 
-  if (isError) {
+  if (goalError || transactionsError || trendError) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>
-            {`Error fetching goal: ${error?.message || "Unknown error"}`}
-          </Text>
-        </View>
+        <Text style={styles.errorText}>
+          {goalError
+            ? `Error fetching goal: ${goalErrorDetails?.message}`
+            : transactionsError
+            ? `Error fetching transactions: ${transactionsErrorDetails?.message}`
+            : `Error fetching trend: ${trendErrorDetails?.message}`}
+        </Text>
       </SafeAreaView>
     );
   }
 
   const goal = goalData || {};
+  const transactions = transactionsData || [];
+  const trendData = trendResponse?.trendData || [];
+  const periodType = trendResponse?.periodType || "day";
 
-  // Calculate progress and format label based on goal type
+  // Calculate progress
   let progress = 0;
   let percentage = 0;
   let progressLabel = "";
 
-  if (goal.goalType === "AmountBased") {
+  if (goal.lockType === "amountBased") {
     progress =
       goal.targetAmount > 0 ? goal.currentAmount / goal.targetAmount : 0;
     percentage = Math.round(progress * 100);
-    progressLabel = `KWD ${goal.currentAmount.toFixed(3)} / ${
-      goal.targetAmount
-    }`;
-  } else if (goal.goalType === "TimeBased") {
-    const startDate = new Date(goal.startDate);
-    const endDate = new Date(goal.endDate);
-    const currentDate = new Date("2025-04-19T00:00:00Z");
+    progressLabel = `KWD ${goal.currentAmount} / ${goal.targetAmount}`;
+  } else if (goal.lockType === "timeBased") {
+    const startDate = new Date(goal.createdAt);
+    const endDate = new Date(goal.targetDate);
+    const currentDate = new Date();
     const totalDuration = endDate - startDate;
     const elapsedDuration = currentDate - startDate;
     progress = totalDuration > 0 ? elapsedDuration / totalDuration : 0;
@@ -247,48 +249,39 @@ const SavingsGoalDetails = ({ navigation, route }) => {
       0,
       Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24))
     );
-    progressLabel = `${daysRemaining} days remaining`;
+    progressLabel = `KWD ${goal.currentAmount} | ${daysRemaining}d left`;
+  } else {
+    console.error(`Unexpected lockType: ${goal.lockType}`);
   }
 
-  // Prepare chart data from transactions
-  const transactions = goal.transactions || [];
-  const chartData = [];
-  if (transactions.length > 0) {
-    const groupedByMonth = transactions.reduce((acc, transaction) => {
-      const date = new Date(transaction.date);
-      const monthKey = date.toLocaleDateString("en-US", {
-        month: "short",
-        year: "numeric",
-      });
-      if (!acc[monthKey]) {
-        acc[monthKey] = { total: 0, transactions: [] };
-      }
-      const amount =
-        transaction.type === "deposit"
-          ? transaction.amount
-          : -transaction.amount;
-      acc[monthKey].total += amount;
-      acc[monthKey].transactions.push(transaction);
-      return acc;
-    }, {});
+  // Prepare chart data (7 bars)
+  const chartData = trendData.map((item) => {
+    const date = new Date(item.periodEnd);
+    let label;
+    switch (periodType) {
+      case "day":
+        label = date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+        break;
+      case "week":
+        label = `Week ${Math.ceil(date.getDate() / 7)}`;
+        break;
+      case "month":
+        label = date.toLocaleDateString("en-US", { month: "short" });
+        break;
+      default:
+        label = "";
+    }
+    return {
+      label,
+      value: item.cumulativeSavings,
+      difference: item.difference,
+    };
+  });
 
-    const months = Object.keys(groupedByMonth).sort(
-      (a, b) => new Date(a) - new Date(b)
-    );
-    let runningTotal = 0;
-    months.forEach((month, index) => {
-      runningTotal += groupedByMonth[month].total;
-      const difference =
-        index > 0 ? runningTotal - chartData[index - 1].value : 0;
-      chartData.push({
-        label: month.split(" ")[0],
-        value: runningTotal,
-        difference: difference,
-      });
-    });
-  }
-
-  // Handlers for button actions
+  // Button handlers
   const handleDeposit = () => {
     setActionType("deposit");
     setModalVisible(true);
@@ -310,30 +303,45 @@ const SavingsGoalDetails = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {modalVisible && (
+        <View
+          style={{
+            flex: 1,
+            position: "absolute",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            height: "100%",
+            width: "100%",
+            zIndex: 10,
+            borderRadius: 16,
+          }}
+        >
+          <Text style={{ opacity: 0, fontSize: 1 }}>.</Text>
+        </View>
+      )}
+
       <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
         <Image
           source={{
             uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/aaquihr0_expires_30_days.png",
           }}
-          resizeMode={"stretch"}
           style={styles.image}
         />
       </TouchableOpacity>
 
       <View style={styles.column}>
         <View style={styles.view}>
-          <TouchableOpacity
-            style={styles.buttonRow}
-            onPress={() => alert("Pressed!")}
-          >
+          <TouchableOpacity style={styles.buttonRow}>
             <Text style={styles.text}>{goal.savingsGoalName}</Text>
-            <Image
-              source={{
-                uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/7iaoctvb_expires_30_days.png",
-              }}
-              resizeMode={"stretch"}
-              style={styles.image2}
-            />
+            {goal.emoji ? (
+              <Text style={styles.emoji}>{goal.emoji}</Text>
+            ) : (
+              <Image
+                source={{
+                  uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/7iaoctvb_expires_30_days.png",
+                }}
+                style={styles.image2}
+              />
+            )}
           </TouchableOpacity>
         </View>
         <View style={styles.view2}>
@@ -363,6 +371,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </View>
+
       <View style={styles.column2}>
         {activeTab === "General" ? (
           <>
@@ -382,55 +391,39 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 <BarChartComponent data={chartData} />
               ) : (
                 <Text style={styles.placeholderText}>
-                  No transaction data available.
+                  No trend data available.
                 </Text>
               )}
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-                height: 60,
-                marginHorizontal: 16,
-                justifyContent: "center",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginTop: -30,
-              }}
-            >
+            <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.icon} onPress={handleDeposit}>
-                <Image
-                  source={require("../../../assets/app/depositDark.png")}
-                  style={styles.img}
+                <MaterialCommunityIcons
+                  name="arrow-up-thick"
+                  size={35}
+                  color="#00F8BE"
                 />
               </TouchableOpacity>
-
-              <TouchableOpacity style={styles.icon} onPress={handleWithdraw}>
-                <Image
-                  source={require("../../../assets/app/withdrawDark.png")}
-                  style={styles.img}
-                />
-              </TouchableOpacity>
-
               <TouchableOpacity style={styles.icon} onPress={handleEdit}>
-                <Feather name="edit" size={24} color="black" />
+                <Feather name="edit" size={26} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.icon} onPress={handleWithdraw}>
+                <MaterialCommunityIcons
+                  name="arrow-down-thick"
+                  size={35}
+                  color="#FF6347"
+                />
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.icon}
-                onPress={() => setUnlockPopupVisible(true)}
-              >
-                <FontAwesome name="unlock-alt" size={24} color="red" />
-              </TouchableOpacity>
-
-              {/* Transfer Modal for Deposit/Withdraw */}
               <TransferModal
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 goalId={goalId}
                 actionType={actionType}
+                style={{
+                  zIndex: 1000,
+                }}
               />
 
-              {/* Unlock Confirmation Pop-up */}
               <Modal
                 transparent={true}
                 visible={unlockPopupVisible}
@@ -472,8 +465,8 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#FEF7FF",
-    gap: 68,
     paddingTop: 90,
+    gap: 68,
   },
   back: {
     position: "absolute",
@@ -505,6 +498,10 @@ const styles = StyleSheet.create({
     borderRadius: 48,
     width: 26,
     height: 26,
+  },
+  emoji: {
+    fontSize: 24,
+    marginRight: 8,
   },
   text: {
     color: "#000000",
@@ -572,7 +569,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     height: 200,
     paddingHorizontal: 16,
-    marginTop: -60,
+    marginTop: -80,
   },
   barContainer: {
     alignItems: "center",
@@ -612,23 +609,23 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 14,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   loadingText: {
     color: "black",
     fontSize: 16,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    textAlign: "center",
   },
   errorText: {
     color: "black",
     fontSize: 16,
+    textAlign: "center",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    height: 60,
+    marginHorizontal: 40,
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: -30,
   },
   icon: {
     width: 50,
@@ -640,10 +637,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  img: {
-    height: 30,
-    width: 30,
-  },
+  img: { height: 30, width: 30 },
   popupContainer: {
     flex: 1,
     justifyContent: "center",

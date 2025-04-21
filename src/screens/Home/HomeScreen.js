@@ -20,6 +20,8 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { getProfile } from "../../api/user";
 
 // Bar Chart Component
 const AnimatedBar = ({ value, label, maxValue, difference }) => {
@@ -121,14 +123,29 @@ const HomeScreen = ({ navigation }) => {
     queryFn: () => getSavingsTrend(periodType),
   });
 
+  const {
+    data: profileData,
+    isLoading: profileLoading,
+    isError: profileError,
+    error: profileErrorDetails,
+  } = useQuery({
+    queryKey: ["profile"],
+    queryFn: getProfile,
+  });
+
   // Log data changes
   useEffect(() => {
     console.log("\ngoals data:\n", goalsData);
     console.log("\ntrend data:\n", trendData);
-    if (trendError) {
+    console.log("\nProfile data:\n", profileData);
+    if (goalsError) {
+      console.log("\ngoals error\n", goalsErrorDetails);
+    } else if (trendError) {
       console.log("\ntrend error:\n", trendErrorDetails);
+    } else if (profileError) {
+      console.log("\nprofile error\n", profileErrorDetails);
     }
-  }, [goalsData, trendData, trendError, trendErrorDetails]);
+  }, [goalsData, trendData, profileData]);
 
   // Handle loading and error states
   if (goalsLoading || trendLoading) {
@@ -218,15 +235,15 @@ const HomeScreen = ({ navigation }) => {
           style={styles.image}
           onPress={() => navigation.navigate("Profile")}
         >
-          <MaterialIcons name="account-circle" size={45} color="black" />
+          <Image
+            source={{
+              uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/7xmv6dxc_expires_30_days.png",
+            }}
+            resizeMode={"stretch"}
+            style={styles.image2}
+          />
         </TouchableOpacity>
-        <Image
-          source={{
-            uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/7xmv6dxc_expires_30_days.png",
-          }}
-          resizeMode={"stretch"}
-          style={styles.image2}
-        />
+        <Ionicons name="notifications" size={40} color="black" />
       </View>
       <Text style={styles.text}>{"Total saving"}</Text>
       <Text style={styles.text2}>{`KWD ${totalSavings.toFixed(3)}`}</Text>
@@ -277,7 +294,7 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.text6}>{"Savings Goals"}</Text>
       <View style={styles.column2}>
         <View style={styles.column3}>
-          {Goals.slice(0, 3).map((goal, index) => {
+          {Goals.slice(0, 2).map((goal, index) => {
             const progress =
               goal.targetAmount > 0
                 ? goal.currentAmount / goal.targetAmount
@@ -305,22 +322,30 @@ const HomeScreen = ({ navigation }) => {
                   <View style={styles.column4}>
                     <View style={index === 2 ? styles.row5 : styles.row3}>
                       <Text style={styles.text7}>{goal.savingsGoalName}</Text>
-                      <Text
-                        style={styles.text8}
-                      >{`KWD ${goal.currentAmount.toFixed(3)}`}</Text>
+                      {goal.lockType === "amountBased" ? (
+                        <Text style={styles.text8}>
+                          {`${goal.currentAmount} / ${goal.targetAmount} KWD`}
+                        </Text>
+                      ) : (
+                        <Text style={styles.text8}>
+                          {`${new Date(
+                            goal.targetDate
+                          ).toLocaleDateString()} | ${goal.currentAmount} KWD`}
+                        </Text>
+                      )}
                     </View>
                     <Progress.Bar
                       progress={progress}
                       width={null}
-                      height={8}
+                      height={10}
                       color={color}
                       unfilledColor="#F0F0F0"
-                      borderWidth={0}
+                      borderWidth={2}
                       borderRadius={8}
                     />
                   </View>
                 </TouchableOpacity>
-                {index < 2 && <View style={styles.box2} />}
+                {index < 1 && <View style={styles.box2} />}
               </React.Fragment>
             );
           })}
@@ -338,12 +363,10 @@ const HomeScreen = ({ navigation }) => {
             alignItems: "center",
             justifyContent: "center",
             flexDirection: "row",
-            justifyContent:"space-between",
+            justifyContent: "space-between",
           }}
         >
-          <View
-            style={styles.info}
-          >
+          <View style={styles.info}>
             <MaterialCommunityIcons
               name="bullseye-arrow"
               size={30}
@@ -351,9 +374,7 @@ const HomeScreen = ({ navigation }) => {
             />
             <Text>{inProgressGoalsCount}</Text>
           </View>
-          <View
-            style={styles.info}
-          >
+          <View style={styles.info}>
             <AntDesign name="checkcircle" size={30} color="black" />
             <Text>{completedGoalsCount}</Text>
           </View>

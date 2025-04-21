@@ -7,6 +7,7 @@ import Faq from "../../screens/Faq/Faq";
 import HomeScreen from "../../screens/Home/HomeScreen";
 import SavingsGoalDetails from "../../screens/Home/SavingsGoalDetails";
 import test from "../../screens/Home/test";
+import EditSavingsGoal from "../../screens/Home/EditSavingsGoal";
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +20,7 @@ const AuthNavigator = () => {
       }}
     >
       {/* <Stack.Screen name="test" component={test} /> */}
+      <Stack.Screen name="EditSavingsGoal" component={EditSavingsGoal} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SavingsGoalDetails" component={SavingsGoalDetails} />
       <Stack.Screen name="Welcome" component={Welcome} />

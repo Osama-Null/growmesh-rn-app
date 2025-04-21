@@ -8,22 +8,47 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  depositToSavingsGoal,
+  withdrawFromSavingsGoal,
+} from "../../api/savingsGoal";
 
 const TransferModal = ({ visible, onClose, goalId, actionType }) => {
   const [amount, setAmount] = useState("");
+  const queryClient = useQueryClient();
+
+  const transferMutation = useMutation({
+    mutationFn: (amount) => {
+      const transferInfo = { amount };
+      if (actionType === "deposit") {
+        return depositToSavingsGoal(goalId, transferInfo);
+      } else if (actionType === "withdraw") {
+        return withdrawFromSavingsGoal(goalId, transferInfo);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["fetchSavingsGoalDetails", goalId]);
+      queryClient.invalidateQueries(["fetchTransactionsBySavingsGoal", goalId]);
+      queryClient.invalidateQueries(["fetchSavingsGoalTrend", goalId]);
+      alert(
+        `${actionType === "deposit" ? "Deposited" : "Withdrawn"} successfully.`
+      );
+      setAmount("");
+      onClose();
+    },
+    onError: (error) => {
+      const errorMessage = error.response?.data || "An error occurred.";
+      alert(`Error: ${errorMessage}`);
+    },
+  });
 
   const handleSubmit = () => {
     if (!amount || isNaN(amount) || Number(amount) <= 0) {
       alert("Please enter a valid amount.");
       return;
     }
-    alert(
-      `${actionType === "deposit" ? "Deposited" : "Withdrawn"} KWD ${Number(
-        amount
-      ).toFixed(3)} to/from Goal ID: ${goalId}`
-    );
-    setAmount("");
-    onClose();
+    transferMutation.mutate(Number(amount));
   };
 
   const title =
@@ -42,15 +67,10 @@ const TransferModal = ({ visible, onClose, goalId, actionType }) => {
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          {/* Close Button */}
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Ionicons name="close" size={28} color="#000" />
           </TouchableOpacity>
-
-          {/* Modal Title */}
           <Text style={styles.modalTitle}>{title}</Text>
-
-          {/* Amount Input */}
           <TextInput
             style={styles.amountInput}
             placeholder={placeholder}
@@ -59,10 +79,14 @@ const TransferModal = ({ visible, onClose, goalId, actionType }) => {
             onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ""))}
             keyboardType="numeric"
           />
-
-          {/* Submit Button */}
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={styles.submitButtonText}>{buttonText}</Text>
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleSubmit}
+            disabled={transferMutation.isLoading}
+          >
+            <Text style={styles.submitButtonText}>
+              {transferMutation.isLoading ? "Processing..." : buttonText}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -74,7 +98,6 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
     backgroundColor: "#FEF7FF",
