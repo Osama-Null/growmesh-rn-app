@@ -9,6 +9,8 @@ import SavingsGoalDetails from "../../screens/Home/SavingsGoalDetails";
 import Profile from "../../screens/Profile/Profile";
 import EditSavingsGoal from "../../screens/Home/EditSavingsGoal";
 import EditProfile from "../../screens/Profile/EditProfile";
+import Faq from "../../screens/Faq/Faq";
+
 const Stack = createNativeStackNavigator();
 
 const HomeNavigation = () => {
@@ -32,6 +34,7 @@ const HomeNavigation = () => {
       <Stack.Screen name="EditProfile" component={EditProfile} />
       <Stack.Screen name="AllSavingsGoals" component={AllSavingsGoals} />
       <Stack.Screen name="CreateGoal" component={CreateGoalScreen} />
+      <Stack.Screen name = "Faq" component={Faq} />
     </Stack.Navigator>
   );
 };

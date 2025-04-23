@@ -5,6 +5,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -14,6 +15,7 @@ import ProfileHeader from "../../../components/profile/ProfileHeader";
 import ProfileSection from "../../../components/profile/ProfileSection";
 import ProfileActions from "../../../components/profile/ProfileActions";
 import { getProfile } from "../../api/user";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function Profile() {
   const navigation = useNavigation();
@@ -64,12 +66,19 @@ export default function Profile() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style ={styles.row}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Faq")}
+        >
+        <Ionicons name="help-circle-outline" size={35} color="black" />
+        </TouchableOpacity>
+        </View>
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
         <ProfileHeader profile={profile} />
-
+      
         <View style={styles.contentContainer}>
           <ProfileSection title="First Name" value={profile.firstName} />
           <ProfileSection title="Last Name" value={profile.lastName} />
@@ -96,6 +105,18 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+   // paddingVertical: 6,
+   // marginTop: 8,
+    //marginBottom: 9,
+    marginHorizontal: 16,
+  },
+  image: {
+    width: 41,
+    height: 41,
   },
   contentContainer: {
     padding: 20,

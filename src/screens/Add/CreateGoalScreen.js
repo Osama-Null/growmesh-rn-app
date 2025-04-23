@@ -215,7 +215,7 @@ const CreateGoalScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    // backgroundColor: "#FEF7FF",
+     backgroundColor: "#FEF7FF",
     maxWidth: Dimensions.get("window").width,
   },
   backButton: {

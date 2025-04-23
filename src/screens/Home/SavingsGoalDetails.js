@@ -26,6 +26,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 // Animated Donut Component
 const AnimatedDonut = ({ progress, size, thickness, color }) => {
+  console.log("AnimatedDonut received progress:", progress);
   const circumference = (size - thickness) * Math.PI;
   const strokeDashoffset = useSharedValue(circumference);
 
@@ -142,7 +143,7 @@ const TransactionList = ({ transactions }) => {
           >
             <Text style={styles.transactionText}>{formattedDate}</Text>
             <Text style={styles.transactionText}>
-              {transaction.transactionType === "deposit" ? "+" : "-"}KWD{" "}
+              {transaction.transactionType === "deposit" ? "+" : "-"} KWD{" "}
               {transaction.amount}
             </Text>
             <Text style={styles.transactionText}>
@@ -220,7 +221,8 @@ const SavingsGoalDetails = ({ navigation, route }) => {
       </SafeAreaView>
     );
   }
-
+{console.log("\nSingle goals: ", goalData, "\n");
+}
   const goal = goalData || {};
   const transactions = transactionsData || [];
   const trendData = trendResponse?.trendData || [];
@@ -237,19 +239,41 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     percentage = Math.round(progress * 100);
     progressLabel = `KWD ${goal.currentAmount} / ${goal.targetAmount}`;
   } else if (goal.lockType === "timeBased") {
-    const startDate = new Date(goal.createdAt);
-    const endDate = new Date(goal.targetDate);
+    const createdAtTrimmed = goal.createdAt.replace(/(\.\d{3})\d*/, "$1");
+    const startDate = new Date(createdAtTrimmed + "Z");
+    const endDate = new Date(goal.targetDate + "Z");
     const currentDate = new Date();
-    const totalDuration = endDate - startDate;
-    const elapsedDuration = currentDate - startDate;
+
+    // Log all dates as UTC
+    console.log("startDate:", startDate.toISOString());
+    console.log("endDate:", endDate.toISOString());
+    console.log("currentDate:", currentDate.toISOString());
+
+    const totalDuration = endDate.getTime() - startDate.getTime();
+    const elapsedDuration = currentDate.getTime() - startDate.getTime();
+
+    console.log("totalDuration (ms):", totalDuration);
+    console.log("elapsedDuration (ms):", elapsedDuration);
+
     progress = totalDuration > 0 ? elapsedDuration / totalDuration : 0;
+    console.log("progress before clamp:", progress);
+
     progress = Math.min(Math.max(progress, 0), 1);
+    console.log("progress after clamp:", progress);
+
     percentage = Math.round(progress * 100);
+    console.log("percentage:", percentage);
+
     const daysRemaining = Math.max(
       0,
-      Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24))
+      Math.ceil(
+        (endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+      )
     );
     progressLabel = `KWD ${goal.currentAmount} | ${daysRemaining}d left`;
+
+    // Pass progress to AnimatedDonut and log it
+    console.log("progress sent to donut:", progress);
   } else {
     console.error(`Unexpected lockType: ${goal.lockType}`);
   }
