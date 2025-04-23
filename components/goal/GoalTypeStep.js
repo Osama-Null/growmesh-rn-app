@@ -1,3 +1,444 @@
+// import React, { useState } from "react";
+// import {
+//   View,
+//   Text,
+//   TouchableOpacity,
+//   TextInput,
+//   StyleSheet,
+//   Dimensions,
+// } from "react-native";
+// import goalTypes from "../../src/data/goalTypes";
+
+// const { width } = Dimensions.get("window");
+
+// const GoalTypeStep = ({ onNext, onBack, setGoalType }) => {
+//   const [customGoalType, setCustomGoalType] = useState("");
+
+//   const handleSelectGoal = (type) => {
+//     setGoalType(type);
+//     onNext();
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.subtitle}>
+//         Select the type of goal you want to achieve
+//       </Text>
+
+//       <View style={styles.goalsGrid}>
+//         {goalTypes.map((goal) => (
+//           <TouchableOpacity
+//             key={goal.id}
+//             style={styles.goalCard}
+//             onPress={() => handleSelectGoal(goal.title)}
+//           >
+//             <Text style={styles.goalTitle}>{goal.title}</Text>
+//             <Text style={styles.goalDescription}>{goal.description}</Text>
+//           </TouchableOpacity>
+//         ))}
+//       </View>
+
+//       <View style={styles.customGoalContainer}>
+//         <Text style={styles.customGoalLabel}>Or create your own goal type</Text>
+//         <View style={styles.customInputContainer}>
+//           <TextInput
+//             style={styles.customInput}
+//             placeholder="Enter custom goal type"
+//             value={customGoalType}
+//             onChangeText={setCustomGoalType}
+//             placeholderTextColor="#1e1e1e80"
+//           />
+//           <TouchableOpacity
+//             style={[
+//               styles.customGoalButton,
+//               !customGoalType && styles.customGoalButtonDisabled,
+//             ]}
+//             disabled={!customGoalType}
+//             onPress={() => handleSelectGoal(customGoalType)}
+//           >
+//             <Text
+//               style={[
+//                 styles.customGoalButtonText,
+//                 !customGoalType && styles.customGoalButtonTextDisabled,
+//               ]}
+//             >
+//               Use Custom Goal
+//             </Text>
+//           </TouchableOpacity>
+//         </View>
+//       </View>
+
+//       <View style={styles.buttonContainer}>
+//         <TouchableOpacity
+//           style={[styles.button, { backgroundColor: "#A0A0A0" }]}
+//           onPress={onBack}
+//         >
+//           <Text style={styles.buttonText}>Back</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity
+//           style={[styles.button, { backgroundColor: "#2F3039", opacity: 0.5 }]}
+//           disabled
+//         >
+//           <Text style={styles.buttonText}>Next</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 16,
+//   },
+//   subtitle: {
+//     fontSize: 16,
+//     color: "#1e1e1e80",
+//     marginBottom: 32,
+//     fontFamily: "Roboto",
+//   },
+//   goalsGrid: {
+//     flexDirection: "row",
+//     flexWrap: "wrap",
+//     justifyContent: "space-between",
+//     gap: 16,
+//   },
+//   goalCard: {
+//     width: (width - 48) / 2,
+//     backgroundColor: "rgba(255,255,255,0.5)",
+//     borderRadius: 14,
+//     padding: 16,
+//     minHeight: 120,
+//   },
+//   goalTitle: {
+//     fontSize: 18,
+//     fontWeight: "700",
+//     marginBottom: 8,
+//     color: "#000",
+//     fontFamily: "Roboto",
+//   },
+//   goalDescription: {
+//     fontSize: 14,
+//     color: "#1e1e1e80",
+//     fontFamily: "Roboto",
+//   },
+//   customGoalContainer: {
+//     marginTop: 24,
+//     padding: 16,
+//   },
+//   customGoalLabel: {
+//     fontSize: 16,
+//     color: "#1e1e1e80",
+//     marginBottom: 12,
+//     fontFamily: "Roboto",
+//   },
+//   customInputContainer: {
+//     gap: 12,
+//   },
+//   customInput: {
+//     backgroundColor: "rgba(255,255,255,0.5)",
+//     borderRadius: 14,
+//     padding: 16,
+//     fontSize: 16,
+//     color: "#1e1e1e",
+//     fontFamily:  "Roboto",
+//   },
+//   customGoalButton: {
+//     backgroundColor: "#2F3039",
+//     borderRadius: 39,
+//     padding: 16,
+//     alignItems: "center",
+//   },
+//   customGoalButtonDisabled: {
+//     backgroundColor: "rgba(47, 48, 57, 0.5)",
+//   },
+//   customGoalButtonText: {
+//     color: "#FFF",
+//     fontSize: 16,
+//     fontWeight: "600",
+//     fontFamily: "Roboto",
+//   },
+ 
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#FEF7FF",
+//     padding: 16,
+//   },
+//   header: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     marginTop: 20,
+//     marginBottom: 32,
+//   },
+//   backButton: {
+//     padding: 8,
+//   },
+//   backButtonText: {
+//     fontSize: 24,
+//     color: "#000",
+//   },
+//   headerTitle: {
+//     fontSize: 20,
+//     fontWeight: "700",
+//     marginLeft: 16,
+//     fontFamily:  "Roboto",
+//   },
+//   subtitle: {
+//     fontSize: 16,
+//     color: "#1e1e1e80",
+//     marginBottom: 32,
+//     fontFamily:  "Roboto",
+//   },
+//   buttonContainer: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     padding: 16,
+//     minHeight: 120,
+//   },
+//   goalTitle: {
+//     fontSize: 18,
+//     fontWeight: "700",
+//     marginBottom: 8,
+//     color: "#000",
+//     fontFamily:  "Roboto",
+//   },
+//   goalDescription: {
+//     fontSize: 14,
+//     color: "#1e1e1e80",
+//     fontFamily: "Roboto",
+//   },
+//   progressContainer: {
+//     position: "absolute",
+//     bottom: 32,
+//     left: 16,
+//     right: 16,
+//   },
+//   progressBar: {
+//     height: 4,
+//     backgroundColor: "rgba(0,0,0,0.1)",
+//     borderRadius: 2,
+//     marginBottom: 8,
+//   },
+//   button: {
+//     width: "45%",
+//     borderRadius: 39,
+//     paddingVertical: 16,
+//     alignItems: "center",
+//   },
+//   progressText: {
+//     fontSize: 14,
+//     color: "#1e1e1e80",
+//     textAlign: "center",
+//     fontFamily:  "Roboto",
+//   },
+// });
+
+// export default GoalTypeStep;
+
+// import React, { useState } from "react";
+// import {
+//   View,
+//   Text,
+//   TouchableOpacity,
+//   TextInput,
+//   StyleSheet,
+//   Dimensions,
+// } from "react-native";
+// import goalTypes from "../../src/data/goalTypes";
+
+// const { width } = Dimensions.get("window");
+
+// const GoalTypeStep = ({ onNext, onBack, setGoalType }) => {
+//   const [customGoalType, setCustomGoalType] = useState("");
+//   const [error, setError] = useState("");
+
+//   const handleSelectGoal = (type) => {
+//     if (type.length > 100) {
+//       setError("Goal type cannot exceed 100 characters.");
+//       return;
+//     }
+//     setError("");
+//     setGoalType(type);
+//     onNext();
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.subtitle}>
+//         Select the type of goal you want to achieve
+//       </Text>
+
+//       {error ? <Text style={styles.error}>{error}</Text> : null}
+
+//       <View style={styles.goalsGrid}>
+//         {goalTypes.map((goal) => (
+//           <TouchableOpacity
+//             key={goal.id}
+//             style={styles.goalCard}
+//             onPress={() => handleSelectGoal(goal.title)}
+//           >
+//             <Text style={styles.goalTitle}>{goal.title}</Text>
+//             <Text style={styles.goalDescription}>{goal.description}</Text>
+//           </TouchableOpacity>
+//         ))}
+//       </View>
+
+//       <View style={styles.customGoalContainer}>
+//         <Text style={styles.customGoalLabel}>Or create your own goal type</Text>
+//         <View style={styles.customInputContainer}>
+//           <TextInput
+//             style={styles.customInput}
+//             placeholder="Enter custom goal type"
+//             value={customGoalType}
+//             onChangeText={(text) => {
+//               setCustomGoalType(text);
+//               setError("");
+//             }}
+//             placeholderTextColor="#1e1e1e80"
+//           />
+//           <TouchableOpacity
+//             style={[
+//               styles.customGoalButton,
+//               !customGoalType && styles.customGoalButtonDisabled,
+//             ]}
+//             disabled={!customGoalType}
+//             onPress={() => handleSelectGoal(customGoalType)}
+//           >
+//             <Text
+//               style={[
+//                 styles.customGoalButtonText,
+//                 !customGoalType && styles.customGoalButtonTextDisabled,
+//               ]}
+//             >
+//               Use Custom Goal
+//             </Text>
+//           </TouchableOpacity>
+//         </View>
+//       </View>
+
+//       <View style={styles.buttonContainer}>
+//         <TouchableOpacity
+//           style={[styles.button, { backgroundColor: "#A0A0A0" }]}
+//           onPress={onBack}
+//         >
+//           <Text style={styles.buttonText}>Back</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity
+//           style={[styles.button, { backgroundColor: "#2F3039", opacity: 0.5 }]}
+//           disabled
+//         >
+//           <Text style={styles.buttonText}>Next</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 16,
+//     backgroundColor: "#FEF7FF",
+//   },
+//   subtitle: {
+//     fontSize: 16,
+//     color: "#1e1e1e80",
+//     marginBottom: 32,
+//     fontFamily: "Roboto",
+//   },
+//   error: {
+//     color: "red",
+//     fontSize: 14,
+//     marginBottom: 8,
+//     fontFamily: "Roboto",
+//   },
+//   goalsGrid: {
+//     flexDirection: "row",
+//     flexWrap: "wrap",
+//     justifyContent: "space-between",
+//     gap: 16,
+//   },
+//   goalCard: {
+//     width: (width - 48) / 2,
+//     backgroundColor: "rgba(255,255,255,0.5)",
+//     borderRadius: 14,
+//     padding: 16,
+//     minHeight: 120,
+//   },
+//   goalTitle: {
+//     fontSize: 18,
+//     fontWeight: "700",
+//     marginBottom: 8,
+//     color: "#000",
+//     fontFamily: "Roboto",
+//   },
+//   goalDescription: {
+//     fontSize: 14,
+//     color: "#1e1e1e80",
+//     fontFamily: "Roboto",
+//   },
+//   customGoalContainer: {
+//     marginTop: 24,
+//     padding: 16,
+//   },
+//   customGoalLabel: {
+//     fontSize: 16,
+//     color: "#1e1e1e80",
+//     marginBottom: 12,
+//     fontFamily: "Roboto",
+//   },
+//   customInputContainer: {
+//     gap: 12,
+//   },
+//   customInput: {
+//     backgroundColor: "rgba(255,255,255,0.5)",
+//     borderRadius: 14,
+//     padding: 16,
+//     fontSize: 16,
+//     color: "#1e1e1e",
+//     fontFamily: "Roboto",
+//   },
+//   customGoalButton: {
+//     backgroundColor: "#2F3039",
+//     borderRadius: 39,
+//     padding: 16,
+//     alignItems: "center",
+//   },
+//   customGoalButtonDisabled: {
+//     backgroundColor: "rgba(47, 48, 57, 0.5)",
+//   },
+//   customGoalButtonText: {
+//     color: "#FFF",
+//     fontSize: 16,
+//     fontWeight: "600",
+//     fontFamily: "Roboto",
+//   },
+//   customGoalButtonTextDisabled: {
+//     color: "#FFF",
+//     opacity: 0.5,
+//   },
+//   buttonContainer: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     padding: 16,
+//     minHeight: 120,
+//   },
+//   button: {
+//     width: "45%",
+//     borderRadius: 39,
+//     paddingVertical: 16,
+//     alignItems: "center",
+//   },
+//   buttonText: {
+//     color: "#FFF",
+//     fontSize: 16,
+//     fontWeight: "700",
+//     fontFamily: "Roboto",
+//   },
+// });
+
+// export default GoalTypeStep;
+
 import React, { useState } from "react";
 import {
   View,
@@ -13,8 +454,14 @@ const { width } = Dimensions.get("window");
 
 const GoalTypeStep = ({ onNext, onBack, setGoalType }) => {
   const [customGoalType, setCustomGoalType] = useState("");
+  const [error, setError] = useState("");
 
   const handleSelectGoal = (type) => {
+    if (type.length > 100) {
+      setError("Goal type cannot exceed 100 characters.");
+      return;
+    }
+    setError("");
     setGoalType(type);
     onNext();
   };
@@ -24,6 +471,8 @@ const GoalTypeStep = ({ onNext, onBack, setGoalType }) => {
       <Text style={styles.subtitle}>
         Select the type of goal you want to achieve
       </Text>
+
+      {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <View style={styles.goalsGrid}>
         {goalTypes.map((goal) => (
@@ -45,7 +494,10 @@ const GoalTypeStep = ({ onNext, onBack, setGoalType }) => {
             style={styles.customInput}
             placeholder="Enter custom goal type"
             value={customGoalType}
-            onChangeText={setCustomGoalType}
+            onChangeText={(text) => {
+              setCustomGoalType(text);
+              setError("");
+            }}
             placeholderTextColor="#1e1e1e80"
           />
           <TouchableOpacity
@@ -89,12 +541,20 @@ const GoalTypeStep = ({ onNext, onBack, setGoalType }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 24, // Increased padding for more space
+    paddingVertical: 16,
+    backgroundColor: "#FEF7FF",
   },
   subtitle: {
     fontSize: 16,
     color: "#1e1e1e80",
-    marginBottom: 32,
+    marginBottom: 24, // Reduced from 32 for tighter spacing
+    fontFamily: "Roboto",
+  },
+  error: {
+    color: "red",
+    fontSize: 14,
+    marginBottom: 16, // Added margin for separation
     fontFamily: "Roboto",
   },
   goalsGrid: {
@@ -102,29 +562,37 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
     gap: 16,
+    marginBottom: 20, // Added margin to separate from custom goal section
   },
   goalCard: {
-    width: (width - 48) / 2,
+    width: 165, // Adjusted for new padding (24 + 24 + 16 gap)
     backgroundColor: "rgba(255,255,255,0.5)",
     borderRadius: 14,
-    padding: 16,
+    padding: 1,
     minHeight: 120,
+    //backgroundColor :'red'
+    borderWidth : 0.2,
+    borderColor :'grey'
   },
   goalTitle: {
     fontSize: 18,
     fontWeight: "700",
     marginBottom: 8,
+    alignSelf :'center',
     color: "#000",
     fontFamily: "Roboto",
+    padding : 10
   },
   goalDescription: {
     fontSize: 14,
     color: "#1e1e1e80",
     fontFamily: "Roboto",
+    padding : 10,
+    alignContent :'space-evenly'
   },
   customGoalContainer: {
-    marginTop: 24,
-    padding: 16,
+    marginTop: 16, 
+    paddingHorizontal: 0, 
   },
   customGoalLabel: {
     fontSize: 16,
@@ -133,7 +601,7 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto",
   },
   customInputContainer: {
-    gap: 12,
+    gap: 16, // Increased from 12 for better separation
   },
   customInput: {
     backgroundColor: "rgba(255,255,255,0.5)",
@@ -141,7 +609,7 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     color: "#1e1e1e",
-    fontFamily:  "Roboto",
+    fontFamily: "Roboto",
   },
   customGoalButton: {
     backgroundColor: "#2F3039",
@@ -158,78 +626,27 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontFamily: "Roboto",
   },
- 
-  container: {
-    flex: 1,
-    backgroundColor: "#FEF7FF",
-    padding: 16,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 20,
-    marginBottom: 32,
-  },
-  backButton: {
-    padding: 8,
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: "#000",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginLeft: 16,
-    fontFamily:  "Roboto",
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#1e1e1e80",
-    marginBottom: 32,
-    fontFamily:  "Roboto",
+  customGoalButtonTextDisabled: {
+    color: "#FFF",
+    opacity: 0.5,
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 16,
-    minHeight: 120,
-  },
-  goalTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 8,
-    color: "#000",
-    fontFamily:  "Roboto",
-  },
-  goalDescription: {
-    fontSize: 14,
-    color: "#1e1e1e80",
-    fontFamily: "Roboto",
-  },
-  progressContainer: {
-    position: "absolute",
-    bottom: 32,
-    left: 16,
-    right: 16,
-  },
-  progressBar: {
-    height: 4,
-    backgroundColor: "rgba(0,0,0,0.1)",
-    borderRadius: 2,
-    marginBottom: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8, // Reduced padding for tighter spacing
   },
   button: {
-    width: "45%",
+    width: "48%", // Adjusted to ensure even spacing
     borderRadius: 39,
     paddingVertical: 16,
     alignItems: "center",
   },
-  progressText: {
-    fontSize: 14,
-    color: "#1e1e1e80",
-    textAlign: "center",
-    fontFamily:  "Roboto",
+  buttonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "700",
+    fontFamily: "Roboto",
   },
 });
 
