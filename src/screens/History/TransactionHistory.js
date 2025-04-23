@@ -15,7 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const TransactionHistory = () => {
   const navigation = useNavigation();
-  const [activeTab, setActiveTab] = useState("All"); // All, Deposits, Withdrawals
+  const [activeTab, setActiveTab] = useState("All"); 
 
   const {
     data: transactions,
