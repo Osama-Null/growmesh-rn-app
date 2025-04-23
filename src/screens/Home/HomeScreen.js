@@ -235,15 +235,16 @@ const HomeScreen = ({ navigation }) => {
           style={styles.image}
           onPress={() => navigation.navigate("Profile")}
         >
-          <Image
-            source={{
-              uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/7xmv6dxc_expires_30_days.png",
-            }}
-            resizeMode={"stretch"}
-            style={styles.image2}
-          />
+                 <Ionicons name="person-circle-outline" size={40} color="black" />
         </TouchableOpacity>
-        <Ionicons name="notifications" size={40} color="black" />
+
+        <TouchableOpacity
+          style={styles.image}
+          onPress={() => navigation.navigate("Profile")}
+        >
+                 <Ionicons name="notifications-outline" size={34} color="black" />
+        </TouchableOpacity>
+        {/* <Ionicons name="notifications-outline" size={40} color="black" /> */}
       </View>
       <Text style={styles.text}>{"Total saving"}</Text>
       <Text style={styles.text2}>{`KWD ${totalSavings.toFixed(3)}`}</Text>
