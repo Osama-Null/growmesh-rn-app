@@ -123,25 +123,26 @@ const styles = StyleSheet.create({
   createButton: {
     height: 60,
     borderRadius: 39,
-    backgroundColor: "#2F3039",
+    backgroundColor: "#FEF7FF",
     justifyContent: "center",
     alignItems: "center",
   },
   createButtonText: {
-    color: "#FFF",
+    color: "black",
     fontSize: 16,
     fontWeight: "700",
   },
   loginButton: {
     height: 60,
     borderRadius: 39,
-    backgroundColor: "#E9EAEC",
+    backgroundColor: "#2F3039",
     justifyContent: "center",
     alignItems: "center",
   },
   loginButtonText: {
-    color: "#1E1E1E",
+    color: "#FEF7FF",
     fontSize: 16,
+    fontWeight:"bold"
   },
 });
 
