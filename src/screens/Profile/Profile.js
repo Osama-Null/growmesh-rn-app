@@ -1,3 +1,139 @@
+// import React from "react";
+// import {
+//   View,
+//   StyleSheet,
+//   ScrollView,
+//   ActivityIndicator,
+//   Alert,
+//   TouchableOpacity,
+// } from "react-native";
+// import { SafeAreaView } from "react-native-safe-area-context";
+// import { useNavigation } from "@react-navigation/native";
+// import { useQuery } from "@tanstack/react-query";
+// import * as SecureStore from "expo-secure-store";
+// import ProfileHeader from "../../../components/profile/ProfileHeader";
+// import ProfileSection from "../../../components/profile/ProfileSection";
+// import ProfileActions from "../../../components/profile/ProfileActions";
+// import { getProfile } from "../../api/user";
+// import Ionicons from "@expo/vector-icons/Ionicons";
+
+// export default function Profile() {
+//   const navigation = useNavigation();
+
+//   const {
+//     data: profile,
+//     isLoading,
+//     isError,
+//     error,
+//   } = useQuery({
+//     queryKey: ["profile"],
+//     queryFn: getProfile,
+//   });
+
+//   const handleLogout = async () => {
+//     try {
+//       await SecureStore.deleteItemAsync("userToken");
+//       navigation.reset({
+//         index: 0,
+//         routes: [{ name: "Auth" }],
+//       });
+//     } catch (error) {
+//       Alert.alert("Error", "Failed to logout. Please try again.");
+//     }
+//   };
+
+//   if (isLoading) {
+//     return (
+//       <SafeAreaView style={styles.container}>
+//         <View style={styles.loadingContainer}>
+//           <ActivityIndicator size="large" color="#2F3039" />
+//         </View>
+//       </SafeAreaView>
+//     );
+//   }
+
+//   if (isError) {
+//     return (
+//       <SafeAreaView style={styles.container}>
+//         <View style={styles.contentContainer}>
+//           <Text style={styles.errorText}>
+//             {error?.message || "Failed to load profile. Please try again."}
+//           </Text>
+//         </View>
+//       </SafeAreaView>
+//     );
+//   }
+
+//   return (
+//     <SafeAreaView style={styles.container}>
+//       <View style ={styles.row}>
+//         <TouchableOpacity
+//           onPress={() => navigation.navigate("Faq")}
+//         >
+//         <Ionicons name="help-circle-outline" size={35} color="black" />
+//         </TouchableOpacity>
+//         </View>
+//       <ScrollView
+//         style={styles.scrollView}
+//         showsVerticalScrollIndicator={false}
+//       >
+//         <ProfileHeader profile={profile} />
+      
+//         <View style={styles.contentContainer}>
+//           <ProfileSection title="First Name" value={profile.firstName} />
+//           <ProfileSection title="Last Name" value={profile.lastName} />
+//           <ProfileSection
+//             title="Date of Birth"
+//             value={new Date(profile.dateOfBirth).toLocaleDateString()}
+//           />
+//           <ProfileSection title="Email" value={profile.email} />
+
+//           <ProfileActions
+//             onEditPress={() => navigation.navigate("EditProfile", { profile })}
+//             onLogout={handleLogout}
+//           />
+//         </View>
+//       </ScrollView>
+//     </SafeAreaView>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#FEF7FF",
+//   },
+//   scrollView: {
+//     flex: 1,
+//   },
+//   row: {
+//     flexDirection: "row",
+//     justifyContent: "flex-end",
+//    // paddingVertical: 6,
+//    // marginTop: 8,
+//     //marginBottom: 9,
+//     marginHorizontal: 16,
+//   },
+//   image: {
+//     width: 41,
+//     height: 41,
+//   },
+//   contentContainer: {
+//     padding: 20,
+//   },
+//   loadingContainer: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   errorText: {
+//     color: "#D8696B",
+//     textAlign: "center",
+//     fontSize: 16,
+//     fontFamily: "Roboto",
+//   },
+// });
+
 import React from "react";
 import {
   View,
@@ -11,11 +147,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
-import ProfileHeader from "../../../components/profile/ProfileHeader";
+import ProfileHeader from "../../../components/profile/ProfileHeader"; 
 import ProfileSection from "../../../components/profile/ProfileSection";
 import ProfileActions from "../../../components/profile/ProfileActions";
 import { getProfile } from "../../api/user";
 import Ionicons from "@expo/vector-icons/Ionicons";
+
+console.log("ProfileHeader import:", ProfileHeader);
 
 export default function Profile() {
   const navigation = useNavigation();
@@ -64,21 +202,20 @@ export default function Profile() {
     );
   }
 
+  console.log("Profile data in Profile.js:", profile);
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style ={styles.row}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Faq")}
-        >
-        <Ionicons name="help-circle-outline" size={35} color="black" />
+      <View style={styles.row}>
+        <TouchableOpacity onPress={() => navigation.navigate("Faq")}>
+          <Ionicons name="help-circle-outline" size={35} color="black" />
         </TouchableOpacity>
-        </View>
+      </View>
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
         <ProfileHeader profile={profile} />
-      
         <View style={styles.contentContainer}>
           <ProfileSection title="First Name" value={profile.firstName} />
           <ProfileSection title="Last Name" value={profile.lastName} />
@@ -87,7 +224,6 @@ export default function Profile() {
             value={new Date(profile.dateOfBirth).toLocaleDateString()}
           />
           <ProfileSection title="Email" value={profile.email} />
-
           <ProfileActions
             onEditPress={() => navigation.navigate("EditProfile", { profile })}
             onLogout={handleLogout}
@@ -109,14 +245,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "flex-end",
-   // paddingVertical: 6,
-   // marginTop: 8,
-    //marginBottom: 9,
     marginHorizontal: 16,
-  },
-  image: {
-    width: 41,
-    height: 41,
   },
   contentContainer: {
     padding: 20,

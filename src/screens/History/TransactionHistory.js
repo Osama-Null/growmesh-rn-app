@@ -1,12 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  ActivityIndicator,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, ScrollView, TouchableOpacity,} from "react-native";
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllTransactions } from "../../api/transaction";
@@ -15,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const TransactionHistory = () => {
   const navigation = useNavigation();
-  const [activeTab, setActiveTab] = useState("All"); 
+  const [activeTab, setActiveTab] = useState("All");
 
   const {
     data: transactions,
@@ -50,11 +42,21 @@ const TransactionHistory = () => {
   }
 
   const filteredTransactions = transactions?.filter((transaction) => {
+    console.log("Transaction Type:", transaction.transactionType);
+    const transactionTypeMap = {
+      "0": "deposit",
+      "1": "withdrawal",
+      "2": "transfertogoal",
+      "3": "transferfromgoal",
+    };
+    const transactionType = transactionTypeMap[transaction.transactionType?.toString()] || transaction.transactionType?.toString().toLowerCase();
     if (activeTab === "All") return true;
     if (activeTab === "Deposits")
-      return transaction.transactionType === "deposit";
+      return transactionType === "deposit";
     if (activeTab === "Withdrawals")
-      return transaction.transactionType === "withdraw";
+      return transactionType === "withdrawal";
+    if (activeTab === "Transfers")
+      return transactionType === "transfertogoal" || transactionType === "transferfromgoal";
     return true;
   });
 
@@ -68,49 +70,75 @@ const TransactionHistory = () => {
   };
 
   const renderTransaction = (transaction) => {
-    const isDeposit = transaction.transactionType === "deposit";
+    const transactionTypeMap = {
+      "0": "deposit",
+      "1": "withdrawal",
+      "2": "transfertogoal",
+      "3": "transferfromgoal",
+    };
+    const transactionType = transactionTypeMap[transaction.transactionType?.toString()] || transaction.transactionType?.toString().toLowerCase();
+
+    let icon, backgroundColor, color, label, amountPrefix;
+
+    switch (transactionType) {
+      case "deposit":
+        icon = "arrow-up";
+        backgroundColor = "rgba(0, 248, 190, 0.1)";
+        color = "#00F8BE";
+        label = "Deposit";
+        amountPrefix = "+";
+        break;
+      case "withdrawal":
+        icon = "arrow-down";
+        backgroundColor = "rgba(255, 99, 71, 0.1)";
+        color = "#FF6347";
+        label = "Withdrawal";
+        amountPrefix = "-";
+        break;
+      case "transfertogoal":
+        icon = "swap-horizontal";
+        backgroundColor = "rgba(255, 215, 0, 0.1)";
+        color = "#FFD700";
+        label = "Transfer to Goal";
+        amountPrefix = "-";
+        break;
+      case "transferfromgoal":
+        icon = "swap-horizontal";
+        backgroundColor = "rgba(0, 191, 255, 0.1)";
+        color = "#00BFFF";
+        label = "Transfer from Goal";
+        amountPrefix = "+";
+        break;
+      default:
+        console.log("Unknown transaction type:", transaction.transactionType);
+        icon = "help-circle";
+        backgroundColor = "rgba(128, 128, 128, 0.1)";
+        color = "#808080";
+        label = "Unknown";
+        amountPrefix = "";
+    }
+
+    console.log("Rendering icon:", icon, "with color:", color); // Debug icon assignment
 
     return (
       <View key={transaction.transactionId} style={styles.transactionItem}>
         <View style={styles.transactionIcon}>
-          <View
-            style={[
-              styles.iconCircle,
-              {
-                backgroundColor: isDeposit
-                  ? "rgba(0, 248, 190, 0.1)"
-                  : "rgba(255, 99, 71, 0.1)",
-              },
-            ]}
-          >
-            <Ionicons
-              name={isDeposit ? "arrow-up" : "arrow-down"}
-              size={24}
-              color={isDeposit ? "#00F8BE" : "#FF6347"}
-            />
-          </View>
+          <Ionicons name={icon} size={24} color={color} style={{ marginRight: 8 }} />          
         </View>
         <View style={styles.transactionDetails}>
           <View style={styles.transactionHeader}>
             <Text style={styles.transactionTitle}>
               {transaction.savingsGoalName || "Goal"}
             </Text>
-            <Text
-              style={[
-                styles.transactionAmount,
-                { color: isDeposit ? "#00F8BE" : "#FF6347" },
-              ]}
-            >
-              {isDeposit ? "+" : "-"}KWD {transaction.amount.toFixed(3)}
+            <Text style={[styles.transactionAmount, { color }]}>
+              {amountPrefix}KWD {transaction.amount.toFixed(3)}
             </Text>
           </View>
           <View style={styles.transactionFooter}>
             <Text style={styles.transactionDate}>
               {formatDate(transaction.transactionDate)}
             </Text>
-            <Text style={styles.transactionType}>
-              {isDeposit ? "Deposit" : "Withdrawal"}
-            </Text>
+            <Text style={styles.transactionType}>{label}</Text>
           </View>
         </View>
       </View>
@@ -120,15 +148,11 @@ const TransactionHistory = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#1D1B20" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Transaction History</Text>
-        <View style={styles.headerRight} />
+=        <Text style={styles.headerTitle}>Transaction History</Text>
       </View>
 
       <View style={styles.tabs}>
-        {["All", "Deposits", "Withdrawals"].map((tab) => (
+        {["All", "Transfers", "Deposits", "Withdrawals",].map((tab) => (
           <TouchableOpacity
             key={tab}
             style={[styles.tab, activeTab === tab && styles.activeTab]}
@@ -228,6 +252,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   transactionIcon: {
+    flexDirection: "row", 
     marginRight: 16,
   },
   iconCircle: {
@@ -236,6 +261,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "black",
   },
   transactionDetails: {
     flex: 1,
