@@ -8,8 +8,8 @@ import CreateGoalScreen from "../../screens/Add/CreateGoalScreen";
 import SavingsGoalDetails from "../../screens/Home/SavingsGoalDetails";
 import Profile from "../../screens/Profile/Profile";
 import EditSavingsGoal from "../../screens/Home/EditSavingsGoal";
-import Faq from "../../screens/Faq/Faq";
 import EditProfile from "../../screens/Profile/EditProfile";
+import Faq from "../../screens/Faq/Faq";
 
 const Stack = createNativeStackNavigator();
 

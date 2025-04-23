@@ -20,19 +20,12 @@ const AuthNavigator = () => {
       {/* <Stack.Screen name="DatePickerScreen" component={DatePickerScreen} /> */}
       {/* <Stack.Screen name="test" component={test} /> */}
       {/* <Stack.Screen name="EditSavingsGoal" component={EditSavingsGoal} /> */}
-<<<<<<< HEAD
+      {/* <Stack.Screen name="EditSavingsGoal" component={EditSavingsGoal} /> */}
       <Stack.Screen name="Welcome" component={Welcome} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="SavingsGoalDetails" component={SavingsGoalDetails} />
       <Stack.Screen name="Faq" component={Faq} />
-=======
-      {/* <Stack.Screen name="Faq" component={Faq} /> */}
-      {/* <Stack.Screen name="SavingsGoalDetails" component={SavingsGoalDetails} /> */}
-      <Stack.Screen name="Welcome" component={Welcome} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Register" component={Register} />
->>>>>>> 09de84153347f57549bddf2d18781944215f96e5
     </Stack.Navigator>
   );
 };
