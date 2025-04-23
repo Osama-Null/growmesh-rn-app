@@ -230,6 +230,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.ScrollView}>
       <View style={styles.row}>
         <TouchableOpacity
           style={styles.image}
@@ -406,6 +407,7 @@ const HomeScreen = ({ navigation }) => {
           />
         </TouchableOpacity>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
