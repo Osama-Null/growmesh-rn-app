@@ -295,11 +295,24 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.text6}>{"Savings Goals"}</Text>
       <View style={styles.column2}>
         <View style={styles.column3}>
-          {Goals.slice(0, 2).map((goal, index) => {
-            const progress =
-              goal.targetAmount > 0
-                ? goal.currentAmount / goal.targetAmount
-                : 0;
+          {Goals.slice(0, 9).map((goal, index) => {
+            let progress = 0;
+            if (goal.lockType === "amountBased") {
+              progress =
+                goal.targetAmount > 0
+                  ? goal.currentAmount / goal.targetAmount
+                  : 0;
+            } else if (goal.lockType === "timeBased") {
+              const startDate = new Date(goal.createdAt);
+              const endDate = new Date(goal.targetDate);
+              const currentDate = new Date();
+              const totalDuration = endDate.getTime() - startDate.getTime();
+              const elapsedDuration =
+                currentDate.getTime() - startDate.getTime();
+              progress =
+                totalDuration > 0 ? elapsedDuration / totalDuration : 0;
+              progress = Math.min(Math.max(progress, 0), 1); // Clamp between 0 and 1
+            }
             const color = progressColors[index % progressColors.length];
             return (
               <React.Fragment key={goal.savingsGoalId}>
