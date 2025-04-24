@@ -118,7 +118,7 @@ const TransactionHistory = () => {
         amountPrefix = "";
     }
 
-    console.log("Rendering icon:", icon, "with color:", color); // Debug icon assignment
+    console.log("Rendering icon:", icon, "with color:", color); 
 
     return (
       <View key={transaction.transactionId} style={styles.transactionItem}>

@@ -191,7 +191,6 @@ const HomeScreen = ({ navigation }) => {
     (goal) => goal.status === "Completed"
   ).length;
 
-  // Format trend data for the chart with a fallback
   const chartData = (trendData || []).map((item) => {
     const date = new Date(item.periodEnd);
     let label;
@@ -253,11 +252,7 @@ const HomeScreen = ({ navigation }) => {
               onError={(e) => console.log("Profile image load error:", e.nativeEvent.error)}
               onLoad={() => console.log("Profile image loaded successfully")}
             />
-            {profilePictureUrl === "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuNhTZJTtkR6b-ADMhmzPvVwaLuLdz273wvQ&s" && (
-              <Text style={{ position: "absolute", color: "red", fontSize: 10 }}>
-                Using Fallback Image
-              </Text>
-            )}
+            {profilePictureUrl === "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuNhTZJTtkR6b-ADMhmzPvVwaLuLdz273wvQ&s"}
           </TouchableOpacity>
 
           <TouchableOpacity
