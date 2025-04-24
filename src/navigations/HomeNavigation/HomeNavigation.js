@@ -10,7 +10,7 @@ import Profile from "../../screens/Profile/Profile";
 import EditSavingsGoal from "../../screens/Home/EditSavingsGoal";
 import EditProfile from "../../screens/Profile/EditProfile";
 import Faq from "../../screens/Faq/Faq";
-
+import notifications from "../../screens/Notifications/Notifications"
 const Stack = createNativeStackNavigator();
 
 const HomeNavigation = () => {

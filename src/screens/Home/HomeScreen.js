@@ -918,7 +918,7 @@ const HomeScreen = ({ navigation }) => {
 
           <TouchableOpacity
             style={styles.image}
-            onPress={() => navigation.navigate("Profile")}
+            onPress={() => navigation.navigate("AllSavingsGoals")}
           >
             <Ionicons name="notifications-outline" size={34} color="black" />
           </TouchableOpacity>
