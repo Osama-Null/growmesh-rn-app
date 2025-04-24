@@ -131,7 +131,7 @@ const TransactionHistory = () => {
               {transaction.savingsGoalName || "Goal"}
             </Text>
             <Text style={[styles.transactionAmount, { color }]}>
-              {amountPrefix}KWD {transaction.amount.toFixed(3)}
+              {amountPrefix}KWD {transaction.amount}
             </Text>
           </View>
           <View style={styles.transactionFooter}>

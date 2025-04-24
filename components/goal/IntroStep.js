@@ -5,9 +5,9 @@ import LottieView from "lottie-react-native";
 const IntroStep = ({ onNext }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
+      {/* <View style={styles.titleContainer}>
         <Text style={styles.title}>LET'S CREATE A SAVINGS{"\n"}GOAL!</Text>
-      </View>
+      </View> */}
 
       <View style={styles.imageContainer}>
         <LottieView

@@ -4,11 +4,8 @@ import { Picker } from "@react-native-picker/picker";
 import { format, getDaysInMonth } from "date-fns";
 import PropTypes from "prop-types";
 
-// Static months array
 const months = [
-  "January",
-  "February",
-  "March",
+  "January", "February", "March",
   "April",
   "May",
   "June",
@@ -20,8 +17,7 @@ const months = [
   "December",
 ];
 
-// Static years array
-const years = Array.from({ length: 201 }, (_, i) => (1900 + i).toString()); // 1900–2100
+const years = Array.from({ length: 201 }, (_, i) => (1900 + i).toString());
 
 const CustomDatePicker = ({
   initialDate = new Date(),
@@ -39,7 +35,6 @@ const CustomDatePicker = ({
   const [selectedYear, setSelectedYear] = useState(format(initialDate, "yyyy"));
   const [days, setDays] = useState([]);
 
-  // Update days array when month or year changes
   useEffect(() => {
     const year = parseInt(selectedYear);
     const monthIndex = months.indexOf(selectedMonth);
@@ -50,13 +45,11 @@ const CustomDatePicker = ({
     );
     setDays(newDays);
 
-    // Reset selected day if it exceeds the new maximum
     if (parseInt(selectedDay) > maxDays) {
       setSelectedDay(newDays[maxDays - 1]);
     }
   }, [selectedMonth, selectedYear, selectedDay]);
 
-  // Handle date changes and optional FormData
   useEffect(() => {
     const selectedDate = new Date(
       parseInt(selectedYear),
@@ -149,43 +142,42 @@ DatePicker.propTypes = {
   showFormData: PropTypes.bool,
 };
 
-// Default styles
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#F3F4F6", // Equivalent to bg-gray-100
+    backgroundColor: "#F3F4F6", 
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
   },
   dateText: {
-    fontSize: 24, // Equivalent to text-2xl
+    fontSize: 24, 
     fontWeight: "bold",
-    color: "#1F2937", // Equivalent to text-gray-800
-    marginBottom: 24, // Equivalent to mb-6
+    color: "#1F2937", 
+    marginBottom: 24, 
   },
   pickerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    maxWidth: 480, // Equivalent to max-w-md
+    maxWidth: 480, 
   },
   pickerWrapper: {
     flex: 1,
-    marginHorizontal: 4, // Equivalent to mx-1
-    backgroundColor: "#FFFFFF", // Equivalent to bg-white
-    borderRadius: 8, // Equivalent to rounded-lg
+    marginHorizontal: 4, 
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8, 
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3, // For Android shadow
+    elevation: 3, 
   },
   picker: {
-    height: 192, // Equivalent to h-48
+    height: 192, 
   },
   pickerItem: {
-    fontSize: 18, // Equivalent to text-lg
-    color: "#1F2937", // Equivalent to text-gray-800
+    fontSize: 18, 
+    color: "#1F2937", 
   },
 });
 

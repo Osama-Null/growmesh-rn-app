@@ -82,10 +82,10 @@ const AnimatedBar = ({ value, label, maxValue, difference }) => {
 
   const barColor =
     difference > 0
-      ? "rgba(21, 254, 211, 1)"
+      ? "rgba(9, 53, 101, 0.14)" // Full opacity for positive
       : difference < 0
-      ? "rgba(21, 254, 211, 0.2)"
-      : "rgba(21, 254, 211, 0.5)";
+      ? "rgba(9, 53, 101, 0.14)" // Low opacity for negative
+      : "rgba(9, 53, 101, 0.36)"; // Medium opacity for zero
 
   return (
     <View style={styles.barContainer}>
@@ -93,7 +93,7 @@ const AnimatedBar = ({ value, label, maxValue, difference }) => {
         <Text
           style={[
             styles.differenceText,
-            { color: difference > 0 ? "#00FF00" : "#FF0000" },
+            { color: difference > 0 ? "#rgba(9, 53, 101, 0.79)" : "#FF0000" },
           ]}
         >
           {difference > 0 ? `+${difference}` : difference}
@@ -332,7 +332,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
           style={{
             flex: 1,
             position: "absolute",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backgroundColor: "rgba(255, 255, 255, 0)",
             height: "100%",
             width: "100%",
             zIndex: 10,
@@ -404,7 +404,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 progress={progress}
                 size={245}
                 thickness={23}
-                color="#00F8BE"
+                color="#rgba(9, 53, 101, 0.65)"
               />
               <View style={styles.percentageContainer}>
                 <Text style={styles.percentageText}>{`${percentage}%`}</Text>
@@ -424,7 +424,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 <MaterialCommunityIcons
                   name="arrow-up-thick"
                   size={35}
-                  color="#00F8BE"
+                  color="#rgb(49, 154, 46)"
                 />
               </TouchableOpacity>
               <TouchableOpacity style={styles.icon} onPress={handleEdit}>
@@ -434,7 +434,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 <MaterialCommunityIcons
                   name="arrow-down-thick"
                   size={35}
-                  color="#FF6347"
+                  color="#rgb(222, 12, 12)"
                 />
               </TouchableOpacity>
 
@@ -544,7 +544,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   activeTab: {
-    color: "#00F8BE",
+    color: "#rgba(9, 53, 101, 0.65)",
     textDecorationLine: "underline",
   },
   view: {
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   percentageText: {
-    color: "#00F8BE",
+    color: "#rgba(9, 53, 101, 0.65)",
     fontSize: 50,
     fontWeight: "900",
     shadowColor: "black",
@@ -604,7 +604,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   barLabel: {
-    color: "#000",
+    color: "#rgba(9, 53, 101, 0.93)",
     fontSize: 12,
     marginTop: 5,
   },
