@@ -1,7 +1,7 @@
 import instance from ".";
 import { setToken } from "./storage";
 
-// Login function
+
 const login = async (userInfo) => {
   const response = await instance.post("/auth/login", { ...userInfo });
   console.log("LOGIN TOKEN", response.data.token);
@@ -11,7 +11,7 @@ const login = async (userInfo) => {
 const register = async (userInfo, image) => {
   const formData = new FormData();
 
-  // Append user info fields
+
   for (const key in userInfo) {
     formData.append(key, userInfo[key]);
   }
