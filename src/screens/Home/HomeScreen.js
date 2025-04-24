@@ -294,7 +294,7 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.text6}>{"Savings Goals"}</Text>
       <View style={styles.column2}>
         <View style={styles.column3}>
-          {Goals.slice(0, 9).map((goal, index) => {
+          {Goals.slice(0, 2).map((goal, index) => {
             let progress = 0;
             if (goal.lockType === "amountBased") {
               progress =

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -26,11 +26,9 @@ const EditSavingsGoal = () => {
   const route = useRoute();
   const { goalId } = route.params;
   const queryClient = useQueryClient();
-  {
-    console.log(
-      `\n=======================\nGoal Id: ${goalId}\n=======================\n`
-    );
-  }
+  console.log(
+    `\n=======================\nGoal Id: ${goalId}\n=======================\n`
+  );
 
   // State for dropdown visibility and frequency options
   const [frequencyMenuVisible, setFrequencyMenuVisible] = useState(false);
@@ -62,6 +60,24 @@ const EditSavingsGoal = () => {
 
   const goal = goalData;
 
+  // Pre-populate form state with fetched goal data
+  useEffect(() => {
+    if (goal) {
+      setFormData({
+        name: goal.savingsGoalName || "",
+        targetAmount: goal.targetAmount ? goal.targetAmount.toString() : "",
+        depositFrequency: goal.depositFrequency || null,
+        depositAmount: goal.depositAmount ? goal.depositAmount.toString() : "",
+        customDepositIntervalDays: goal.customDepositIntervalDays
+          ? goal.customDepositIntervalDays.toString()
+          : "",
+        description: goal.description || "",
+        emoji: goal.emoji || "",
+        TargetDate: goal.targetDate || null,
+      });
+    }
+  }, [goal]);
+
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: (updatedGoal) => updateSavingsGoal(goalId, updatedGoal),
@@ -71,8 +87,8 @@ const EditSavingsGoal = () => {
       navigation.goBack();
     },
     onError: (error) => {
-      console.log("Update Goal Error:", error); // Debug: Log the error details
-      console.log("Error Response:", error.response?.data); // Debug: Log the response data
+      console.log("Update Goal Error:", error);
+      console.log("Error Response:", error.response?.data);
       console.log("Error Status:", error.response?.status);
       Alert.alert(
         "Error",
@@ -105,15 +121,15 @@ const EditSavingsGoal = () => {
   // Handle form submission
   const handleSave = () => {
     // Check required fields
-    if (formData.name === "" && !goal?.savingsGoalName) {
+    if (!formData.name && !goal?.savingsGoalName) {
       Alert.alert("Error", "Goal name is required");
       return;
     }
 
     if (
       goal?.lockType === "amountBased" &&
-      formData.targetAmount === "" && // Only fail if user explicitly cleared targetAmount
-      !goal?.targetAmount // Or if there's no targetAmount in API data
+      !formData.targetAmount &&
+      !goal?.targetAmount
     ) {
       Alert.alert("Error", "Target amount is required for amount-based goals");
       return;
@@ -121,8 +137,8 @@ const EditSavingsGoal = () => {
 
     if (
       goal?.lockType === "timeBased" &&
-      formData.TargetDate === null && // Only fail if user explicitly cleared TargetDate
-      !goal?.targetDate // Or if there's no targetDate in API data
+      !formData.TargetDate &&
+      !goal?.targetDate
     ) {
       Alert.alert("Error", "Target date is required for time-based goals");
       return;
@@ -131,32 +147,29 @@ const EditSavingsGoal = () => {
     const effectiveDepositFrequency =
       formData.depositFrequency !== null
         ? formData.depositFrequency
-        : goal?.depositFrequency;
+        : goal?.depositFrequency || "Disabled";
 
-    // Validate deposit amount only if frequency is selected and user cleared the field
-    if (
-      effectiveDepositFrequency &&
-      effectiveDepositFrequency !== "Disabled" &&
-      formData.depositAmount === "" && // Only fail if user explicitly cleared depositAmount
-      !goal?.depositAmount // Or if there's no depositAmount in API data
-    ) {
-      Alert.alert(
-        "Error",
-        "Deposit amount is required when a frequency is selected"
-      );
-      return;
-    }
+    // Skip deposit-related validations if frequency is Disabled
+    if (effectiveDepositFrequency !== "Disabled") {
+      if (!formData.depositAmount && !goal?.depositAmount) {
+        Alert.alert(
+          "Error",
+          "Deposit amount is required when a frequency is selected"
+        );
+        return;
+      }
 
-    if (
-      effectiveDepositFrequency === "Custom" &&
-      formData.customDepositIntervalDays === "" && // Only fail if user explicitly cleared days
-      !goal?.customDepositIntervalDays // Or if there's no days in API data
-    ) {
-      Alert.alert(
-        "Error",
-        "Custom deposit interval days are required for custom frequency"
-      );
-      return;
+      if (
+        effectiveDepositFrequency === "Custom" &&
+        !formData.customDepositIntervalDays &&
+        !goal?.customDepositIntervalDays
+      ) {
+        Alert.alert(
+          "Error",
+          "Custom deposit interval days are required for custom frequency"
+        );
+        return;
+      }
     }
 
     // Numeric validation
@@ -176,11 +189,23 @@ const EditSavingsGoal = () => {
       return;
     }
 
+    // Build the payload
     const updatedGoal = {};
     if (formData.name) updatedGoal.savingsGoalName = formData.name;
-    if (formData.targetAmount)
-      updatedGoal.targetAmount = parseFloat(formData.targetAmount);
-    if (formData.TargetDate) updatedGoal.targetDate = formData.TargetDate;
+    if (formData.description) updatedGoal.description = formData.description;
+    if (formData.emoji) updatedGoal.emoji = formData.emoji;
+
+    // Enforce null for TargetAmount/TargetDate based on LockType
+    if (goal.lockType === "timeBased") {
+      updatedGoal.targetAmount = null;
+      if (formData.TargetDate) updatedGoal.targetDate = formData.TargetDate;
+    } else {
+      updatedGoal.targetDate = null;
+      if (formData.targetAmount)
+        updatedGoal.targetAmount = parseFloat(formData.targetAmount);
+    }
+
+    // Handle deposit-related fields
     if (formData.depositFrequency !== null) {
       updatedGoal.depositFrequency =
         formData.depositFrequency === "Disabled"
@@ -189,13 +214,10 @@ const EditSavingsGoal = () => {
     }
     if (formData.depositAmount)
       updatedGoal.depositAmount = parseFloat(formData.depositAmount);
-    if (formData.customDepositIntervalDays) {
+    if (formData.customDepositIntervalDays)
       updatedGoal.customDepositIntervalDays = parseInt(
         formData.customDepositIntervalDays
       );
-    }
-    if (formData.description) updatedGoal.description = formData.description;
-    if (formData.emoji) updatedGoal.emoji = formData.emoji;
 
     if (Object.keys(updatedGoal).length === 0) {
       Alert.alert("Warning", "No changes made to the goal");
@@ -234,18 +256,11 @@ const EditSavingsGoal = () => {
     );
   }
 
-  // Determine if the Days field should be editable based on the effective frequency
- const effectiveDepositFrequencyForDays =
-   formData.depositFrequency !== null
-     ? formData.depositFrequency
-     : goal?.depositFrequency || "Disabled";
- const isDaysEditable = effectiveDepositFrequencyForDays === "Custom";
-
-  // Determine if the Deposit Amount field should be editable based on the effective frequency
-  // const isDepositAmountEditable =
-  //   formData.depositFrequency !== null
-  //     ? formData.depositFrequency !== "Disabled"
-  //     : goal?.depositFrequency && goal.depositFrequency !== "Disabled";
+  const effectiveDepositFrequencyForDays =
+    formData.depositFrequency !== null
+      ? formData.depositFrequency
+      : goal?.depositFrequency || "Disabled";
+  const isDaysEditable = effectiveDepositFrequencyForDays === "Custom";
 
   const isDepositAmountEditable =
     effectiveDepositFrequencyForDays !== "Disabled";
@@ -297,6 +312,7 @@ const EditSavingsGoal = () => {
               <Text style={styles.label}>Name</Text>
               <TextInput
                 style={styles.input}
+                value={formData.name}
                 onChangeText={(text) =>
                   setFormData({ ...formData, name: text })
                 }
@@ -315,8 +331,8 @@ const EditSavingsGoal = () => {
                     setFormData({ ...formData, targetAmount: text })
                   }
                   placeholder={
-                    goal?.targetAmount
-                      ? goal.targetAmount.toString()
+                    `KWD ${goal?.targetAmount}`
+                      ? `KWD ${goal.targetAmount.toString()}`
                       : "KWD amount"
                   }
                   keyboardType="numeric"
@@ -349,12 +365,12 @@ const EditSavingsGoal = () => {
                   initialDate={
                     formData.TargetDate
                       ? new Date(formData.TargetDate)
-                      : new Date(goal.targetDate)
+                      : goal?.targetDate
+                      ? new Date(goal.targetDate)
+                      : new Date()
                   }
                   onDateSelected={handleDateSelected}
-                  style={{
-                    zIndex: 1000,
-                  }}
+                  style={{ zIndex: 1000 }}
                 />
               </View>
             )}
@@ -409,6 +425,7 @@ const EditSavingsGoal = () => {
                     styles.input,
                     !isDaysEditable && styles.disabledInput,
                   ]}
+                  value={formData.customDepositIntervalDays}
                   onChangeText={(text) =>
                     setFormData({
                       ...formData,
@@ -442,10 +459,9 @@ const EditSavingsGoal = () => {
               <TextInput
                 style={[
                   styles.input,
-                  formData.depositFrequency === null &&
-                    !goal?.depositFrequency &&
-                    styles.disabledInput,
+                  !isDepositAmountEditable && styles.disabledInput,
                 ]}
+                value={formData.depositAmount}
                 onChangeText={(text) =>
                   setFormData({ ...formData, depositAmount: text })
                 }
@@ -473,6 +489,7 @@ const EditSavingsGoal = () => {
             <Text style={styles.label}>Description</Text>
             <TextInput
               style={styles.input2}
+              value={formData.description}
               onChangeText={(text) =>
                 setFormData({ ...formData, description: text })
               }
@@ -503,6 +520,7 @@ const EditSavingsGoal = () => {
     </SafeAreaView>
   );
 };
+export default EditSavingsGoal;
 
 const styles = StyleSheet.create({
   container: {
@@ -701,5 +719,3 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: { fontSize: 16, color: "#E80004", marginRight: 4 },
 });
-
-export default EditSavingsGoal;
