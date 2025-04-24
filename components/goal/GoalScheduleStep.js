@@ -13,17 +13,47 @@
 // const frequencies = [
 //   { id: 1, title: "Weekly", value: "Weekly" },
 //   { id: 2, title: "Monthly", value: "Monthly" },
-//   { id: 3, title: "Quarterly", value: "Quarterly" },
+//   { id: 3, title: "Custom", value: "Custom" },
 // ];
 
 // const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) => {
-//   const [selectedFrequency, setSelectedFrequency] = useState("monthly");
+//   const [selectedFrequency, setSelectedFrequency] = useState("Monthly");
 //   const [contribution, setContribution] = useState("");
 //   const [makeInitialPayment, setMakeInitialPayment] = useState(null);
 //   const [initialPayment, setInitialPayment] = useState("");
+//   const [customIntervalDays, setCustomIntervalDays] = useState("");
+//   const [error, setError] = useState("");
 //   const [isAnimating, setIsAnimating] = useState(false);
 
 //   const handleComplete = () => {
+//     // Validate contribution and frequency
+//     const contributionValue = parseFloat(contribution);
+//     if (contribution) {
+//       if (!contributionValue || contributionValue <= 0) {
+//         setError("Contribution amount must be greater than zero.");
+//         return;
+//       }
+//       if (!selectedFrequency) {
+//         setError("Please select a deposit frequency.");
+//         return;
+//       }
+//       if (selectedFrequency === "Custom") {
+//         const intervalDays = parseInt(customIntervalDays);
+//         if (!customIntervalDays || intervalDays <= 0) {
+//           setError("Custom deposit interval must be greater than zero.");
+//           return;
+//         }
+//       }
+//     }
+
+//     // Validate initial payment
+//     const initialPaymentValue = parseFloat(initialPayment);
+//     if (makeInitialPayment && (!initialPayment || initialPaymentValue <= 0)) {
+//       setError("Initial payment amount must be greater than zero.");
+//       return;
+//     }
+
+//     setError("");
 //     setIsAnimating(true);
 //     setTimeout(() => {
 //       setIsAnimating(false);
@@ -31,9 +61,10 @@
 //         goalType,
 //         amount,
 //         description,
-//         frequency: selectedFrequency,
-//         contribution,
+//         frequency: contribution ? selectedFrequency : null,
+//         contribution: contribution || "0",
 //         initialPayment: makeInitialPayment ? initialPayment : "0",
+//         customIntervalDays: selectedFrequency === "Custom" ? customIntervalDays : null,
 //       });
 //     }, 2500);
 //   };
@@ -51,7 +82,10 @@
 //                 styles.frequencyOption,
 //                 selectedFrequency === freq.value && styles.selectedFrequency,
 //               ]}
-//               onPress={() => setSelectedFrequency(freq.value)}
+//               onPress={() => {
+//                 setSelectedFrequency(freq.value);
+//                 setError("");
+//               }}
 //             >
 //               <Text
 //                 style={[
@@ -66,18 +100,38 @@
 //         </View>
 
 //         <View style={styles.inputGroup}>
-//           <Text style={styles.label}>Contribution Amount</Text>
+//           <Text style={styles.label}>Please enter your deposit amount </Text>
 //           <TextInput
 //             style={styles.input}
 //             placeholder="KWD 0.000"
 //             value={contribution}
-//             onChangeText={setContribution}
+//             onChangeText={(text) => {
+//               setContribution(text);
+//               setError("");
+//             }}
 //             keyboardType="numeric"
 //             placeholderTextColor="#1e1e1e80"
 //           />
 //         </View>
 
-//         <View style={styles.initialPaymentContainer}>
+//         {selectedFrequency === "Custom" && (
+//           <View style={styles.inputGroup}>
+//             <Text style={styles.label}>Custom Interval (Days)</Text>
+//             <TextInput
+//               style={styles.input}
+//               placeholder="Enter number of days"
+//               value={customIntervalDays}
+//               onChangeText={(text) => {
+//                 setCustomIntervalDays(text);
+//                 setError("");
+//               }}
+//               keyboardType="numeric"
+//               placeholderTextColor="#1e1e1e80"
+//             />
+//           </View>
+//         )}
+
+//         {/* <View style={styles.initialPaymentContainer}>
 //           <Text style={styles.label}>
 //             Do you want to make first payment today?
 //           </Text>
@@ -90,6 +144,7 @@
 //               onPress={() => {
 //                 setMakeInitialPayment(true);
 //                 setInitialPayment("");
+//                 setError("");
 //               }}
 //             >
 //               <Text
@@ -109,6 +164,7 @@
 //               onPress={() => {
 //                 setMakeInitialPayment(false);
 //                 setInitialPayment("0");
+//                 setError("");
 //               }}
 //             >
 //               <Text
@@ -129,13 +185,18 @@
 //                 style={styles.input}
 //                 placeholder="KWD 0.000"
 //                 value={initialPayment}
-//                 onChangeText={setInitialPayment}
+//                 onChangeText={(text) => {
+//                   setInitialPayment(text);
+//                   setError("");
+//                 }}
 //                 keyboardType="numeric"
 //                 placeholderTextColor="#1e1e1e80"
 //               />
 //             </View>
 //           )}
-//         </View>
+//         </View> */}
+
+//         {error ? <Text style={styles.error}>{error}</Text> : null}
 
 //         <View style={styles.summaryContainer}>
 //           <Text style={styles.summaryTitle}>Summary</Text>
@@ -150,7 +211,7 @@
 //           <View style={styles.summaryItem}>
 //             <Text style={styles.summaryLabel}>Frequency</Text>
 //             <Text style={styles.summaryValue}>
-//               {selectedFrequency.charAt(0).toUpperCase() + selectedFrequency.slice(1)}
+//               {contribution ? selectedFrequency : "None"}
 //             </Text>
 //           </View>
 //         </View>
@@ -174,8 +235,8 @@
 //       {isAnimating && (
 //         <View style={styles.animationContainer}>
 //           <LottieView
-//             source={require("../../assets/confetti.json")}
-//             autoPlay
+//            source={require("../../assets/confetti.json")}
+// autoPlay
 //             loop={false}
 //             style={styles.animation}
 //             speed={0.5}
@@ -272,6 +333,12 @@
 //     marginTop: 16,
 //     gap: 8,
 //   },
+//   error: {
+//     color: "red",
+//     fontSize: 14,
+//     marginBottom: 8,
+//     fontFamily: "Roboto",
+//   },
 //   summaryContainer: {
 //     backgroundColor: "rgba(255,255,255,0.5)",
 //     borderRadius: 14,
@@ -356,10 +423,11 @@ const frequencies = [
   { id: 3, title: "Custom", value: "Custom" },
 ];
 
-const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) => {
-  const [selectedFrequency, setSelectedFrequency] = useState("Monthly");
+const GoalScheduleStep = ({ onBack, goalType, amount, description, lockType, onSubmit }) => {
+  const [selectedFrequency, setSelectedFrequency] = useState(null);
   const [contribution, setContribution] = useState("");
   const [makeInitialPayment, setMakeInitialPayment] = useState(null);
+  const [initialPaymentType, setInitialPaymentType] = useState(null); // "manual" or "automatic"
   const [initialPayment, setInitialPayment] = useState("");
   const [customIntervalDays, setCustomIntervalDays] = useState("");
   const [error, setError] = useState("");
@@ -370,7 +438,7 @@ const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) =
     const contributionValue = parseFloat(contribution);
     if (contribution) {
       if (!contributionValue || contributionValue <= 0) {
-        setError("Contribution amount must be greater than zero.");
+        setError("Deposit amount must be greater than zero.");
         return;
       }
       if (!selectedFrequency) {
@@ -384,13 +452,24 @@ const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) =
           return;
         }
       }
+    } else if (selectedFrequency) {
+      setError("Deposit amount is required if a frequency is selected.");
+      return;
     }
 
     // Validate initial payment
-    const initialPaymentValue = parseFloat(initialPayment);
-    if (makeInitialPayment && (!initialPayment || initialPaymentValue <= 0)) {
-      setError("Initial payment amount must be greater than zero.");
-      return;
+    if (makeInitialPayment === true) {
+      if (!initialPaymentType) {
+        setError("Please select an initial payment type (manual or automatic).");
+        return;
+      }
+      if (initialPaymentType === "manual") {
+        const initialPaymentValue = parseFloat(initialPayment);
+        if (!initialPayment || initialPaymentValue <= 0) {
+          setError("Initial payment amount must be greater than zero.");
+          return;
+        }
+      }
     }
 
     setError("");
@@ -401,9 +480,12 @@ const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) =
         goalType,
         amount,
         description,
+        lockType,
         frequency: contribution ? selectedFrequency : null,
-        contribution: contribution || "0",
-        initialPayment: makeInitialPayment ? initialPayment : "0",
+        contribution: contribution || null,
+        initialManualPayment: makeInitialPayment === true && initialPaymentType === "manual",
+        initialAutomaticPayment: makeInitialPayment === true && initialPaymentType === "automatic",
+        initialManualPaymentAmount: makeInitialPayment === true && initialPaymentType === "manual" ? initialPayment : null,
         customIntervalDays: selectedFrequency === "Custom" ? customIntervalDays : null,
       });
     }, 2500);
@@ -440,7 +522,7 @@ const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) =
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Contribution Amount</Text>
+          <Text style={styles.label}>Please enter your deposit amount (Optional)</Text>
           <TextInput
             style={styles.input}
             placeholder="KWD 0.000"
@@ -472,9 +554,7 @@ const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) =
         )}
 
         <View style={styles.initialPaymentContainer}>
-          <Text style={styles.label}>
-            Do you want to make first payment today?
-          </Text>
+          <Text style={styles.label}>Do you want to make an initial payment today?</Text>
           <View style={styles.optionsContainer}>
             <TouchableOpacity
               style={[
@@ -483,6 +563,7 @@ const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) =
               ]}
               onPress={() => {
                 setMakeInitialPayment(true);
+                setInitialPaymentType(null);
                 setInitialPayment("");
                 setError("");
               }}
@@ -503,7 +584,8 @@ const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) =
               ]}
               onPress={() => {
                 setMakeInitialPayment(false);
-                setInitialPayment("0");
+                setInitialPaymentType(null);
+                setInitialPayment(null);
                 setError("");
               }}
             >
@@ -518,21 +600,74 @@ const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) =
             </TouchableOpacity>
           </View>
 
-          {makeInitialPayment && (
-            <View style={styles.initialPaymentInputContainer}>
-              <Text style={styles.label}>Initial Payment Amount</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="KWD 0.000"
-                value={initialPayment}
-                onChangeText={(text) => {
-                  setInitialPayment(text);
-                  setError("");
-                }}
-                keyboardType="numeric"
-                placeholderTextColor="#1e1e1e80"
-              />
-            </View>
+          {makeInitialPayment === true && (
+            <>
+              <View style={styles.initialPaymentTypeContainer}>
+                <Text style={styles.label}>Initial Payment Type</Text>
+                <View style={styles.optionsContainer}>
+                  <TouchableOpacity
+                    style={[
+                      styles.optionButton,
+                      initialPaymentType === "manual" && styles.selectedOption,
+                    ]}
+                    onPress={() => {
+                      setInitialPaymentType("manual");
+                      setError("");
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.optionText,
+                        initialPaymentType === "manual" && styles.selectedOptionText,
+                      ]}
+                    >
+                      Manual
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.optionButton,
+                      initialPaymentType === "automatic" && styles.selectedOption,
+                      !contribution && styles.disabledOption,
+                    ]}
+                    onPress={() => {
+                      if (contribution) {
+                        setInitialPaymentType("automatic");
+                        setError("");
+                      }
+                    }}
+                    disabled={!contribution}
+                  >
+                    <Text
+                      style={[
+                        styles.optionText,
+                        initialPaymentType === "automatic" && styles.selectedOptionText,
+                        !contribution && styles.disabledOptionText,
+                      ]}
+                    >
+                      Automatic
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {initialPaymentType === "manual" && (
+                <View style={styles.initialPaymentInputContainer}>
+                  <Text style={styles.label}>Initial Payment Amount</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="KWD 0.000"
+                    value={initialPayment}
+                    onChangeText={(text) => {
+                      setInitialPayment(text);
+                      setError("");
+                    }}
+                    keyboardType="numeric"
+                    placeholderTextColor="#1e1e1e80"
+                  />
+                </View>
+              )}
+            </>
           )}
         </View>
 
@@ -544,14 +679,28 @@ const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) =
             <Text style={styles.summaryLabel}>Goal Type</Text>
             <Text style={styles.summaryValue}>{goalType}</Text>
           </View>
-          <View style={styles.summaryItem}>
-            <Text style={styles.summaryLabel}>Target Amount</Text>
-            <Text style={styles.summaryValue}>KWD {amount}</Text>
-          </View>
+          {lockType === "AmountBased" && (
+            <View style={styles.summaryItem}>
+              <Text style={styles.summaryLabel}>Target Amount</Text>
+              <Text style={styles.summaryValue}>KWD {amount || "N/A"}</Text>
+            </View>
+          )}
           <View style={styles.summaryItem}>
             <Text style={styles.summaryLabel}>Frequency</Text>
             <Text style={styles.summaryValue}>
-              {contribution ? selectedFrequency : "None"}
+              {selectedFrequency || "None"}
+            </Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryLabel}>Initial Payment</Text>
+            <Text style={styles.summaryValue}>
+              {makeInitialPayment === true
+                ? initialPaymentType === "manual"
+                  ? `Manual: KWD ${initialPayment || "0"}`
+                  : initialPaymentType === "automatic"
+                  ? `Automatic: KWD ${contribution || "0"}`
+                  : "Not Selected"
+                : "None"}
             </Text>
           </View>
         </View>
@@ -575,8 +724,8 @@ const GoalScheduleStep = ({ onBack, goalType, amount, description, onSubmit }) =
       {isAnimating && (
         <View style={styles.animationContainer}>
           <LottieView
-           source={require("../../assets/confetti.json")}
-autoPlay
+            source={require("../../assets/confetti.json")}
+            autoPlay
             loop={false}
             style={styles.animation}
             speed={0.5}
@@ -590,6 +739,7 @@ autoPlay
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#FEF7FF",
   },
   content: {
     flex: 1,
@@ -647,6 +797,10 @@ const styles = StyleSheet.create({
     marginTop: 24,
     gap: 12,
   },
+  initialPaymentTypeContainer: {
+    marginTop: 16,
+    gap: 12,
+  },
   optionsContainer: {
     flexDirection: "row",
     gap: 12,
@@ -661,6 +815,9 @@ const styles = StyleSheet.create({
   selectedOption: {
     backgroundColor: "#2F3039",
   },
+  disabledOption: {
+    opacity: 0.5,
+  },
   optionText: {
     fontSize: 16,
     color: "#000",
@@ -668,6 +825,10 @@ const styles = StyleSheet.create({
   },
   selectedOptionText: {
     color: "#FFF",
+  },
+  disabledOptionText: {
+    color: "#000",
+    opacity: 0.5,
   },
   initialPaymentInputContainer: {
     marginTop: 16,

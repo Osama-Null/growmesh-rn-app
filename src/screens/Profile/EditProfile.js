@@ -8,6 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -29,17 +30,32 @@ const EditProfile = () => {
     email: initialProfile.email || "",
     profilePictureUrl: initialProfile.profilePictureUrl || null,
   });
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(
+    profile.profilePictureUrl || null,
+  );
 
   const updateProfileMutation = useMutation({
-    mutationFn: ({ userInfo, image }) => editProfile(userInfo, image),
-    onSuccess: () => {
+    mutationFn: ({ userInfo, image }) => {
+      const formattedUserInfo = {
+        email: userInfo.email,
+        firstName: userInfo.firstName,
+        lastName: userInfo.lastName,
+        dateOfBirth: userInfo.dateOfBirth,
+        password: userInfo.password || "",
+        phone: userInfo.phone || "",
+      };
+      return editProfile(formattedUserInfo, image);
+    },
+    onSuccess: (data) => {
       queryClient.invalidateQueries(["profile"]);
       Alert.alert("Success", "Profile updated successfully");
       navigation.goBack();
     },
     onError: (error) => {
-      Alert.alert("Error", error?.message || "Failed to update profile");
+      Alert.alert(
+        "Error",
+        error?.response?.data?.message || "Failed to update profile",
+      );
     },
   });
 
@@ -74,23 +90,19 @@ const EditProfile = () => {
   };
 
   const validateForm = () => {
-    if (!profile.firstName.trim()) {
-      Alert.alert("Error", "First name is required");
-      return false;
+    const requiredFields = {
+      firstName: "First name",
+      lastName: "Last name",
+      email: "Email",
+    };
+
+    for (const [field, label] of Object.entries(requiredFields)) {
+      if (!profile[field]?.trim()) {
+        Alert.alert("Error", `${label} is required`);
+        return false;
+      }
     }
-    if (!profile.lastName.trim()) {
-      Alert.alert("Error", "Last name is required");
-      return false;
-    }
-    if (!profile.email.trim()) {
-      Alert.alert("Error", "Email is required");
-      return false;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(profile.email)) {
-      Alert.alert("Error", "Please enter a valid email");
-      return false;
-    }
+
     return true;
   };
 
@@ -98,28 +110,31 @@ const EditProfile = () => {
     if (!validateForm()) return;
 
     const userInfo = {
-      firstName: profile.firstName,
-      lastName: profile.lastName,
+      email: profile.email?.toLowerCase().trim(),
+      firstName: profile.firstName?.trim(),
+      lastName: profile.lastName?.trim(),
       dateOfBirth: profile.dateOfBirth,
-      email: profile.email,
+      password: profile.password || "",
+      phone: profile.phone || "",
     };
 
-    updateProfileMutation.mutate(
-      {
-        userInfo,
-        image: selectedImage,
-      },
-      {
-        onSuccess: (data) => {
-          queryClient.setQueryData(["profile"], data);
-          Alert.alert("Success", "Profile updated successfully");
-          navigation.goBack();
-        },
-        onError: (error) => {
-          Alert.alert("Error", error?.message || "Failed to update profile");
-        },
-      },
-    );
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userInfo.email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
+    // Validate required fields
+    if (!userInfo.firstName || !userInfo.lastName || !userInfo.email) {
+      Alert.alert("Error", "Please fill in all required fields");
+      return;
+    }
+
+    updateProfileMutation.mutate({
+      userInfo,
+      image: selectedImage,
+    });
   };
 
   const FormSection = ({
@@ -170,6 +185,10 @@ const EditProfile = () => {
               <Image
                 source={{ uri: selectedImage }}
                 style={styles.profileImage}
+                onError={() => {
+                  Alert.alert("Error", "Failed to load image");
+                  setSelectedImage(null);
+                }}
               />
             ) : (
               <Svg width={40} height={40} viewBox="0 0 24 24" fill="none">
