@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthNavigation from "./src/navigations/AuthNavigation/AuthNavigation";
@@ -12,18 +12,29 @@ import Register from "./src/screens/Auth/Register";
 export default function App() {
   const queryClient = new QueryClient();
   const [isAuth, setIsAuth] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const checkToken = async () => {
-    // get the token
-    const token = await getToken();
-    if (token) {
-      // token ? setIsAuth(true) :
-      setIsAuth(true);
-    }
-  };
   useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const token = await getToken();
+        setIsAuth(!!token);
+      } catch (error) {
+        setIsAuth(false);
+      } finally {
+        setLoading(false);
+      }
+    };
     checkToken();
-  });
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Checking token...</Text>
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
@@ -45,5 +56,14 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#FEF7FF",
+  },
+  loadingContainer: {
+    flex: 1,
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loadingText: {
+    fontWeight: "bold",
   },
 });
