@@ -22,6 +22,7 @@ import Animated, {
 } from "react-native-reanimated";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getProfile } from "../../api/user";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 // Bar Chart Component
 const AnimatedBar = ({ value, label, maxValue, difference }) => {
@@ -232,10 +233,7 @@ const HomeScreen = ({ navigation }) => {
     "#rgba(117, 37, 127, 0.63)",
   ];
 
-  const BACKEND_BASE_URL = "http://192.168.2.132:5208"; 
-  const profilePictureUrl = profileData?.profilePicture
-    ? `${BACKEND_BASE_URL}${profileData.profilePicture}`
-    : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuNhTZJTtkR6b-ADMhmzPvVwaLuLdz273wvQ&s"; 
+  const notificationCount = goalsData.filter((goal) => goal.status === "markDone").length;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -246,21 +244,40 @@ const HomeScreen = ({ navigation }) => {
             onPress={() => navigation.navigate("Profile")}
           >
             <Image
-              source={{ uri: profilePictureUrl }}
+              source={{
+                uri: profileData.profilePicture,
+              }}
               style={styles.profileImage}
               resizeMode="cover"
-              onError={(e) => console.log("Profile image load error:", e.nativeEvent.error)}
-              onLoad={() => console.log("Profile image loaded successfully")}
             />
-            {profilePictureUrl === "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuNhTZJTtkR6b-ADMhmzPvVwaLuLdz273wvQ&s"}
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.image}
-            onPress={() => navigation.navigate("Notifications")}
-          >
-            <Ionicons name="notifications-outline" size={34} color="black" />
-          </TouchableOpacity>
+          <View>
+            {/* <TouchableOpacity
+              style={styles.image}
+              onPress={() => navigation.navigate("Notifications")}
+            >
+              <Ionicons name="notifications-outline" size={34} color="black" />
+            </TouchableOpacity> */}
+            <View style={styles.notificationWrapper}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Notifications")}
+              >
+                <Ionicons
+                  name="notifications-outline"
+                  size={34}
+                  color="black"
+                />
+                {notificationCount > 0 && (
+                  <View style={styles.notificationBadge}>
+                    <Text style={styles.notificationBadgeText}>
+                      {notificationCount}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
         <Text style={styles.text}>{"Total saving"}</Text>
         <Text style={styles.text2}>{`KWD ${totalSavings}`}</Text>
@@ -360,7 +377,9 @@ const HomeScreen = ({ navigation }) => {
                           <Text style={styles.text8}>
                             {`${new Date(
                               goal.targetDate
-                            ).toLocaleDateString()} | ${goal.currentAmount} KWD`}
+                            ).toLocaleDateString()} | ${
+                              goal.currentAmount
+                            } KWD`}
                           </Text>
                         )}
                       </View>
@@ -672,5 +691,25 @@ const styles = StyleSheet.create({
     width: "49%",
     backgroundColor: "rgba(30, 30, 30, 0.09)",
     height: 80,
+  },
+  notificationWrapper: {
+    position: "relative",
+  },
+  notificationBadge: {
+    position: "absolute",
+    top: 0,
+    right: -3,
+    backgroundColor: "red",
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  notificationBadgeText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
