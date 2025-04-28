@@ -14,7 +14,7 @@ import * as Progress from "react-native-progress";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-
+ 
 const AllSavingsGoals = () => {
   const navigation = useNavigation();
 
