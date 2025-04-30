@@ -1,7 +1,6 @@
 # React Native / Node stuff
 node_modules/
 *.env
-
 # Mac / Windows system files
 .DS_Store
 Thumbs.db

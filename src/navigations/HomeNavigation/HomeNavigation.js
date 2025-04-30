@@ -25,9 +25,6 @@ const HomeNavigation = () => {
       <Stack.Screen
         name="SavingsGoalDetails"
         component={SavingsGoalDetails}
-        options={{
-          tabBarStyle: { display: "none" },
-        }}
       />
       <Stack.Screen name="EditSavingsGoal" component={EditSavingsGoal} />
       <Stack.Screen name="Profile" component={Profile} />

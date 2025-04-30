@@ -6,6 +6,11 @@ import Welcome from "../../screens/Auth/Welcome";
 import Faq from "../../screens/Faq/Faq";
 import SavingsGoalDetails from "../../screens/Home/SavingsGoalDetails";
 import DatePickerScreen from "../../screens/testing/DatePickerScreen";
+import AddGoal from "../../screens/Add/AddGoal";
+import TimeBased from "../../screens/Add/TimeBased";
+import emojiss from "../../screens/testing/emojiss";
+import IntroStep from "../../../components/goal/IntroStep";
+import IntroAdd from "../../screens/Add/IntroAdd";
 
 const Stack = createNativeStackNavigator();
 
@@ -20,7 +25,8 @@ const AuthNavigator = () => {
       {/* <Stack.Screen name="DatePickerScreen" component={DatePickerScreen} /> */}
       {/* <Stack.Screen name="test" component={test} /> */}
       {/* <Stack.Screen name="EditSavingsGoal" component={EditSavingsGoal} /> */}
-      {/* <Stack.Screen name="EditSavingsGoal" component={EditSavingsGoal} /> */}
+      {/* <Stack.Screen name="Faq" component={Faq} /> */}
+      {/* <Stack.Screen name="SavingsGoalDetails" component={SavingsGoalDetails} /> */}
       <Stack.Screen name="Welcome" component={Welcome} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Register" component={Register} />

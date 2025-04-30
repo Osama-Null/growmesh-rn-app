@@ -46,4 +46,15 @@ const forgotPassword = async (passwordInfo) => {
   return response.data;
 };
 
-export { getProfile, editProfile, changePassword, forgotPassword };
+const profileAgent = async (message) => {
+  const response = await instance.post("/User/profile-agent", { message });
+  return response.data;
+};
+
+export {
+  getProfile,
+  editProfile,
+  changePassword,
+  forgotPassword,
+  profileAgent,
+};

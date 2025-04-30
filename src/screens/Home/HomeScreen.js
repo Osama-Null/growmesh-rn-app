@@ -664,20 +664,26 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import * as Progress from "react-native-progress";
 import { useQuery } from "@tanstack/react-query";
-import { getAllSavingsGoals, getSavingsTrend } from "../../api/savingsGoal";
+import {
+  getAllSavingsGoals,
+  getSavingsTrend,
+  homeAgent,
+} from "../../api/savingsGoal";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Modal from "react-native-modal";
 import { getProfile } from "../../api/user";
+import ChatScreen from "../../components/ChatScreen";
 
 // Bar Chart Component
 const AnimatedBar = ({ value, label, maxValue, difference }) => {
@@ -742,6 +748,43 @@ const BarChartComponent = ({ data }) => {
 };
 
 const HomeScreen = ({ navigation }) => {
+  // GrowMesh ============================================
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [messages, setMessages] = useState([]);
+  //==>> Llama
+  // const onSend = useCallback(async (newMessages = []) => {
+  //   setMessages((prev) => [...newMessages, ...prev]);
+  //   const userMessage = newMessages[0].text;
+
+  //   try {
+  //     const response = await homeAgent(userMessage);
+  //     const botMessage = {
+  //       _id: Math.random().toString(36).substring(7),
+  //       text: response.Response,
+  //       createdAt: new Date(),
+  //       user: { _id: 2, name: "Home Agent" },
+  //     };
+  //     setMessages((prev) => [botMessage, ...prev]);
+  //   } catch (error) {
+  //     const errorMessage = {
+  //       _id: Math.random().toString(36).substring(7),
+  //       text: "Sorry, I encountered an error. Please try again.",
+  //       createdAt: new Date(),
+  //       user: { _id: 2, name: "Home Agent" },
+  //     };
+  //     setMessages((prev) => [errorMessage, ...prev]);
+  //   }
+  // }, []);
+
+  // const handleClose = () => {
+  //   setModalVisible(false);
+  // };
+
+  //==>> Grok
+  const systemPrompt =
+    "Your name is GrowMesh. You are a financial assistant for the home screen of a savings goals app. You have access to all savings goals and savings trend data. Provide short, concise answers in a single sentence about overall savings, trends, or the first two goals. Always include the '$' symbol for monetary values and format responses like 'Your total savings across all goals are $X.' If no goals or trend data are available, respond with 'You have no savings goals yet.' Do not give lengthy answers.";
+  // ============================================ GrowMesh
+
   const [filter, setFilter] = useState("days");
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
@@ -889,10 +932,23 @@ const HomeScreen = ({ navigation }) => {
     "#4682B4",
   ];
 
-  const BACKEND_BASE_URL = "http://192.168.2.132:5208"; 
-  const profilePictureUrl = profileData?.profilePicture
-    ? `${BACKEND_BASE_URL}${profileData.profilePicture}`
-    : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuNhTZJTtkR6b-ADMhmzPvVwaLuLdz273wvQ&s"; 
+  // GrowMesh ============================================
+  const handleError = (error) => {
+    console.error("Chat error:", error.message);
+    Alert.alert(
+      "Error",
+      "Failed to get a response from the chatbot. Please try again."
+    );
+  };
+
+  const contextData = {
+    all_goals_data: goalsData || [],
+  };
+
+  const handleClose = () => {
+    setModalVisible(false);
+  };
+  // ============================================ GrowMesh
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -1072,18 +1128,42 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
 
-        <View style={styles.absoluteImage2}>
-          <TouchableOpacity>
-            <Image
-              source={{
-                uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/em1sgz79_expires_30_days.png",
-              }}
-              resizeMode={"stretch"}
-              style={styles.absoluteImage}
+      <View style={styles.absoluteImage2}>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Image
+            source={{
+              uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/em1sgz79_expires_30_days.png",
+            }}
+            resizeMode={"stretch"}
+            style={styles.absoluteImage}
+          />
+        </TouchableOpacity>
+        {/* GrowMesh ============================================ */}
+        <Modal
+          isVisible={isModalVisible}
+          onBackdropPress={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContent}>
+            {/* //==>> Llama */}
+            {/* <ChatScreen
+              messages={messages}
+              onSend={onSend}
+              onClose={handleClose}
+            /> */}
+
+            {/* //==>> Grok */}
+            <ChatScreen
+              messages={messages}
+              setMessages={setMessages}
+              onClose={handleClose}
+              systemPrompt={systemPrompt}
+              contextData={contextData}
+              onError={handleError}
             />
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+          </View>
+        </Modal>
+        {/* ============================================ GrowMesh */}
+      </View>
     </SafeAreaView>
   );
 };
@@ -1091,6 +1171,12 @@ const HomeScreen = ({ navigation }) => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
+  modalContent: {
+    padding: 10,
+    borderRadius: 10,
+    height: "80%",
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: "#FEF7FF",

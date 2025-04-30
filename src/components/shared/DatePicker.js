@@ -143,7 +143,7 @@ const DatePicker = ({ visible, onClose, initialDate, onDateSelected }) => {
                 itemStyle={styles.pickerItem}
               >
                 {availableDays.map((day) => (
-                  <Picker.Item key={day} label={day} value={day} />
+                  <Picker.Item key={day} label={day} value={day} style={styles.pickerList}/>
                 ))}
               </Picker>
             </View>
@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
     backgroundColor: "#FEF7FF",
@@ -207,13 +208,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   submitButton: {
-    backgroundColor: "#00F8BE",
+    backgroundColor: "rgb(9, 53, 101)",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
   },
   submitButtonText: {
-    color: "#000",
+    color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },

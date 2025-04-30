@@ -15,13 +15,19 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     "SavingsGoalDetails",
     "EditGoal",
     "CreateGoal",
+    "AddGoal",
     // Add more screen names here as needed
   ];
 
-  const isHiddenScreen = navigation
-    .getState()
-    ?.routes.find((route) => route.name === "HomeNav")
-    ?.state?.routes?.some((route) => hiddenScreens.includes(route.name));
+  const isHiddenScreen =
+    navigation
+      .getState()
+      ?.routes.find((route) => route.name === "HomeNav")
+      ?.state?.routes?.some((route) => hiddenScreens.includes(route.name)) ||
+    navigation
+      .getState()
+      ?.routes.find((route) => route.name === "AddNav")
+      ?.state?.routes?.some((route) => hiddenScreens.includes(route.name));
 
   // To hide from other nav but add || :
   // navigation

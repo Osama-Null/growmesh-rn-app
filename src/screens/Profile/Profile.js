@@ -147,16 +147,47 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
-import ProfileHeader from "../../../components/profile/ProfileHeader"; 
+import ProfileHeader from "../../../components/profile/ProfileHeader";
 import ProfileSection from "../../../components/profile/ProfileSection";
 import ProfileActions from "../../../components/profile/ProfileActions";
-import { getProfile } from "../../api/user";
-import Ionicons from "@expo/vector-icons/Ionicons";
-
-console.log("ProfileHeader import:", ProfileHeader);
+import { getProfile, profileAgent } from "../../api/user";
+import Modal from "react-native-modal";
+import ChatScreen from "../../components/ChatScreen";
 
 export default function Profile() {
   const navigation = useNavigation();
+  // Llama ============================================
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [messages, setMessages] = useState([]);
+
+  const onSend = useCallback(async (newMessages = []) => {
+    setMessages((prev) => [...newMessages, ...prev]);
+    const userMessage = newMessages[0].text;
+
+    try {
+      const response = await profileAgent(userMessage);
+      const botMessage = {
+        _id: Math.random().toString(36).substring(7),
+        text: response.Response,
+        createdAt: new Date(),
+        user: { _id: 2, name: "Profile Agent" },
+      };
+      setMessages((prev) => [botMessage, ...prev]);
+    } catch (error) {
+      const errorMessage = {
+        _id: Math.random().toString(36).substring(7),
+        text: "Sorry, I encountered an error. Please try again.",
+        createdAt: new Date(),
+        user: { _id: 2, name: "Profile Agent" },
+      };
+      setMessages((prev) => [errorMessage, ...prev]);
+    }
+  }, []);
+
+  const handleClose = () => {
+    setModalVisible(false);
+  };
+  // ============================================ Llama
 
   const {
     data: profile,
@@ -245,7 +276,14 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "flex-end",
+    // paddingVertical: 6,
+    // marginTop: 8,
+    //marginBottom: 9,
     marginHorizontal: 16,
+  },
+  image: {
+    width: 41,
+    height: 41,
   },
   contentContainer: {
     padding: 20,

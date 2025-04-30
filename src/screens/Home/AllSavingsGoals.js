@@ -1,19 +1,8 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getAllSavingsGoals } from "../../api/savingsGoal";
-import * as Progress from "react-native-progress";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useNavigation } from "@react-navigation/native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useState } from "react";
+// import Modal from "react-native-modal";
+// import { allGoalsAgent } from '../../api/savingsGoal';
+// import ChatScreen from '../../components/ChatScreen';
 
 const AllSavingsGoals = () => {
   const navigation = useNavigation();
@@ -61,6 +50,96 @@ const AllSavingsGoals = () => {
     "#FF6347",
     "#4682B4",
   ];
+
+  //   // GrowMesh ============================================
+  //   const [isModalVisible, setModalVisible] = useState(false);
+  //   const [messages, setMessages] = useState([]);
+
+  //   //==>> Llama
+  //   // const onSend = useCallback(async (newMessages = []) => {
+  //   //   setMessages((prev) => [...newMessages, ...prev]);
+  //   //   const userMessage = newMessages[0].text;
+
+  //   //   try {
+  //   //     const response = await allGoalsAgent(userMessage);
+  //   //     const botMessage = {
+  //   //       _id: Math.random().toString(36).substring(7),
+  //   //       text: response.Response,
+  //   //       createdAt: new Date(),
+  //   //       user: { _id: 2, name: "All Goals Agent" },
+  //   //     };
+  //   //     setMessages((prev) => [botMessage, ...prev]);
+  //   //   } catch (error) {
+  //   //     const errorMessage = {
+  //   //       _id: Math.random().toString(36).substring(7),
+  //   //       text: "Sorry, I encountered an error. Please try again.",
+  //   //       createdAt: new Date(),
+  //   //       user: { _id: 2, name: "All Goals Agent" },
+  //   //     };
+  //   //     setMessages((prev) => [errorMessage, ...prev]);
+  //   //   }
+  //   // }, []);
+
+  //   //==>> Grok
+  //   const systemPrompt =
+  //     "Your name is GrowMesh. You are a financial assistant for the 'All Savings Goals' screen of a savings goals app. You have access to all savings goals and their details. Provide short, concise answers in a single sentence about the goals, such as totals, statuses, or comparisons. Always include the '$' symbol for monetary values and format responses like 'Your total savings are $X.' If no goals are available, respond with 'You have no savings goals yet.' Do not give lengthy answers.";
+  //   // ============================================ GrowMesh
+
+  //    // GrowMesh ============================================
+  //   const handleError = (error) => {
+  //     console.error("Chat error:", error.message);
+  //     Alert.alert(
+  //       "Error",
+  //       "Failed to get a response from the chatbot. Please try again."
+  //     );
+  //   };
+
+  //   const contextData = {
+  //     all_goals_data: goalsData || [],
+  //   };
+
+  //   const handleClose = () => {
+  //     setModalVisible(false);
+  //   };
+  //   // ============================================ GrowMesh
+
+  //   return (
+  //     <View style={styles.container}>
+  //       {/* Your existing content */}
+  //       <TouchableOpacity
+  //         onPress={() => setModalVisible(true)}
+  //         style={styles.chatButton}
+  //       >
+  //         <Text style={styles.chatButtonText}>Chat with All Goals Agent</Text>
+  //       </TouchableOpacity>
+  //       {/* GrowMesh ============================================ */}
+  //       <Modal
+  //         isVisible={isModalVisible}
+  //         onBackdropPress={() => setModalVisible(false)}
+  //       >
+  //         <View style={styles.modalContent}>
+  //           {/* //==>> Llama */}
+  //           {/* <ChatScreen
+  //             messages={messages}
+  //             onSend={onSend}
+  //             onClose={handleClose}
+  //           /> */}
+
+  //           {/* //==>> Grok */}
+  //             <ChatScreen
+  //               messages={messages}
+  //               setMessages={setMessages}
+  //               onClose={handleClose}
+  //               systemPrompt={systemPrompt}
+  //               contextData={contextData}
+  //               onError={handleError}
+  //             />
+  //         </View>
+  //       </Modal>
+  //       {/* ============================================ GrowMesh */}
+  //     </View>
+  //   );
+  // }
 
   return (
     <SafeAreaView style={styles.container}>

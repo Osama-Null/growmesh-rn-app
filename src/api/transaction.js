@@ -12,4 +12,11 @@ const getTransactionsBySavingsGoal = async (savingsGoalId) => {
   return response.data;
 };
 
-export { getAllTransactions, getTransactionsBySavingsGoal };
+const transactionsAgent = async (message) => {
+  const response = await instance.post("/Transaction/transactions-agent", {
+    message,
+  });
+  return response.data;
+};
+
+export { getAllTransactions, getTransactionsBySavingsGoal, transactionsAgent };

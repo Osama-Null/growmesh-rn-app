@@ -7,9 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  Modal,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Animated, {
   useSharedValue,
@@ -20,9 +19,11 @@ import Svg, { Circle } from "react-native-svg";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import TransferModal from "../../components/SavingsGoalDetails/TransferModal";
-import { getSavingsGoal, getSavingsGoalTrend } from "../../api/savingsGoal";
+import { getSavingsGoal, getSavingsGoalTrend, goalDetailsAgent } from "../../api/savingsGoal";
 import { getTransactionsBySavingsGoal } from "../../api/transaction";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import Modal from "react-native-modal";
+import ChatScreen from "../../components/ChatScreen";
 
 // Animated Donut Component
 const AnimatedDonut = ({ progress, size, thickness, color }) => {
@@ -159,6 +160,43 @@ const TransactionList = ({ transactions }) => {
 const SavingsGoalDetails = ({ navigation, route }) => {
   const { goalId } = route.params;
 
+  // GrowMesh ============================================
+  const [isModalVisible2, setModalVisible2] = useState(false);
+  const [messages, setMessages] = useState([]);
+
+  //==>> Llama
+  // const onSend = useCallback(
+  //   async (newMessages = []) => {
+  //     setMessages((prev) => [...newMessages, ...prev]);
+  //     const userMessage = newMessages[0].text;
+
+  //     try {
+  //       const response = await goalDetailsAgent(goalId, userMessage);
+  //       const botMessage = {
+  //         _id: Math.random().toString(36).substring(7),
+  //         text: response.Response,
+  //         createdAt: new Date(),
+  //         user: { _id: 2, name: "Goal Agent" },
+  //       };
+  //       setMessages((prev) => [botMessage, ...prev]);
+  //     } catch (error) {
+  //       const errorMessage = {
+  //         _id: Math.random().toString(36).substring(7),
+  //         text: "Sorry, I encountered an error. Please try again.",
+  //         createdAt: new Date(),
+  //         user: { _id: 2, name: "Goal Agent" },
+  //       };
+  //       setMessages((prev) => [errorMessage, ...prev]);
+  //     }
+  //   },
+  //   [goalId]
+  // );
+
+  //==>> Grok
+  const systemPrompt =
+    "Your name is GrowMesh. You are a financial assistant for a specific savings goal in a savings goals app. You have access to the goal’s details, trend data, and transactions. Provide short, concise answers in a single sentence about the goal’s progress, deposits, withdrawals, or predictions. Always include the '$' symbol for monetary values and format responses like 'You have deposited $X into this goal.' If trend data or transactions are not available, respond with 'You have no transactions for this goal.' Do not give lengthy answers.";
+  // ============================================ GrowMesh
+
   const [activeTab, setActiveTab] = useState("General");
   const [modalVisible, setModalVisible] = useState(false);
   const [actionType, setActionType] = useState("deposit");
@@ -221,8 +259,9 @@ const SavingsGoalDetails = ({ navigation, route }) => {
       </SafeAreaView>
     );
   }
-{console.log("\nSingle goals: ", goalData, "\n");
-}
+  {
+    console.log("\nSingle goals: ", goalData, "\n");
+  }
   const goal = goalData || {};
   const transactions = transactionsData || [];
   const trendData = trendResponse?.trendData || [];
@@ -325,6 +364,24 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     setUnlockPopupVisible(false);
   };
 
+  // GrowMesh ============================================
+  const handleError = (error) => {
+    console.error("Chat error:", error.message);
+    Alert.alert(
+      "Error",
+      "Failed to get a response from the chatbot. Please try again."
+    );
+  };
+
+  const contextData = {
+    goalData: goalData || [],
+    transactionsData: transactionsData || [],
+  };
+
+  const handleClose = () => {
+    setModalVisible2(false);
+  };
+  // ============================================ GrowMesh
   return (
     <SafeAreaView style={styles.safeArea}>
       {modalVisible && (
@@ -437,7 +494,6 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                   color="#FF6347"
                 />
               </TouchableOpacity>
-
               <TransferModal
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
@@ -447,7 +503,6 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                   zIndex: 1000,
                 }}
               />
-
               <Modal
                 transparent={true}
                 visible={unlockPopupVisible}
@@ -475,6 +530,37 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                   </View>
                 </View>
               </Modal>
+              {/* Llama ============================================ */}
+              <TouchableOpacity
+                onPress={() => setModalVisible2(true)}
+                style={styles.chatButton}
+              >
+                <Text style={styles.chatButtonText}>Chat with Goal Agent</Text>
+              </TouchableOpacity>
+              <Modal
+                isVisible={isModalVisible2}
+                onBackdropPress={() => setModalVisible2(false)}
+              >
+                <View style={styles.modalContent}>
+                  {/* // Llama */}
+                  {/* <ChatScreen
+                    messages={messages}
+                    onSend={onSend}
+                    onClose={handleClose}
+                  /> */}
+
+                  {/* // Grok */}
+                  <ChatScreen
+                    messages={messages}
+                    setMessages={setMessages}
+                    onClose={handleClose}
+                    systemPrompt={systemPrompt}
+                    contextData={contextData}
+                    onError={handleError}
+                  />
+                </View>
+              </Modal>
+              {/* ============================================ Llama */}
             </View>
           </>
         ) : (
@@ -486,6 +572,23 @@ const SavingsGoalDetails = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
+  chatButton: {
+    backgroundColor: "#007AFF",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    margin: 16,
+  },
+  chatButtonText: {
+    color: "white",
+    fontSize: 16,
+  },
+  modalContent: {
+    padding: 10,
+    borderRadius: 10,
+    height: "80%",
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: "#FEF7FF",
