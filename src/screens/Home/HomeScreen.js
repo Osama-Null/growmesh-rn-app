@@ -952,7 +952,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.ScrollView}>
+      <View style={styles.ScrollView}>
         <View style={styles.row}>
           <TouchableOpacity
             style={styles.image}
@@ -962,11 +962,16 @@ const HomeScreen = ({ navigation }) => {
               source={{ uri: profilePictureUrl }}
               style={styles.profileImage}
               resizeMode="cover"
-              onError={(e) => console.log("Profile image load error:", e.nativeEvent.error)}
+              onError={(e) =>
+                console.log("Profile image load error:", e.nativeEvent.error)
+              }
               onLoad={() => console.log("Profile image loaded successfully")}
             />
-            {profilePictureUrl === "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuNhTZJTtkR6b-ADMhmzPvVwaLuLdz273wvQ&s" && (
-              <Text style={{ position: "absolute", color: "red", fontSize: 10 }}>
+            {profilePictureUrl ===
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuNhTZJTtkR6b-ADMhmzPvVwaLuLdz273wvQ&s" && (
+              <Text
+                style={{ position: "absolute", color: "red", fontSize: 10 }}
+              >
                 Using Fallback Image
               </Text>
             )}
@@ -1077,7 +1082,9 @@ const HomeScreen = ({ navigation }) => {
                           <Text style={styles.text8}>
                             {`${new Date(
                               goal.targetDate
-                            ).toLocaleDateString()} | ${goal.currentAmount} KWD`}
+                            ).toLocaleDateString()} | ${
+                              goal.currentAmount
+                            } KWD`}
                           </Text>
                         )}
                       </View>
@@ -1128,41 +1135,42 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
 
-      <View style={styles.absoluteImage2}>
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Image
-            source={{
-              uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/em1sgz79_expires_30_days.png",
-            }}
-            resizeMode={"stretch"}
-            style={styles.absoluteImage}
-          />
-        </TouchableOpacity>
-        {/* GrowMesh ============================================ */}
-        <Modal
-          isVisible={isModalVisible}
-          onBackdropPress={() => setModalVisible(false)}
-        >
-          <View style={styles.modalContent}>
-            {/* //==>> Llama */}
-            {/* <ChatScreen
+        <View style={styles.absoluteImage2}>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Image
+              source={{
+                uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/em1sgz79_expires_30_days.png",
+              }}
+              resizeMode={"stretch"}
+              style={styles.absoluteImage}
+            />
+          </TouchableOpacity>
+          {/* GrowMesh ============================================ */}
+          <Modal
+            isVisible={isModalVisible}
+            onBackdropPress={() => setModalVisible(false)}
+          >
+            <View style={styles.modalContent}>
+              {/* //==>> Llama */}
+              {/* <ChatScreen
               messages={messages}
               onSend={onSend}
               onClose={handleClose}
             /> */}
 
-            {/* //==>> Grok */}
-            <ChatScreen
-              messages={messages}
-              setMessages={setMessages}
-              onClose={handleClose}
-              systemPrompt={systemPrompt}
-              contextData={contextData}
-              onError={handleError}
-            />
-          </View>
-        </Modal>
-        {/* ============================================ GrowMesh */}
+              {/* //==>> Grok */}
+              <ChatScreen
+                messages={messages}
+                setMessages={setMessages}
+                onClose={handleClose}
+                systemPrompt={systemPrompt}
+                contextData={contextData}
+                onError={handleError}
+              />
+            </View>
+          </Modal>
+          {/* ============================================ GrowMesh */}
+        </View>
       </View>
     </SafeAreaView>
   );
