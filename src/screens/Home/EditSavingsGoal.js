@@ -21,8 +21,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import DatePicker from "../../components/DatePicker";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import CustomEmojiPicker from "../../components/CustomColorPicker";
-import CustomColorPicker from "../../components/CustomEmojiPicker";
+import CustomEmojiPicker from "../../components/CustomEmojiPicker";
+import CustomColorPicker from "../../components/CustomColorPicker";
 
 const EditSavingsGoal = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -322,7 +322,7 @@ const EditSavingsGoal = () => {
             >
               <Ionicons name="close" size={28} color="#000" />
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>Emoji   |   Color</Text>
+            <Text style={styles.modalTitle}>Emoji | Color</Text>
             {/* Display Current Emoji and Color */}
             <View style={styles.currentEmojiColor}>
               <View
@@ -346,24 +346,24 @@ const EditSavingsGoal = () => {
             </View>
 
             {/* Buttons to Change Emoji and Color */}
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => {
-                  setShowEmojiPicker(true);
-                  setShowColorPicker(false);
-                }}
-              >
-                <Text style={styles.modalButtonText}>Change Emoji</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => {
-                  setShowColorPicker(true);
-                  setShowEmojiPicker(false);
-                }}
-              >
-                <Text style={styles.modalButtonText}>Change Color</Text>
-              </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setShowEmojiPicker(true);
+                setShowColorPicker(false);
+              }}
+            >
+              <Text style={styles.modalButtonText}>Change Emoji</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setShowColorPicker(true);
+                setShowEmojiPicker(false);
+              }}
+            >
+              <Text style={styles.modalButtonText}>Change Color</Text>
+            </TouchableOpacity>
 
             {/* Emoji Picker */}
             {showEmojiPicker && (
