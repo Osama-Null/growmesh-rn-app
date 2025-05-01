@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+  Modal,
   SafeAreaView,
   View,
   Text,
@@ -17,11 +18,17 @@ import {
   deleteSavingsGoal,
 } from "../../api/savingsGoal";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import DatePicker from "../../components/shared/DatePicker";
+import DatePicker from "../../components/DatePicker";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import CustomEmojiPicker from "../../components/CustomEmojiPicker";
+import CustomColorPicker from "../../components/CustomColorPicker";
 
 const EditSavingsGoal = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [emojiColorModalVisible, setEmojiColorModalVisible] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
   const { goalId } = route.params;
@@ -43,6 +50,7 @@ const EditSavingsGoal = () => {
     customDepositIntervalDays: "",
     description: "",
     emoji: "",
+    color: "#093565",
     TargetDate: null,
   });
 
@@ -73,6 +81,7 @@ const EditSavingsGoal = () => {
           : "",
         description: goal.description || "",
         emoji: goal.emoji || "",
+        color: goal.color || "#093565",
         TargetDate: goal.targetDate || null,
       });
     }
@@ -116,6 +125,16 @@ const EditSavingsGoal = () => {
   // Handle date selection from DatePicker
   const handleDateSelected = (formattedDate) => {
     setFormData({ ...formData, TargetDate: formattedDate });
+  };
+
+  // Handle emoji selection
+  const handleEmojiSelected = (emoji) => {
+    setFormData({ ...formData, emoji });
+  };
+
+  // Handle color selection
+  const handleColorSelected = (color) => {
+    setFormData({ ...formData, color });
   };
 
   // Handle form submission
@@ -189,13 +208,14 @@ const EditSavingsGoal = () => {
       return;
     }
 
-    // Build the payload
+    // Payload
     const updatedGoal = {};
     if (formData.name) updatedGoal.savingsGoalName = formData.name;
     if (formData.description) updatedGoal.description = formData.description;
     if (formData.emoji) updatedGoal.emoji = formData.emoji;
+    if (formData.color) updatedGoal.color = formData.color;
 
-    // Enforce null for TargetAmount/TargetDate based on LockType
+    // TargetAmount/TargetDate based on LockType
     if (goal.lockType === "timeBased") {
       updatedGoal.targetAmount = null;
       if (formData.TargetDate) updatedGoal.targetDate = formData.TargetDate;
@@ -282,6 +302,91 @@ const EditSavingsGoal = () => {
           <Text style={{ opacity: 0, fontSize: 1 }}>.</Text>
         </View>
       )}
+
+      {/* Emoji & Color Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={emojiColorModalVisible}
+        onRequestClose={() => setEmojiColorModalVisible(false)}
+      >
+        <View style={styles.emojiColorModalContainer}>
+          <View style={styles.emojiColorModalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => {
+                setEmojiColorModalVisible(false);
+                setShowEmojiPicker(false);
+                setShowColorPicker(false);
+              }}
+            >
+              <Ionicons name="close" size={28} color="#000" />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Emoji | Color</Text>
+            {/* Display Current Emoji and Color */}
+            <View style={styles.currentEmojiColor}>
+              <View
+                style={[
+                  styles.emojiCircle,
+                  {
+                    backgroundColor: formData.color || goal?.color || "#00F8BE",
+                  },
+                ]}
+              >
+                <Text style={styles.emoji}>
+                  {formData.emoji || goal?.emoji || (
+                    <MaterialCommunityIcons
+                      name="bullseye-arrow"
+                      size={100}
+                      color="#093565"
+                    />
+                  )}
+                </Text>
+              </View>
+            </View>
+
+            {/* Buttons to Change Emoji and Color */}
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setShowEmojiPicker(true);
+                setShowColorPicker(false);
+              }}
+            >
+              <Text style={styles.modalButtonText}>Change Emoji</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setShowColorPicker(true);
+                setShowEmojiPicker(false);
+              }}
+            >
+              <Text style={styles.modalButtonText}>Change Color</Text>
+            </TouchableOpacity>
+
+            {/* Emoji Picker */}
+            {showEmojiPicker && (
+              <CustomEmojiPicker
+                visible={showEmojiPicker}
+                onClose={() => setShowEmojiPicker(false)}
+                onSelectEmoji={handleEmojiSelected}
+              />
+            )}
+
+            {/* Color Picker */}
+            {showColorPicker && (
+              <CustomColorPicker
+                visible={showColorPicker}
+                onClose={() => setShowColorPicker(false)}
+                initialColor={formData.color || goal?.color || "#00F8BE"}
+                onColorSelected={handleColorSelected}
+              />
+            )}
+          </View>
+        </View>
+      </Modal>
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#1D1B20" />
@@ -294,12 +399,26 @@ const EditSavingsGoal = () => {
 
       <View style={styles.content}>
         <View style={styles.emojiContainer}>
-          <View style={styles.emojiCircle}>
+          <View
+            style={[
+              styles.emojiCircle,
+              { backgroundColor: formData.color || goal?.color || "#00F8BE" },
+            ]}
+          >
             <Text style={styles.emoji}>
-              {formData.emoji || goal?.emoji || "Add"}
+              {formData.emoji || goal?.emoji || (
+                <MaterialCommunityIcons
+                  name="bullseye-arrow"
+                  size={100}
+                  color="#093565"
+                />
+              )}
             </Text>
           </View>
-          <TouchableOpacity style={styles.editEmojiButton}>
+          <TouchableOpacity
+            style={styles.editEmojiButton}
+            onPress={() => setEmojiColorModalVisible(true)}
+          >
             <View style={styles.editEmojiCircle}>
               <Ionicons name="create" size={16} color="#FFF" />
             </View>
@@ -523,6 +642,57 @@ const EditSavingsGoal = () => {
 export default EditSavingsGoal;
 
 const styles = StyleSheet.create({
+  emojiColorModalContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Overlay for modal
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emojiColorModalContent: {
+    backgroundColor: "#FEF7FF",
+    padding: 20,
+    borderRadius: 20,
+    height: 550,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 30,
+    width: "100%",
+    gap: 30,
+  },
+  closeButton: {
+    fontSize: 64,
+    fontWeight: "bold",
+    color: "#000",
+    textAlign: "center",
+    position: "absolute",
+    top: 20,
+    right: 20,
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
+  modalTitle: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#000",
+    position: "absolute",
+    top: 20,
+  },
+  modalButton: {
+    backgroundColor: "rgba(30, 30, 30, 0.51)",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    width: "50%",
+    alignItems: "center",
+  },
+  modalButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   container: {
     flex: 1,
     backgroundColor: "#FEF7FF",

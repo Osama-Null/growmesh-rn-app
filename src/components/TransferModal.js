@@ -16,7 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   depositToSavingsGoal,
   withdrawFromSavingsGoal,
-} from "../../api/savingsGoal";
+} from "../api/savingsGoal";
 
 const TransferModal = ({ visible, onClose, goalId, actionType }) => {
   const [amount, setAmount] = useState("");

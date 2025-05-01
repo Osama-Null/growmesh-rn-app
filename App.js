@@ -7,7 +7,10 @@ import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import UserContext from "./src/context/UserContext";
 import MainNavigation from "./src/navigations/MainNavigation/MainNavigation";
-import Register from "./src/screens/Auth/Register";
+import Constants from "expo-constants";
+import { saveApiKey } from "./src/utils/secureStorage";
+import { getToken } from "./src/api/storage";
+import * as SecureStore from "expo-secure-store";
 
 export default function App() {
   const queryClient = new QueryClient();
@@ -15,17 +18,28 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkToken = async () => {
+    const checkTokenAndSetApiKey = async () => {
       try {
+        await SecureStore.deleteItemAsync("authToken");
         const token = await getToken();
+        console.log("Token retrieved:", token); // Debug: Log the token
+        console.log("Token type:", typeof token); // Debug: Log the type of token
+        console.log("isAuth will be set to:", !!token); // Debug: Log the boolean value
         setIsAuth(!!token);
+        const apiKey = Constants.expoConfig.extra.grokApiKey;
+        if (!apiKey) {
+          throw new Error("Grok API key not found in environment variables");
+        }
+        await saveApiKey(apiKey);
       } catch (error) {
+        console.error("Error setting up API key:", error.message);
         setIsAuth(false);
       } finally {
         setLoading(false);
       }
     };
-    checkToken();
+    
+    checkTokenAndSetApiKey();
   }, []);
 
   if (loading) {
@@ -35,6 +49,8 @@ export default function App() {
       </View>
     );
   }
+
+  console.log("Rendering navigation, isAuth:", isAuth); // Debug: Log the final isAuth value
 
   return (
     <NavigationContainer>

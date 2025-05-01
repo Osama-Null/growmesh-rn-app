@@ -6,6 +6,24 @@ const createSavingsGoal = async (savingsGoalInfo) => {
   return response.data;
 };
 
+// Create an amount-based savings goal
+const createAmountBasedSavingsGoal = async (savingsGoalInfo) => {
+  const response = await instance.post(
+    "/SavingsGoal/create-amount-based",
+    savingsGoalInfo
+  );
+  return response.data;
+};
+
+// Create a time-based savings goal
+const createTimeBasedSavingsGoal = async (savingsGoalInfo) => {
+  const response = await instance.post(
+    "/SavingsGoal/create-time-based",
+    savingsGoalInfo
+  );
+  return response.data;
+};
+
 // Get all savings goals details
 const getAllSavingsGoals = async () => {
   const response = await instance.get("/SavingsGoal/get-all");
@@ -79,7 +97,29 @@ const getSavingsGoalTrend = async (id, periods = 7) => {
   return response.data;
 };
 
+const homeAgent = async (message) => {
+  const response = await instance.post("/SavingsGoal/home-agent", { message });
+  return response.data;
+};
+
+const allGoalsAgent = async (message) => {
+  const response = await instance.post("/SavingsGoal/all-goals-agent", {
+    message,
+  });
+  return response.data;
+};
+
+const goalDetailsAgent = async (id, message) => {
+  const response = await instance.post(
+    `/SavingsGoal/goal-details-agent/${id}`,
+    { message }
+  );
+  return response.data;
+};
+
 export {
+  createAmountBasedSavingsGoal,
+  createTimeBasedSavingsGoal,
   createSavingsGoal,
   getAllSavingsGoals,
   getSavingsGoal,
@@ -91,4 +131,7 @@ export {
   getSavingsTrend,
   markSavingsGoalAsDone,
   getSavingsGoalTrend,
+  homeAgent,
+  allGoalsAgent,
+  goalDetailsAgent,
 };
