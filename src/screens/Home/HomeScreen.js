@@ -959,7 +959,9 @@ const HomeScreen = ({ navigation }) => {
             onPress={() => navigation.navigate("Profile")}
           >
             <Image
-              source={{ uri: profilePictureUrl }}
+              source={{
+                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuNhTZJTtkR6b-ADMhmzPvVwaLuLdz273wvQ&s",
+              }}
               style={styles.profileImage}
               resizeMode="cover"
               onError={(e) =>
@@ -967,14 +969,6 @@ const HomeScreen = ({ navigation }) => {
               }
               onLoad={() => console.log("Profile image loaded successfully")}
             />
-            {profilePictureUrl ===
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuNhTZJTtkR6b-ADMhmzPvVwaLuLdz273wvQ&s" && (
-              <Text
-                style={{ position: "absolute", color: "red", fontSize: 10 }}
-              >
-                Using Fallback Image
-              </Text>
-            )}
           </TouchableOpacity>
 
           <TouchableOpacity

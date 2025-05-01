@@ -15,7 +15,7 @@
 // import ProfileSection from "../../../components/profile/ProfileSection";
 // import ProfileActions from "../../../components/profile/ProfileActions";
 // import { getProfile } from "../../api/user";
-// import Ionicons from "@expo/vector-icons/Ionicons";
+// 
 
 // export default function Profile() {
 //   const navigation = useNavigation();
@@ -134,7 +134,7 @@
 //   },
 // });
 
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -153,6 +153,7 @@ import ProfileActions from "../../../components/profile/ProfileActions";
 import { getProfile, profileAgent } from "../../api/user";
 import Modal from "react-native-modal";
 import ChatScreen from "../../components/ChatScreen";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function Profile() {
   const navigation = useNavigation();
