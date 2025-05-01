@@ -96,8 +96,11 @@ const AllSavingsGoals = () => {
                 ) : (
                   <MaterialCommunityIcons
                     name="bullseye-arrow"
-                    size={40}
-                    color="rgba(21, 254, 211, 1)"
+                    size={30}
+                      color="rgba(9, 53, 101, 1)"
+                      style={{
+                        right: 10
+                      }}
                   />
                 )}
                 <View style={styles.goalDetails}>
@@ -173,10 +176,13 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
     marginBottom: 16,
+    paddingLeft: 23
   },
   emoji: {
-    fontSize: 24,
-    marginRight: 16,
+    fontSize: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    right: 10
   },
   goalDetails: {
     flex: 1,

@@ -1,6 +1,7 @@
 # React Native / Node stuff
 node_modules/
 *.env
+.env
 
 # Mac / Windows system files
 .DS_Store

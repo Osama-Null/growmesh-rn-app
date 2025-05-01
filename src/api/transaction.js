@@ -8,8 +8,17 @@ const getAllTransactions = async () => {
 
 // Get transactions by savings goal ID
 const getTransactionsBySavingsGoal = async (savingsGoalId) => {
-  const response = await instance.get(`/Transaction/get-by-savings-goal/${savingsGoalId}`);
+  const response = await instance.get(
+    `/Transaction/get-by-savings-goal/${savingsGoalId}`
+  );
   return response.data;
 };
 
-export { getAllTransactions, getTransactionsBySavingsGoal };
+const transactionsAgent = async (message) => {
+  const response = await instance.post("/Transaction/transactions-agent", {
+    message,
+  });
+  return response.data;
+};
+
+export { getAllTransactions, getTransactionsBySavingsGoal, transactionsAgent };

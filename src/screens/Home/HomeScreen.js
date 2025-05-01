@@ -23,6 +23,9 @@ import Animated, {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getProfile } from "../../api/user";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Modal from "react-native-modal";
+import GrowMesh from "../../components/GrowMesh";
+import LottieView from "lottie-react-native";
 
 // Bar Chart Component
 const AnimatedBar = ({ value, label, maxValue, difference }) => {
@@ -87,6 +90,14 @@ const BarChartComponent = ({ data }) => {
 };
 
 const HomeScreen = ({ navigation }) => {
+  // GrowMesh ============================================
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [messages, setMessages] = useState([]);
+
+  const systemPrompt =
+    "Your name is GrowMesh. You are a financial assistant for the home screen of a savings goals app. You have access to all savings goals and savings trend data. Provide short, concise answers in a single sentence about overall savings, trends, or the first two goals. Always include the '$' symbol for monetary values and format responses like 'Your total savings across all goals are $X.' If no goals or trend data are available, respond with 'You have no savings goals yet.' Do not give lengthy answers.";
+  // ============================================ GrowMesh
+
   const [filter, setFilter] = useState("days");
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
@@ -233,11 +244,31 @@ const HomeScreen = ({ navigation }) => {
     "#rgba(117, 37, 127, 0.63)",
   ];
 
-  const notificationCount = goalsData.filter((goal) => goal.status === "markDone").length;
+  const notificationCount = goalsData.filter(
+    (goal) => goal.status === "markDone"
+  ).length;
+
+  // GrowMesh ============================================
+  const handleError = (error) => {
+    console.error("Chat error:", error.message);
+    Alert.alert(
+      "Error",
+      "Failed to get a response from the chatbot. Please try again."
+    );
+  };
+
+  const contextData = {
+    all_goals_data: goalsData || [],
+  };
+
+  const handleClose = () => {
+    setModalVisible(false);
+  };
+  // ============================================ GrowMesh
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.ScrollView}>
+      <View style={styles.ScrollView}>
         <View style={styles.row}>
           <TouchableOpacity
             style={styles.image}
@@ -253,12 +284,6 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
 
           <View>
-            {/* <TouchableOpacity
-              style={styles.image}
-              onPress={() => navigation.navigate("Notifications")}
-            >
-              <Ionicons name="notifications-outline" size={34} color="black" />
-            </TouchableOpacity> */}
             <View style={styles.notificationWrapper}>
               <TouchableOpacity
                 onPress={() => navigation.navigate("Notifications")}
@@ -270,6 +295,16 @@ const HomeScreen = ({ navigation }) => {
                 />
                 {notificationCount > 0 && (
                   <View style={styles.notificationBadge}>
+                    <LottieView
+                      source={require("../../../assets/app/red.json")}
+                      autoPlay
+                      loop
+                      width={50}
+                      height={50}
+                      style={{
+                        position: "absolute",
+                      }}
+                    />
                     <Text style={styles.notificationBadgeText}>
                       {notificationCount}
                     </Text>
@@ -328,7 +363,7 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.text6}>{"Savings Goals"}</Text>
         <View style={styles.column2}>
           <View style={styles.column3}>
-            {Goals.slice(0, 9).map((goal, index) => {
+            {Goals.slice(0, 2).map((goal, index) => {
               let progress = 0;
               if (goal.lockType === "amountBased") {
                 progress =
@@ -346,7 +381,7 @@ const HomeScreen = ({ navigation }) => {
                   totalDuration > 0 ? elapsedDuration / totalDuration : 0;
                 progress = Math.min(Math.max(progress, 0), 1); // Clamp between 0 and 1
               }
-              const color = progressColors[index % progressColors.length];
+              const progressColor = goal.color || "#093565";
               return (
                 <React.Fragment key={goal.savingsGoalId}>
                   <TouchableOpacity
@@ -363,7 +398,10 @@ const HomeScreen = ({ navigation }) => {
                       <MaterialCommunityIcons
                         name="bullseye-arrow"
                         size={40}
-                        color="rgba(21, 254, 211, 1)"
+                          color="rgba(9, 53, 101, 1)"
+                          style={{
+                            right: 10
+                          }}
                       />
                     )}
                     <View style={styles.column4}>
@@ -387,10 +425,11 @@ const HomeScreen = ({ navigation }) => {
                         progress={progress}
                         width={null}
                         height={10}
-                        color={color}
+                        color={progressColor}
                         unfilledColor="#F0F0F0"
                         borderWidth={2}
                         borderRadius={8}
+                        borderColor={progressColor}
                       />
                     </View>
                   </TouchableOpacity>
@@ -429,19 +468,33 @@ const HomeScreen = ({ navigation }) => {
             </View>
           </View>
         </View>
-
-        <View style={styles.absoluteImage2}>
-          <TouchableOpacity>
-            <Image
-              source={{
-                uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/em1sgz79_expires_30_days.png",
-              }}
-              resizeMode={"stretch"}
-              style={styles.absoluteImage}
+      </View>
+      {/* GrowMesh ============================================ */}
+      <View style={styles.absoluteImage2}>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Image
+            source={require("../../../assets/app/growmesh.png")}
+            resizeMode={"stretch"}
+            style={styles.absoluteImage}
+          />
+        </TouchableOpacity>
+        <Modal
+          isVisible={isModalVisible}
+          onBackdropPress={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContent}>
+            <GrowMesh
+              messages={messages}
+              setMessages={setMessages}
+              onClose={handleClose}
+              systemPrompt={systemPrompt}
+              contextData={contextData}
+              onError={handleError}
             />
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+          </View>
+        </Modal>
+      </View>
+      {/* ============================================ GrowMesh */}
     </SafeAreaView>
   );
 };
@@ -449,6 +502,12 @@ const HomeScreen = ({ navigation }) => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
+  modalContent: {
+    padding: 10,
+    borderRadius: 10,
+    height: "80%",
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: "#FEF7FF",
@@ -459,10 +518,14 @@ const styles = StyleSheet.create({
   },
   absoluteImage2: {
     position: "absolute",
-    bottom: 120,
+    bottom: 70,
     right: 0,
-    width: "100%",
     alignItems: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 70,
+    padding: 5,
   },
   box2: {
     width: 287,
@@ -659,8 +722,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   emoji: {
-    fontSize: 24,
-    marginRight: 8,
+    fontSize: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    right: 10
   },
   view: {
     alignItems: "center",

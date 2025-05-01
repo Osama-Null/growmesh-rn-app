@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  Modal,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -19,10 +18,12 @@ import Animated, {
 import Svg, { Circle } from "react-native-svg";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import TransferModal from "../../components/SavingsGoalDetails/TransferModal";
+import TransferModal from "../../components/TransferModal";
 import { getSavingsGoal, getSavingsGoalTrend } from "../../api/savingsGoal";
 import { getTransactionsBySavingsGoal } from "../../api/transaction";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import GrowMesh from "../../components/GrowMesh";
+import Modal from "react-native-modal";
 
 // Animated Donut Component
 const AnimatedDonut = ({ progress, size, thickness, color }) => {
@@ -159,6 +160,14 @@ const TransactionList = ({ transactions }) => {
 const SavingsGoalDetails = ({ navigation, route }) => {
   const { goalId } = route.params;
 
+  // GrowMesh ============================================
+  const [isModalVisible2, setModalVisible2] = useState(false);
+  const [messages, setMessages] = useState([]);
+
+  const systemPrompt =
+    "Your name is GrowMesh. You are a financial assistant for a specific savings goal in a savings goals app. You have access to the goal’s details, trend data, and transactions. Provide short, concise answers in a single sentence about the goal’s progress, deposits, withdrawals, or predictions. Always include the '$' symbol for monetary values and format responses like 'You have deposited $X into this goal.' If trend data or transactions are not available, respond with 'You have no transactions for this goal.' Do not give lengthy answers.";
+  // ============================================ GrowMesh
+
   const [activeTab, setActiveTab] = useState("General");
   const [modalVisible, setModalVisible] = useState(false);
   const [actionType, setActionType] = useState("deposit");
@@ -221,8 +230,9 @@ const SavingsGoalDetails = ({ navigation, route }) => {
       </SafeAreaView>
     );
   }
-{console.log("\nSingle goals: ", goalData, "\n");
-}
+  {
+    console.log("\nSingle goals: ", goalData, "\n");
+  }
   const goal = goalData || {};
   const transactions = transactionsData || [];
   const trendData = trendResponse?.trendData || [];
@@ -325,6 +335,25 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     setUnlockPopupVisible(false);
   };
 
+  // GrowMesh ============================================
+  const handleError = (error) => {
+    console.error("Chat error:", error.message);
+    Alert.alert(
+      "Error",
+      "Failed to get a response from the chatbot. Please try again."
+    );
+  };
+
+  const contextData = {
+    goalData: goalData || [],
+    transactionsData: transactionsData || [],
+  };
+
+  const handleClose = () => {
+    setModalVisible2(false);
+  };
+  // ============================================ GrowMesh
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {modalVisible && (
@@ -419,6 +448,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 </Text>
               )}
             </View>
+            
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.icon} onPress={handleDeposit}>
                 <MaterialCommunityIcons
@@ -481,11 +511,58 @@ const SavingsGoalDetails = ({ navigation, route }) => {
           <TransactionList transactions={transactions} />
         )}
       </View>
+
+      {/* GrowMesh ============================================ */}
+      <View style={styles.absoluteImage2}>
+        <TouchableOpacity onPress={() => setModalVisible2(true)}>
+          <Image
+            source={{
+              uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/em1sgz79_expires_30_days.png",
+            }}
+            resizeMode={"stretch"}
+            style={styles.absoluteImage}
+          />
+        </TouchableOpacity>
+        <Modal
+          isVisible={isModalVisible2}
+          onBackdropPress={() => setModalVisible2(false)}
+        >
+          <View style={styles.modalContent}>
+            <GrowMesh
+              messages={messages}
+              setMessages={setMessages}
+              onClose={handleClose}
+              systemPrompt={systemPrompt}
+              contextData={contextData}
+              onError={handleError}
+            />
+          </View>
+        </Modal>
+      </View>
+      {/* ============================================ GrowMesh */}
+      
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  modalContent: {
+    padding: 10,
+    borderRadius: 10,
+    height: "80%",
+    flex: 1,
+  },
+  absoluteImage: {
+    width: 70,
+    height: 70,
+  },
+  absoluteImage2: {
+    position: "absolute",
+    bottom: 120,
+    right: 0,
+    width: "100%",
+    alignItems: "flex-end",
+  },
   safeArea: {
     flex: 1,
     backgroundColor: "#FEF7FF",
@@ -655,8 +732,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 100,
-    borderWidth: 3,
-    borderColor: "rgba(30, 30, 30, 0.1)",
     backgroundColor: "rgba(30, 30, 30, 0.09)",
     alignItems: "center",
     justifyContent: "center",

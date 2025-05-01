@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, ScrollView, TouchableOpacity,} from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  ActivityIndicator,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllTransactions } from "../../api/transaction";
@@ -44,19 +52,22 @@ const TransactionHistory = () => {
   const filteredTransactions = transactions?.filter((transaction) => {
     console.log("Transaction Type:", transaction.transactionType);
     const transactionTypeMap = {
-      "0": "deposit",
-      "1": "withdrawal",
-      "2": "transfertogoal",
-      "3": "transferfromgoal",
+      0: "deposit",
+      1: "withdrawal",
+      2: "transfertogoal",
+      3: "transferfromgoal",
     };
-    const transactionType = transactionTypeMap[transaction.transactionType?.toString()] || transaction.transactionType?.toString().toLowerCase();
+    const transactionType =
+      transactionTypeMap[transaction.transactionType?.toString()] ||
+      transaction.transactionType?.toString().toLowerCase();
     if (activeTab === "All") return true;
-    if (activeTab === "Deposits")
-      return transactionType === "deposit";
-    if (activeTab === "Withdrawals")
-      return transactionType === "withdrawal";
+    if (activeTab === "Deposits") return transactionType === "deposit";
+    if (activeTab === "Withdrawals") return transactionType === "withdrawal";
     if (activeTab === "Transfers")
-      return transactionType === "transfertogoal" || transactionType === "transferfromgoal";
+      return (
+        transactionType === "transfertogoal" ||
+        transactionType === "transferfromgoal"
+      );
     return true;
   });
 
@@ -71,12 +82,14 @@ const TransactionHistory = () => {
 
   const renderTransaction = (transaction) => {
     const transactionTypeMap = {
-      "0": "deposit",
-      "1": "withdrawal",
-      "2": "transfertogoal",
-      "3": "transferfromgoal",
+      0: "deposit",
+      1: "withdrawal",
+      2: "transfertogoal",
+      3: "transferfromgoal",
     };
-    const transactionType = transactionTypeMap[transaction.transactionType?.toString()] || transaction.transactionType?.toString().toLowerCase();
+    const transactionType =
+      transactionTypeMap[transaction.transactionType?.toString()] ||
+      transaction.transactionType?.toString().toLowerCase();
 
     let icon, backgroundColor, color, label, amountPrefix;
 
@@ -118,12 +131,17 @@ const TransactionHistory = () => {
         amountPrefix = "";
     }
 
-    console.log("Rendering icon:", icon, "with color:", color); 
+    console.log("Rendering icon:", icon, "with color:", color);
 
     return (
       <View key={transaction.transactionId} style={styles.transactionItem}>
         <View style={styles.transactionIcon}>
-          <Ionicons name={icon} size={24} color={color} style={{ marginRight: 8 }} />          
+          <Ionicons
+            name={icon}
+            size={24}
+            color={color}
+            style={{ marginRight: 8 }}
+          />
         </View>
         <View style={styles.transactionDetails}>
           <View style={styles.transactionHeader}>
@@ -148,11 +166,12 @@ const TransactionHistory = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-=        <Text style={styles.headerTitle}>Transaction History</Text>
+        <Text style={styles.headerTitle}>Transaction History</Text>
       </View>
 
       <View style={styles.tabs}>
-        {["All", "Transfers", "Deposits", "Withdrawals",].map((tab) => (
+        {["All", "Transfers", "Deposits", "Withdrawals"].map((tab) => (
+          
           <TouchableOpacity
             key={tab}
             style={[styles.tab, activeTab === tab && styles.activeTab]}
@@ -252,7 +271,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   transactionIcon: {
-    flexDirection: "row", 
+    flexDirection: "row",
     marginRight: 16,
   },
   iconCircle: {

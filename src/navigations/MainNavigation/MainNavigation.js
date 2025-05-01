@@ -15,13 +15,25 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     "SavingsGoalDetails",
     "EditGoal",
     "CreateGoal",
+    "AddGoal",
+    // Add more screen names here as needed
   ];
 
-  const isHiddenScreen = navigation
-    .getState()
-    ?.routes.find((route) => route.name === "HomeNav")
-    ?.state?.routes?.some((route) => hiddenScreens.includes(route.name));
+  const isHiddenScreen =
+    navigation
+      .getState()
+      ?.routes.find((route) => route.name === "HomeNav")
+      ?.state?.routes?.some((route) => hiddenScreens.includes(route.name)) ||
+    navigation
+      .getState()
+      ?.routes.find((route) => route.name === "AddNav")
+      ?.state?.routes?.some((route) => hiddenScreens.includes(route.name));
 
+  // To hide from other nav but add || :
+  // navigation
+  // .getState()
+  // ?.routes.find((route) => route.name === "AddNav")
+  // ?.state?.routes?.some((route) => hiddenScreens.includes(route.name)) ||
 
   if (isHiddenScreen) {
     return null;
@@ -59,7 +71,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             ]}
           >
             {options.tabBarIcon({
-              color: isFocused ? "#00F8BE" : "#2F3039",
+              color: isFocused ? "white" : "#2F3039",
               size: 24,
             })}
           </TouchableOpacity>
@@ -134,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bubbleFocused: {
-    backgroundColor: "rgba(120, 120, 128, 0.12)",
+    backgroundColor: "rgba(9, 53, 101, 1)",
     transform: [{ scale: 1.1 }],
   },
   bubbleInactive: {

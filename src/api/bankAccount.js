@@ -8,7 +8,9 @@ const getBankAccountInfo = async () => {
 
 // Deposit to bank account
 const depositToBankAccount = async (depositInfo) => {
-  const response = await instance.post("/BankAccount/deposit", { ...depositInfo });
+  const response = await instance.post("/BankAccount/deposit", {
+    ...depositInfo,
+  });
   return response.data;
 };
 
