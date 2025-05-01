@@ -19,6 +19,7 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  runOnJS,
 } from "react-native-reanimated";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getProfile } from "../../api/user";
@@ -93,6 +94,7 @@ const HomeScreen = ({ navigation }) => {
   // GrowMesh ============================================
   const [isModalVisible, setModalVisible] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [isBubbleVisible, setIsBubbleVisible] = useState(true);
 
   const systemPrompt =
     "Your name is GrowMesh. You are a financial assistant for the home screen of a savings goals app. You have access to all savings goals and savings trend data. Provide short, concise answers in a single sentence about overall savings, trends, or the first two goals. Always include the '$' symbol for monetary values and format responses like 'Your total savings across all goals are $X.' If no goals or trend data are available, respond with 'You have no savings goals yet.' Do not give lengthy answers.";
@@ -100,6 +102,29 @@ const HomeScreen = ({ navigation }) => {
 
   const [filter, setFilter] = useState("days");
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
+  const bubbleOpacity = useSharedValue(0);
+
+  const bubbleAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: bubbleOpacity.value,
+    };
+  });
+
+  useEffect(() => {
+    // Pop in immediately
+    bubbleOpacity.value = withTiming(1, { duration: 500 });
+
+    // Fade out after 5 seconds
+    const timeout = setTimeout(() => {
+      bubbleOpacity.value = withTiming(0, { duration: 500 }, () => {
+        // Use runOnJS to execute setIsBubbleVisible on the JS thread
+        runOnJS(setIsBubbleVisible)(false);
+      });
+    }, 5000); // 5 seconds
+
+    return () => clearTimeout(timeout); // Cleanup on unmount
+  }, []);
 
   const filterOptions = ["days", "months", "years"];
   const displayedFilter = filter.charAt(0).toUpperCase() + filter.slice(1);
@@ -122,7 +147,7 @@ const HomeScreen = ({ navigation }) => {
     months: "month",
     years: "year",
   };
-  const periodType = periodTypeMap[filter] || "day"; // Default to "day" if filter is invalid
+  const periodType = periodTypeMap[filter] || "day";
 
   // Fetch savings trend
   const {
@@ -233,16 +258,6 @@ const HomeScreen = ({ navigation }) => {
   const allZeros =
     chartData.length === 0 || chartData.every((item) => item.value === 0);
   console.log("\nallZeros:\n", allZeros); // Debug log
-
-  // Define colors for progress bars
-  const progressColors = [
-    "#rgba(70, 131, 180, 0.85)",
-    "#rgba(54, 195, 198, 0.49)",
-    "#rgba(242, 208, 14, 0.6)",
-    "#rgba(219, 130, 131, 0.82)",
-    "#rgba(217, 44, 13, 0.8)",
-    "#rgba(117, 37, 127, 0.63)",
-  ];
 
   const notificationCount = goalsData.filter(
     (goal) => goal.status === "markDone"
@@ -398,10 +413,11 @@ const HomeScreen = ({ navigation }) => {
                       <MaterialCommunityIcons
                         name="bullseye-arrow"
                         size={40}
-                          color="rgba(9, 53, 101, 1)"
-                          style={{
-                            right: 10
-                          }}
+                        color="rgba(9, 53, 101, 1)"
+                        style={{
+                          right: 10,
+                          top: 5,
+                        }}
                       />
                     )}
                     <View style={styles.column4}>
@@ -473,11 +489,18 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.absoluteImage2}>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Image
-            source={require("../../../assets/app/growmesh.png")}
+            source={require("../../../assets/app/growmesh-light.png")}
             resizeMode={"stretch"}
             style={styles.absoluteImage}
           />
         </TouchableOpacity>
+        {isBubbleVisible && (
+          <Animated.View style={[styles.speechBubble, bubbleAnimatedStyle]}>
+            <Text style={styles.speechBubbleText}>
+              Hi, I'm GrowMesh!{`\n`}I can help you manage your savings goals.
+            </Text>
+          </Animated.View>
+        )}
         <Modal
           isVisible={isModalVisible}
           onBackdropPress={() => setModalVisible(false)}
@@ -502,6 +525,23 @@ const HomeScreen = ({ navigation }) => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
+  speechBubble: {
+    position: "absolute",
+    bottom: 40,
+    right: 60,
+    backgroundColor: "rgba(0, 0, 0, 0.44)",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    width: 230,
+    zIndex: 10,
+    borderBottomRightRadius: 10,
+  },
+  speechBubbleText: {
+    color: "#FFF",
+    fontSize: 13,
+    lineHeight: 20,
+  },
   modalContent: {
     padding: 10,
     borderRadius: 10,
@@ -518,14 +558,11 @@ const styles = StyleSheet.create({
   },
   absoluteImage2: {
     position: "absolute",
-    bottom: 70,
+    bottom: 80,
     right: 0,
-    alignItems: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 70,
-    padding: 5,
   },
   box2: {
     width: 287,
@@ -725,7 +762,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     justifyContent: "center",
     alignItems: "center",
-    right: 10
+    right: 10,
   },
   view: {
     alignItems: "center",

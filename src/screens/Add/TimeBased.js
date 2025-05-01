@@ -60,35 +60,27 @@ const TimeBased = () => {
     setSelectedEmoji(emoji);
   };
 
-  const handleColor = () => {
-    setShowColorPicker(true);
-  };
-
   const handleDate = () => {
     setDateModalVisible(true);
   };
 
   const handleDateSelected = (formattedDate) => {
-    // Convert formattedDate (string) to a Date object
     const selectedDate = new Date(formattedDate);
-    setTargetDate(selectedDate); // Store as Date object
-    setTargetDateError(""); // Clear error when a date is selected
+    setTargetDate(selectedDate);
+    setTargetDateError("");
   };
 
   const handleNext = () => {
-    // Reset errors
     setGoalNameError("");
     setTargetDateError("");
 
     let hasError = false;
 
-    // Validation for goalName
     if (!goalName) {
       setGoalNameError("Goal name is required");
       hasError = true;
     }
 
-    // Validation for targetDate
     if (!targetDate) {
       setTargetDateError("Target date is required");
       hasError = true;
@@ -97,18 +89,17 @@ const TimeBased = () => {
       hasError = true;
     }
 
-    // If there are errors, stop the navigation
     if (hasError) {
       return;
     }
 
-    // Navigate to Step2 with collected data
     navigation.navigate("Step2", {
       goalData: {
         savingsGoalName: goalName,
-        targetDate: targetDate.toISOString(), // Pass as ISO string for serialization
+        targetDate: targetDate.toISOString(),
         description: description || null,
         emoji: selectedEmoji || null,
+        color: selectedColor || null,
       },
     });
   };
@@ -139,7 +130,7 @@ const TimeBased = () => {
               value={goalName}
               onChangeText={(text) => {
                 setGoalName(text);
-                setGoalNameError(""); // Clear error when user types
+                setGoalNameError("");
               }}
               style={styles.input}
               placeholderTextColor="rgba(30,30,30,0.27)"

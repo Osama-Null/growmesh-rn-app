@@ -9,8 +9,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  Image,
 } from "react-native";
 import { sendGrokMessage } from "../api/grok";
+import Entypo from "@expo/vector-icons/Entypo";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import LottieView from "lottie-react-native";
 
 const GrowMesh = ({
   messages,
@@ -20,9 +24,9 @@ const GrowMesh = ({
   contextData,
 }) => {
   const [inputText, setInputText] = useState("");
+  const [isThinking, setIsThinking] = useState(false);
   const flatListRef = useRef(null);
 
-  // Ensure messages is an array
   const safeMessages = Array.isArray(messages) ? messages : [];
 
   const handleSend = async () => {
@@ -35,7 +39,6 @@ const GrowMesh = ({
       user: { _id: 1, name: "User" },
     };
 
-    // Add user's message to the chat
     setMessages((prev) => {
       const safePrev = Array.isArray(prev) ? prev : [];
       console.log("Adding user message:", newMessage);
@@ -44,6 +47,11 @@ const GrowMesh = ({
       console.log("Updated messages:", updatedMessages);
       return updatedMessages;
     });
+
+    setInputText("");
+    Keyboard.dismiss();
+
+    setIsThinking(true);
 
     try {
       const botResponse = await sendGrokMessage(
@@ -82,6 +90,8 @@ const GrowMesh = ({
         console.log("Updated messages:", updatedMessages);
         return updatedMessages;
       });
+    } finally {
+      setIsThinking(false);
     }
 
     setInputText("");
@@ -105,15 +115,47 @@ const GrowMesh = ({
     );
   };
 
+  const renderThinkingAnimation = () => {
+    if (!isThinking) return null;
+    return (
+      <View style={styles.thinkingContainer}>
+        <LottieView
+          source={require("../../assets/app/think.json")}
+          autoPlay
+          loop
+          style={styles.thinkingAnimation}
+        />
+      </View>
+    );
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
       <View style={styles.header}>
-        <Text style={styles.headerText}>Chat</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 5,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Image
+            source={require("../../assets/app/growmesh-light.png")}
+            resizeMode={"stretch"}
+            style={{
+              height: 40,
+              width: 40,
+            }}
+          />
+          <Text style={styles.headerText}>GrowMesh</Text>
+        </View>
+
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <Text style={styles.closeButtonText}>×</Text>
+          <Entypo name="cross" size={24} color="black" />
         </TouchableOpacity>
       </View>
       <FlatList
@@ -124,15 +166,17 @@ const GrowMesh = ({
         inverted
         style={styles.messageList}
       />
+      {renderThinkingAnimation()}
       <View style={styles.inputToolbar}>
         <TextInput
           style={styles.textInput}
           value={inputText}
           onChangeText={setInputText}
           placeholder="Type a message..."
+          placeholderTextColor={"white"}
         />
         <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
-          <Text style={styles.sendButtonText}>Send</Text>
+          <AntDesign name="arrowup" size={24} color="white" />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -151,13 +195,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 10,
-    backgroundColor: "rgb(9, 53, 101)",
     borderRadius: 15,
   },
   headerText: {
-    fontSize: 18,
+    fontSize: 23,
     fontWeight: "bold",
-    color: "white",
+    color: "black",
   },
   closeButton: {
     padding: 5,
@@ -198,24 +241,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
-    borderTopWidth: 1,
-    borderColor: "rgb(9, 53, 101)",
+    backgroundColor: "rgba(30, 30, 30, 0.67)",
+    borderRadius: 15,
   },
   textInput: {
     flex: 1,
-    padding: 10,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 20,
-    marginRight: 10,
+    color: "white",
   },
   sendButton: {
     padding: 10,
-    backgroundColor: "rgb(9, 53, 101)",
-    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.33)",
+    borderRadius: 50,
   },
   sendButtonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  thinkingContainer: {
+    padding: 10,
+  },
+  thinkingAnimation: {
+    width: 50,
+    height: 50,
   },
 });
 
