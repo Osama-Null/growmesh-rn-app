@@ -96,7 +96,7 @@ const AmountBased = () => {
         targetAmount: parseFloat(targetAmount),
         description: description || null,
         emoji: selectedEmoji || null,
-        color: selectedColor || null, // Include color in the payload
+        color: selectedColor || null,
       },
     });
   };
