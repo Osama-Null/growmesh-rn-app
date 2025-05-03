@@ -144,7 +144,7 @@ const GrowMesh = ({
           }}
         >
           <Image
-            source={require("../../assets/app/growmesh-light.png")}
+            source={require("../../assets/app/g.png")}
             resizeMode={"stretch"}
             style={{
               height: 40,

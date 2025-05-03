@@ -553,8 +553,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FEF7FF",
   },
   absoluteImage: {
-    width: 70,
-    height: 70,
+    width: 80,
+    height: 80,
   },
   absoluteImage2: {
     position: "absolute",

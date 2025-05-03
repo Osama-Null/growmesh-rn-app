@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bubbleFocused: {
-    backgroundColor: "rgba(9, 53, 101, 1)",
+    backgroundColor: "rgba(9, 53, 101, 0.54)",
     transform: [{ scale: 1.1 }],
   },
   bubbleInactive: {
