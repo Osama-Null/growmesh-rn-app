@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -28,6 +28,19 @@ const GrowMesh = ({
   const flatListRef = useRef(null);
 
   const safeMessages = Array.isArray(messages) ? messages : [];
+
+  useEffect(() => {
+    // Only add the welcome message if the messages array is empty
+    if (safeMessages.length === 0) {
+      const welcomeMessage = {
+        id: Math.random().toString(36).substring(7),
+        text: "Hi, I'm GrowMesh! How can I help you today?",
+        createdAt: new Date(),
+        user: { _id: 2, name: "GrowMesh" },
+      };
+      setMessages([welcomeMessage]);
+    }
+  }, [setMessages, safeMessages.length]);
 
   const handleSend = async () => {
     if (inputText.trim() === "") return;

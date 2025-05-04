@@ -6,6 +6,7 @@ import AmountBased from "../../screens/Add/AmountBased";
 import TimeBased from "../../screens/Add/TimeBased";
 import Step2 from "../../screens/Add/Step2";
 import Step3Final from "../../screens/Add/Step3Final";
+import HomeScreen from "../../screens/Home/HomeScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ const AddNavigation = () => {
       <Stack.Screen name="TimeBased" component={TimeBased} />
       <Stack.Screen name="Step2" component={Step2} />
       <Stack.Screen name="Step3Final" component={Step3Final} />
+      <Stack.Screen name="HomeScreenAdd" component={HomeScreen} />
     </Stack.Navigator>
   );
 };

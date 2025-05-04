@@ -27,6 +27,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Modal from "react-native-modal";
 import GrowMesh from "../../components/GrowMesh";
 import LottieView from "lottie-react-native";
+import { useNavigation } from "@react-navigation/native";
 
 // Bar Chart Component
 const AnimatedBar = ({ value, label, maxValue, difference }) => {
@@ -90,14 +91,15 @@ const BarChartComponent = ({ data }) => {
   );
 };
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
+  const navigation = useNavigation();
   // GrowMesh ============================================
   const [isModalVisible, setModalVisible] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isBubbleVisible, setIsBubbleVisible] = useState(true);
 
   const systemPrompt =
-    "Your name is GrowMesh. You are a financial assistant for the home screen of a savings goals app. You have access to all savings goals and savings trend data. Provide short, concise answers in a single sentence about overall savings, trends, or the first two goals. Always include the '$' symbol for monetary values and format responses like 'Your total savings across all goals are $X.' If no goals or trend data are available, respond with 'You have no savings goals yet.' Do not give lengthy answers.";
+    "Your name is GrowMesh. You are a friendly financial assistant for the home screen of a savings goals app. You have access to all savings goals and savings trend data. Provide short, conversational answers in a single sentence about overall savings, trends, or the first two goals. Always include the 'KWD' currency for monetary values and format responses like 'Your total savings across all goals are KWD X.' If the user says 'hi' or a similar greeting, respond with a friendly greeting like 'Hello! Your total savings across all goals are KWD X.' or 'Hey there! You have no savings goals yet. Want to create one?' If no goals or trend data are available, respond with 'You have no savings goals yet. Want to create one?' Do not give lengthy answers.";
   // ============================================ GrowMesh
 
   const [filter, setFilter] = useState("days");
