@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -28,6 +28,8 @@ import Modal from "react-native-modal";
 import GrowMesh from "../../components/GrowMesh";
 import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
+import UserContext from "../../context/UserContext";
+import { deleteToken } from "../../api/storage";
 
 // Bar Chart Component
 const AnimatedBar = ({ value, label, maxValue, difference }) => {
@@ -93,13 +95,14 @@ const BarChartComponent = ({ data }) => {
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const { setIsAuth } = useContext(UserContext);
   // GrowMesh ============================================
   const [isModalVisible, setModalVisible] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isBubbleVisible, setIsBubbleVisible] = useState(true);
 
   const systemPrompt =
-    "Your name is GrowMesh. You are a friendly financial assistant for the home screen of a savings goals app. You have access to all savings goals and savings trend data. Provide short, conversational answers in a single sentence about overall savings, trends, or the first two goals. Always include the 'KWD' currency for monetary values and format responses like 'Your total savings across all goals are KWD X.' If the user says 'hi' or a similar greeting, respond with a friendly greeting like 'Hello! Your total savings across all goals are KWD X.' or 'Hey there! You have no savings goals yet. Want to create one?' If no goals or trend data are available, respond with 'You have no savings goals yet. Want to create one?' Do not give lengthy answers.";
+    "Your name is GrowMesh. You are a friendly financial assistant for the home screen of a savings goals app. You have access to all savings goals and savings trend data. Provide short, conversational answers in a single sentence about overall savings, trends, or the first two goals. Always include the 'KWD' currency for monetary values and format responses like 'Your total savings across all goals are KWD X.' If the user says 'hi' or a similar greeting, respond with a friendly greeting like 'Hey! Your total savings across all goals are KWD X.' or 'Hi there! You have no savings goals yet. Want to create one?' If no goals or trend data are available, respond with 'You have no savings goals yet. Want to create one?' If the user mentions a savings goal amount and a deadline (e.g., 'I need to save 1000 KWD by September'), calculate a monthly savings plan based on the current date and the deadline, and suggest a plan like 'You have X months to save 1000 KWD, so I recommend saving KWD Y per month.' Do not give lengthy answers.";
   // ============================================ GrowMesh
 
   const [filter, setFilter] = useState("days");
@@ -186,10 +189,37 @@ const HomeScreen = () => {
     }
   }, [goalsData, trendData, profileData]);
 
+  const handleLogout = async () => {
+    try {
+      await deleteToken();
+      setIsAuth(false);
+    } catch (error) {
+      console.error("Error during logout:", error);
+      Alert.alert("Error", "Failed to log out. Please try again.");
+    }
+  };
+
+
   // Handle loading and error states
   if (goalsLoading || trendLoading || profileLoading) {
     return (
       <SafeAreaView style={styles.safeArea}>
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            top: 20,
+            right: 20,
+            padding: 10,
+            borderRadius: 50,
+            backgroundColor: "rgba(255, 0, 0, 0.08)",
+            justifyContent: "center",
+            alignItems: "center",
+            width: 50,
+          }}
+          onPress={handleLogout}
+        >
+          <MaterialIcons name="logout" size={24} color="red" />
+        </TouchableOpacity>
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Loading...</Text>
         </View>
@@ -200,6 +230,22 @@ const HomeScreen = () => {
   if (goalsError || trendError || profileError) {
     return (
       <SafeAreaView style={styles.safeArea}>
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            top: 20,
+            right: 20,
+            padding: 10,
+            borderRadius: 50,
+            backgroundColor: "rgba(255, 0, 0, 0.08)",
+            justifyContent: "center",
+            alignItems: "center",
+            width: 50,
+          }}
+          onPress={handleLogout}
+        >
+          <MaterialIcons name="logout" size={24} color="red" />
+        </TouchableOpacity>
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>
             {goalsError
@@ -289,15 +335,19 @@ const HomeScreen = () => {
         <View style={styles.row}>
           <TouchableOpacity
             style={styles.image}
-            onPress={() => navigation.navigate("Profile")}
+            onPress={() => navigation.navigate("ProfileScreen")}
           >
-            <Image
-              source={{
-                uri: profileData.profilePicture,
-              }}
-              style={styles.profileImage}
-              resizeMode="cover"
-            />
+            {profileData.profilePicture ? (
+              <Image
+                source={{
+                  uri: profileData.profilePicture,
+                }}
+                style={styles.profileImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <FontAwesome name="user-circle-o" size={24} color="black" />
+            )}
           </TouchableOpacity>
 
           <View>
@@ -380,81 +430,85 @@ const HomeScreen = () => {
         <Text style={styles.text6}>{"Savings Goals"}</Text>
         <View style={styles.column2}>
           <View style={styles.column3}>
-            {Goals.slice(0, 2).map((goal, index) => {
-              let progress = 0;
-              if (goal.lockType === "amountBased") {
-                progress =
-                  goal.targetAmount > 0
-                    ? goal.currentAmount / goal.targetAmount
-                    : 0;
-              } else if (goal.lockType === "timeBased") {
-                const startDate = new Date(goal.createdAt);
-                const endDate = new Date(goal.targetDate);
-                const currentDate = new Date();
-                const totalDuration = endDate.getTime() - startDate.getTime();
-                const elapsedDuration =
-                  currentDate.getTime() - startDate.getTime();
-                progress =
-                  totalDuration > 0 ? elapsedDuration / totalDuration : 0;
-                progress = Math.min(Math.max(progress, 0), 1); // Clamp between 0 and 1
-              }
-              const progressColor = goal.color || "#093565";
-              return (
-                <React.Fragment key={goal.savingsGoalId}>
-                  <TouchableOpacity
-                    style={index === 2 ? styles.row4 : styles.row2}
-                    onPress={() => {
-                      navigation.navigate("SavingsGoalDetails", {
-                        goalId: goal.savingsGoalId,
-                      });
-                    }}
-                  >
-                    {goal.emoji ? (
-                      <Text style={styles.emoji}>{goal.emoji}</Text>
-                    ) : (
-                      <MaterialCommunityIcons
-                        name="bullseye-arrow"
-                        size={40}
-                        color="rgba(9, 53, 101, 1)"
-                        style={{
-                          right: 10,
-                          top: 5,
-                        }}
-                      />
-                    )}
-                    <View style={styles.column4}>
-                      <View style={index === 2 ? styles.row5 : styles.row3}>
-                        <Text style={styles.text7}>{goal.savingsGoalName}</Text>
-                        {goal.lockType === "amountBased" ? (
-                          <Text style={styles.text8}>
-                            {`${goal.currentAmount} / ${goal.targetAmount} KWD`}
+            {Goals.reverse()
+              .slice(0, 2)
+              .map((goal, index) => {
+                let progress = 0;
+                if (goal.lockType === "amountBased") {
+                  progress =
+                    goal.targetAmount > 0
+                      ? goal.currentAmount / goal.targetAmount
+                      : 0;
+                } else if (goal.lockType === "timeBased") {
+                  const startDate = new Date(goal.createdAt);
+                  const endDate = new Date(goal.targetDate);
+                  const currentDate = new Date();
+                  const totalDuration = endDate.getTime() - startDate.getTime();
+                  const elapsedDuration =
+                    currentDate.getTime() - startDate.getTime();
+                  progress =
+                    totalDuration > 0 ? elapsedDuration / totalDuration : 0;
+                  progress = Math.min(Math.max(progress, 0), 1);
+                }
+                const progressColor = goal.color || "#093565";
+                return (
+                  <React.Fragment key={goal.savingsGoalId}>
+                    <TouchableOpacity
+                      style={index === 2 ? styles.row4 : styles.row2}
+                      onPress={() => {
+                        navigation.navigate("SavingsGoalDetails", {
+                          goalId: goal.savingsGoalId,
+                        });
+                      }}
+                    >
+                      {goal.emoji ? (
+                        <Text style={styles.emoji}>{goal.emoji}</Text>
+                      ) : (
+                        <MaterialCommunityIcons
+                          name="bullseye-arrow"
+                          size={40}
+                          color="rgba(9, 53, 101, 1)"
+                          style={{
+                            right: 10,
+                            top: 5,
+                          }}
+                        />
+                      )}
+                      <View style={styles.column4}>
+                        <View style={index === 2 ? styles.row5 : styles.row3}>
+                          <Text style={styles.text7}>
+                            {goal.savingsGoalName}
                           </Text>
-                        ) : (
-                          <Text style={styles.text8}>
-                            {`${new Date(
-                              goal.targetDate
-                            ).toLocaleDateString()} | ${
-                              goal.currentAmount
-                            } KWD`}
-                          </Text>
-                        )}
+                          {goal.lockType === "amountBased" ? (
+                            <Text style={styles.text8}>
+                              {`${goal.currentAmount} / ${goal.targetAmount} KWD`}
+                            </Text>
+                          ) : (
+                            <Text style={styles.text8}>
+                              {`${new Date(
+                                goal.targetDate
+                              ).toLocaleDateString()} | ${
+                                goal.currentAmount
+                              } KWD`}
+                            </Text>
+                          )}
+                        </View>
+                        <Progress.Bar
+                          progress={progress}
+                          width={null}
+                          height={10}
+                          color={progressColor}
+                          unfilledColor="#F0F0F0"
+                          borderWidth={2}
+                          borderRadius={8}
+                          borderColor={progressColor}
+                        />
                       </View>
-                      <Progress.Bar
-                        progress={progress}
-                        width={null}
-                        height={10}
-                        color={progressColor}
-                        unfilledColor="#F0F0F0"
-                        borderWidth={2}
-                        borderRadius={8}
-                        borderColor={progressColor}
-                      />
-                    </View>
-                  </TouchableOpacity>
-                  {index < 1 && <View style={styles.box2} />}
-                </React.Fragment>
-              );
-            })}
+                    </TouchableOpacity>
+                    {index < 1 && <View style={styles.box2} />}
+                  </React.Fragment>
+                );
+              })}
             <TouchableOpacity
               onPress={() => navigation.navigate("AllSavingsGoals")}
               style={styles.seeAll}
@@ -529,8 +583,8 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   speechBubble: {
     position: "absolute",
-    bottom: 40,
-    right: 60,
+    bottom: 45,
+    right: 65,
     backgroundColor: "rgba(0, 0, 0, 0.44)",
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -576,6 +630,7 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     position: "relative",
     alignItems: "center",
+    marginBottom: 30,
   },
   dropdownButton: {
     flexDirection: "row",
@@ -669,8 +724,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profileImage: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     borderRadius: 20,
   },
   image2: {
@@ -679,11 +734,15 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    justifyContent: "space-between",
     paddingVertical: 6,
     marginTop: 8,
     marginBottom: 9,
     marginHorizontal: 16,
+    position: "absolute",
+    justifyContent: "space-between",
+    width: "100%",
+    alignSelf: "center",
+    paddingHorizontal: 10,
   },
   row2: {
     flexDirection: "row",
@@ -714,10 +773,11 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#000000",
-    fontSize: 16,
+    fontSize: 20,
     textAlign: "center",
     marginBottom: 11,
     marginHorizontal: 16,
+    marginTop: 40,
   },
   text2: {
     color: "#000000",

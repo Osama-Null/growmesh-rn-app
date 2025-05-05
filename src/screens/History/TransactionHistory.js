@@ -171,7 +171,6 @@ const TransactionHistory = () => {
 
       <View style={styles.tabs}>
         {["All", "Transfers", "Deposits", "Withdrawals"].map((tab) => (
-          
           <TouchableOpacity
             key={tab}
             style={[styles.tab, activeTab === tab && styles.activeTab]}
@@ -191,7 +190,7 @@ const TransactionHistory = () => {
 
       <ScrollView style={styles.transactionList}>
         {filteredTransactions?.length > 0 ? (
-          filteredTransactions.map(renderTransaction)
+          [...filteredTransactions].reverse().map(renderTransaction)
         ) : (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>No transactions found</Text>
@@ -206,14 +205,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FEF7FF",
+    paddingBottom: 90,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0, 0, 0, 0.1)",
   },
   headerTitle: {
     flex: 1,
@@ -254,11 +252,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 12,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
   },
   transactionItem: {
     flexDirection: "row",
     padding: 16,
-    backgroundColor: "#FFF",
+    backgroundColor: "#EBE5EC",
     borderRadius: 12,
     marginBottom: 12,
     shadowColor: "#000",

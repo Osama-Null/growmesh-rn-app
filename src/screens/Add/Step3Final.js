@@ -93,7 +93,9 @@ const Step3Final = () => {
       console.log("Mutation Success: Goal created successfully");
       queryClient.invalidateQueries(["savingsGoals"]);
       alert("Success", "Goal created successfully", [{ text: "OK" }]);
-      navigation.navigate("HomeScreenAdd");
+      navigation.reset({
+        routes: [{ name: "HomeNav" }],
+      });
     },
     onError: (error) => {
       console.error("Mutation Error:", {

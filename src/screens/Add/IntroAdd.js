@@ -5,8 +5,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import LottieView from "lottie-react-native";
 
 const IntroAdd = () => {
   const navigation = useNavigation();
@@ -20,6 +22,27 @@ const IntroAdd = () => {
 
         <View style={styles.imageContainer}>
           {/* Your Lottie animation here */}
+          <LottieView
+            source={require("../../../assets/app/add.json")}
+            autoPlay
+            loop={false}
+            style={{
+              width: 400,
+              height: 400,
+              bottom: 123,
+            }}
+          />
+          <Image
+            source={require("../../../assets/app/abk.png")}
+            resizeMode={"stretch"}
+            style={{
+              height: 90,
+              width: 90,
+              position: "absolute",
+              top: 270,
+              alignSelf: "center",
+            }}
+          />
         </View>
       </View>
 

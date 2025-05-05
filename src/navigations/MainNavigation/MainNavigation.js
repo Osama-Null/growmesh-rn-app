@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeNavigation from "../HomeNavigation/HomeNavigation";
 import AddNavigation from "../AddNavigation/AddNavigation";
 import HistoryNavigation from "../HistoryNavigation/HistoryNavigation";
+import ProfileScreen from "../../screens/Profile/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -16,6 +17,8 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     "EditGoal",
     "CreateGoal",
     "AddGoal",
+    "ProfileScreen",
+    "AllSavingsGoals",
     // Add more screen names here as needed
   ];
 

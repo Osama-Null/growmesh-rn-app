@@ -2,18 +2,14 @@ import { getApiKey } from "../utils/secureStorage";
 
 const grokApiBaseUrl = "https://api.x.ai/v1/chat/completions";
 
-export const sendGrokMessage = async (
-  systemPrompt,
-  contextData,
-  userMessage
-) => {
+export const sendGrokMessage = async (systemPrompt, contextData, messages) => {
   // Retrieve the API key securely
   const apiKey = await getApiKey();
   if (!apiKey) {
     throw new Error("Grok API key not found");
   }
 
-  // Construct the request payload
+  // Construct the request payload with the full messages array
   const requestBody = {
     messages: [
       {
@@ -22,10 +18,7 @@ export const sendGrokMessage = async (
           contextData
         )}`,
       },
-      {
-        role: "user",
-        content: userMessage,
-      },
+      ...messages, // Include the full chat history
     ],
     model: "grok-3-mini-beta",
     stream: false,

@@ -27,10 +27,11 @@ const GrowMesh = ({
   const [isThinking, setIsThinking] = useState(false);
   const flatListRef = useRef(null);
 
+  // Ensure messages is an array
   const safeMessages = Array.isArray(messages) ? messages : [];
 
+  // Add welcome message when the chatbot opens
   useEffect(() => {
-    // Only add the welcome message if the messages array is empty
     if (safeMessages.length === 0) {
       const welcomeMessage = {
         id: Math.random().toString(36).substring(7),
@@ -52,6 +53,7 @@ const GrowMesh = ({
       user: { _id: 1, name: "User" },
     };
 
+    // Add user's message to the chat
     setMessages((prev) => {
       const safePrev = Array.isArray(prev) ? prev : [];
       console.log("Adding user message:", newMessage);
@@ -61,16 +63,30 @@ const GrowMesh = ({
       return updatedMessages;
     });
 
+    // Clear the input text immediately after sending
     setInputText("");
     Keyboard.dismiss();
 
+    // Show the "thinking" animation
     setIsThinking(true);
 
     try {
+      // Construct the messages array with the full chat history
+      const chatHistory = safeMessages.map((msg) => ({
+        role: msg.user._id === 1 ? "user" : "assistant",
+        content: msg.text,
+      }));
+
+      // Add the current user message to the history
+      const messagesForApi = [
+        ...chatHistory,
+        { role: "user", content: inputText },
+      ];
+
       const botResponse = await sendGrokMessage(
         systemPrompt,
         contextData,
-        inputText
+        messagesForApi // Pass the full chat history
       );
       console.log("Grok API response:", botResponse);
 
@@ -78,7 +94,7 @@ const GrowMesh = ({
         id: Math.random().toString(36).substring(7),
         text: botResponse,
         createdAt: new Date(),
-        user: { _id: 2, name: "Grok" },
+        user: { _id: 2, name: "GrowMesh" },
       };
       setMessages((prev) => {
         const safePrev = Array.isArray(prev) ? prev : [];
@@ -93,7 +109,7 @@ const GrowMesh = ({
         id: Math.random().toString(36).substring(7),
         text: "Sorry, I encountered an error. Please try again.",
         createdAt: new Date(),
-        user: { _id: 2, name: "Grok" },
+        user: { _id: 2, name: "GrowMesh" },
       };
       setMessages((prev) => {
         const safePrev = Array.isArray(prev) ? prev : [];
@@ -106,9 +122,6 @@ const GrowMesh = ({
     } finally {
       setIsThinking(false);
     }
-
-    setInputText("");
-    Keyboard.dismiss();
   };
 
   const renderMessage = ({ item }) => {
@@ -218,10 +231,6 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 5,
   },
-  closeButtonText: {
-    fontSize: 24,
-    color: "white",
-  },
   messageList: {
     flex: 1,
   },
@@ -265,10 +274,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "rgba(255, 255, 255, 0.33)",
     borderRadius: 50,
-  },
-  sendButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
   },
   thinkingContainer: {
     padding: 10,

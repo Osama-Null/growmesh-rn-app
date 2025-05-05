@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -14,7 +15,7 @@ import * as Progress from "react-native-progress";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
- 
+
 const AllSavingsGoals = () => {
   const navigation = useNavigation();
 
@@ -53,19 +54,13 @@ const AllSavingsGoals = () => {
 
   const goals = goalsData || [];
 
-  const progressColors = [
-    "#36C3C6",
-    "#B536C6",
-    "#D8686A",
-    "#FFD700",
-    "#FF6347",
-    "#4682B4",
-  ];
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Ionicons name="arrow-back" size={24} color="#1D1B20" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>All Savings Goals</Text>
@@ -74,63 +69,82 @@ const AllSavingsGoals = () => {
 
       <ScrollView style={styles.scrollView}>
         <View style={styles.goalsContainer}>
-          {goals.map((goal, index) => {
-            const progress =
-              goal.targetAmount > 0
-                ? goal.currentAmount / goal.targetAmount
-                : 0;
-            const color = progressColors[index % progressColors.length];
-
-            return (
-              <TouchableOpacity
-                key={goal.savingsGoalId}
-                style={styles.goalItem}
-                onPress={() =>
-                  navigation.navigate("SavingsGoalDetails", {
-                    goalId: goal.savingsGoalId,
-                  })
-                }
-              >
-                {goal.emoji ? (
-                  <Text style={styles.emoji}>{goal.emoji}</Text>
-                ) : (
-                  <MaterialCommunityIcons
-                    name="bullseye-arrow"
-                    size={30}
-                      color="rgba(9, 53, 101, 1)"
-                      style={{
-                        right: 10
-                      }}
-                  />
-                )}
-                <View style={styles.goalDetails}>
-                  <View style={styles.goalHeader}>
-                    <Text style={styles.goalName}>{goal.savingsGoalName}</Text>
-                    {goal.lockType === "amountBased" ? (
-                      <Text style={styles.goalAmount}>
-                        {`${goal.currentAmount} / ${goal.targetAmount} KWD`}
-                      </Text>
+          <View style={styles.column3}>
+            {goals.map((goal, index) => {
+              let progress = 0;
+              if (goal.lockType === "amountBased") {
+                progress =
+                  goal.targetAmount > 0
+                    ? goal.currentAmount / goal.targetAmount
+                    : 0;
+              } else if (goal.lockType === "timeBased") {
+                const startDate = new Date(goal.createdAt);
+                const endDate = new Date(goal.targetDate);
+                const currentDate = new Date();
+                const totalDuration = endDate.getTime() - startDate.getTime();
+                const elapsedDuration =
+                  currentDate.getTime() - startDate.getTime();
+                progress =
+                  totalDuration > 0 ? elapsedDuration / totalDuration : 0;
+                progress = Math.min(Math.max(progress, 0), 1);
+              }
+              const progressColor = goal.color || "#093565";
+              return (
+                <React.Fragment key={goal.savingsGoalId}>
+                  <TouchableOpacity
+                    style={styles.row2}
+                    onPress={() => {
+                      navigation.navigate("SavingsGoalDetails", {
+                        goalId: goal.savingsGoalId,
+                      });
+                    }}
+                  >
+                    {goal.emoji ? (
+                      <Text style={styles.emoji}>{goal.emoji}</Text>
                     ) : (
-                      <Text style={styles.goalAmount}>
-                        {`${new Date(goal.targetDate).toLocaleDateString()} | ${
-                          goal.currentAmount
-                        } KWD`}
-                      </Text>
+                      <MaterialCommunityIcons
+                        name="bullseye-arrow"
+                        size={40}
+                        color="rgba(9, 53, 101, 1)"
+                        style={{
+                          right: 10,
+                          top: 5,
+                        }}
+                      />
                     )}
-                  </View>
-                  <Progress.Bar
-                    progress={progress}
-                    width={null}
-                    height={10}
-                    color={color}
-                    unfilledColor="#F0F0F0"
-                    borderWidth={2}
-                    borderRadius={8}
-                  />
-                </View>
-              </TouchableOpacity>
-            );
-          })}
+                    <View style={styles.column4}>
+                      <View style={styles.row3}>
+                        <Text style={styles.text7}>{goal.savingsGoalName}</Text>
+                        {goal.lockType === "amountBased" ? (
+                          <Text style={styles.text8}>
+                            {`${goal.currentAmount} / ${goal.targetAmount} KWD`}
+                          </Text>
+                        ) : (
+                          <Text style={styles.text8}>
+                            {`${new Date(
+                              goal.targetDate
+                            ).toLocaleDateString()} | ${
+                              goal.currentAmount
+                            } KWD`}
+                          </Text>
+                        )}
+                      </View>
+                      <Progress.Bar
+                        progress={progress}
+                        width={null}
+                        height={10}
+                        color={progressColor}
+                        unfilledColor="#F0F0F0"
+                        borderWidth={2}
+                        borderRadius={8}
+                        borderColor={progressColor}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                </React.Fragment>
+              );
+            })}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -149,8 +163,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0, 0, 0, 0.1)",
+    position: "absolute",
+  },
+  backButton: {
+    padding: 10,
+    borderRadius: 50,
   },
   headerTitle: {
     flex: 1,
@@ -158,51 +175,66 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#000",
     textAlign: "center",
-    marginLeft: -24,
   },
   headerRight: {
-    width: 24, 
+    width: 24,
   },
   scrollView: {
     flex: 1,
+    marginTop: 40,
   },
   goalsContainer: {
     padding: 16,
   },
-  goalItem: {
+  column3: {
+    alignItems: "flex-start",
+    borderRadius: 14,
+    paddingVertical: 23,
+  },
+  row2: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(30,30,30,0.09)",
     borderRadius: 14,
-    padding: 16,
-    marginBottom: 16,
-    paddingLeft: 23
+    paddingVertical: 10,
+    paddingHorizontal: 23,
+    marginBottom: 14,
+    backgroundColor: "rgba(30,30,30,0.09)",
   },
-  emoji: {
-    fontSize: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    right: 10
-  },
-  goalDetails: {
+  column4: {
     flex: 1,
   },
-  goalHeader: {
+  row3: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 9,
   },
-  goalName: {
+  text7: {
+    color: "#000000",
     fontSize: 16,
     fontWeight: "bold",
-    color: "#000",
+    textAlign: "left",
+    marginRight: 4,
     flex: 1,
-    marginRight: 8,
   },
-  goalAmount: {
+  text8: {
+    color: "#000000",
     fontSize: 16,
-    color: "#000",
+    textAlign: "right",
+    flex: 1,
+  },
+  emoji: {
+    fontSize: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    right: 10,
+  },
+  box2: {
+    width: 287,
+    height: 1,
+    backgroundColor: "#00000057",
+    marginBottom: 13,
+    marginLeft: 71,
   },
   loadingContainer: {
     flex: 1,
@@ -213,11 +245,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 16,
   },
   errorText: {
-    fontSize: 16,
     color: "#FF0000",
-    textAlign: "center",
+    fontSize: 16,
   },
 });

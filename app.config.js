@@ -2,8 +2,8 @@ import "dotenv/config";
 
 export default {
   expo: {
-    name: "growmesh-rn-app",
-    slug: "growmesh-rn-app",
+    name: "GrowMesh",
+    slug: "GrowMesh",
     version: "1.0.0",
     extra: {
       grokApiKey: process.env.GROK_API_KEY,

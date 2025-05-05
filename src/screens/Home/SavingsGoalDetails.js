@@ -24,6 +24,8 @@ import { getTransactionsBySavingsGoal } from "../../api/transaction";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import GrowMesh from "../../components/GrowMesh";
 import Modal from "react-native-modal";
+import hexToRgba from "hex-to-rgba";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 // Animated Donut Component
 const AnimatedDonut = ({ progress, size, thickness, color }) => {
@@ -69,24 +71,33 @@ const AnimatedDonut = ({ progress, size, thickness, color }) => {
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 // Bar Chart Component
-const AnimatedBar = ({ value, label, maxValue, difference }) => {
+const AnimatedBar = ({
+  value,
+  label,
+  maxValue,
+  difference,
+  goalColor,
+  maxCumulative,
+}) => {
   const height = useSharedValue(0);
-
+  {
+    console.log(
+      "\n===============================\nAnimatedBar color:",
+      goalColor
+    );
+  }
   useEffect(() => {
-    const calculatedHeight = value === 0 ? 5 : (value / maxValue) * 150;
+    const calculatedHeight =
+      difference === 0 ? 5 : (difference / maxValue) * 150;
     height.value = withTiming(calculatedHeight, { duration: 1000 });
-  }, [value, maxValue]);
+  }, [difference, maxValue]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: height.value,
   }));
 
-  const barColor =
-    difference > 0
-      ? "rgba(9, 53, 101, 0.14)" // Full opacity for positive
-      : difference < 0
-      ? "rgba(9, 53, 101, 0.14)" // Low opacity for negative
-      : "rgba(9, 53, 101, 0.36)"; // Medium opacity for zero
+  const opacity = maxCumulative > 0 ? value / maxCumulative : 0;
+  const barColor = hexToRgba(goalColor, opacity);
 
   return (
     <View style={styles.barContainer}>
@@ -94,7 +105,7 @@ const AnimatedBar = ({ value, label, maxValue, difference }) => {
         <Text
           style={[
             styles.differenceText,
-            { color: difference > 0 ? "#rgba(9, 53, 101, 0.79)" : "#FF0000" },
+            { color: difference > 0 ? "#rgb(7, 205, 0)" : "#FF0000" },
           ]}
         >
           {difference > 0 ? `+${difference}` : difference}
@@ -108,8 +119,13 @@ const AnimatedBar = ({ value, label, maxValue, difference }) => {
   );
 };
 
-const BarChartComponent = ({ data }) => {
-  const maxValue = Math.max(...data.map((item) => item.value), 10) * 1.1;
+const BarChartComponent = ({ data, goalColor }) => {
+  {
+    console.log("\n\n\nBarChartComponent color\n:", goalColor);
+  }
+
+  const maxValue = Math.max(...data.map((item) => item.difference), 10) * 1.1;
+  const maxCumulative = Math.max(...data.map((item) => item.value));
 
   return (
     <View style={styles.chartContainer}>
@@ -120,6 +136,8 @@ const BarChartComponent = ({ data }) => {
           label={item.label}
           maxValue={maxValue}
           difference={item.difference}
+          goalColor={goalColor}
+          maxCumulative={maxCumulative}
         />
       ))}
     </View>
@@ -230,13 +248,26 @@ const SavingsGoalDetails = ({ navigation, route }) => {
       </SafeAreaView>
     );
   }
-  {
-    console.log("\nSingle goals: ", goalData, "\n");
-  }
   const goal = goalData || {};
   const transactions = transactionsData || [];
   const trendData = trendResponse?.trendData || [];
   const periodType = trendResponse?.periodType || "day";
+
+  {
+    console.log("==================\ntrendData:", trendData);
+  }
+  {
+    console.log("\nperiodType:", periodType);
+  }
+  {
+    console.log("\ngoal:", goal);
+  }
+  {
+    console.log("\ntransactions:", transactions, "\n==================\n");
+  }
+
+  // Extract the goal color with default fallback
+  const goalColor = goal.color || "#093565";
 
   // Calculate progress
   let progress = 0;
@@ -373,12 +404,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
       )}
 
       <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
-        <Image
-          source={{
-            uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/aaquihr0_expires_30_days.png",
-          }}
-          style={styles.image}
-        />
+        <Ionicons name="arrow-back" size={24} color="#1D1B20" />
       </TouchableOpacity>
 
       <View style={styles.column}>
@@ -388,11 +414,10 @@ const SavingsGoalDetails = ({ navigation, route }) => {
             {goal.emoji ? (
               <Text style={styles.emoji}>{goal.emoji}</Text>
             ) : (
-              <Image
-                source={{
-                  uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/7iaoctvb_expires_30_days.png",
-                }}
-                style={styles.image2}
+              <MaterialCommunityIcons
+                name="bullseye-arrow"
+                size={30}
+                color="rgba(9, 53, 101, 1)"
               />
             )}
           </TouchableOpacity>
@@ -405,7 +430,10 @@ const SavingsGoalDetails = ({ navigation, route }) => {
             <Text
               style={[
                 styles.text3,
-                activeTab === "General" && styles.activeTab,
+                activeTab === "General" && {
+                  color: goalColor,
+                  textDecorationLine: "underline",
+                },
               ]}
             >
               General
@@ -416,7 +444,10 @@ const SavingsGoalDetails = ({ navigation, route }) => {
             <Text
               style={[
                 styles.text3,
-                activeTab === "History" && styles.activeTab,
+                activeTab === "History" && {
+                  color: goalColor,
+                  textDecorationLine: "underline",
+                },
               ]}
             >
               History
@@ -433,22 +464,24 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 progress={progress}
                 size={245}
                 thickness={23}
-                color="#rgba(9, 53, 101, 0.65)"
+                color={goalColor}
               />
               <View style={styles.percentageContainer}>
-                <Text style={styles.percentageText}>{`${percentage}%`}</Text>
+                <Text style={[styles.percentageText, { color: goalColor }]}>
+                  {`${percentage}%`}
+                </Text>
               </View>
             </View>
             <View style={styles.view5}>
               {chartData.length > 0 ? (
-                <BarChartComponent data={chartData} />
+                <BarChartComponent data={chartData} goalColor={goalColor} />
               ) : (
                 <Text style={styles.placeholderText}>
                   No trend data available.
                 </Text>
               )}
             </View>
-            
+
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.icon} onPress={handleDeposit}>
                 <MaterialCommunityIcons
@@ -516,9 +549,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
       <View style={styles.absoluteImage2}>
         <TouchableOpacity onPress={() => setModalVisible2(true)}>
           <Image
-            source={{
-              uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/hMN4DI2FNU/em1sgz79_expires_30_days.png",
-            }}
+            source={require("../../../assets/app/growmesh-light.png")}
             resizeMode={"stretch"}
             style={styles.absoluteImage}
           />
@@ -540,7 +571,6 @@ const SavingsGoalDetails = ({ navigation, route }) => {
         </Modal>
       </View>
       {/* ============================================ GrowMesh */}
-      
     </SafeAreaView>
   );
 };
@@ -558,7 +588,7 @@ const styles = StyleSheet.create({
   },
   absoluteImage2: {
     position: "absolute",
-    bottom: 120,
+    bottom: 300,
     right: 0,
     width: "100%",
     alignItems: "flex-end",
@@ -581,6 +611,7 @@ const styles = StyleSheet.create({
     borderRadius: 48,
     paddingVertical: 4,
     paddingHorizontal: 21,
+    justifyContent: "center",
   },
   column: {
     gap: 20,
@@ -620,10 +651,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
-  activeTab: {
-    color: "#rgba(9, 53, 101, 0.65)",
-    textDecorationLine: "underline",
-  },
   view: {
     alignItems: "center",
   },
@@ -659,7 +686,6 @@ const styles = StyleSheet.create({
     right: 0,
   },
   percentageText: {
-    color: "#rgba(9, 53, 101, 0.65)",
     fontSize: 50,
     fontWeight: "900",
     shadowColor: "black",
