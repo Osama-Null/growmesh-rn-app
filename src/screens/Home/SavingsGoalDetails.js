@@ -148,7 +148,7 @@ const BarChartComponent = ({ data, goalColor }) => {
 const TransactionList = ({ transactions }) => {
   return (
     <ScrollView style={styles.transactionList}>
-      {transactions.map((transaction, index) => {
+      {transactions.reverse().map((transaction, index) => {
         const date = new Date(transaction.transactionDate);
         const formattedDate = date.toLocaleDateString("en-US", {
           month: "short",
