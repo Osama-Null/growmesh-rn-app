@@ -9,10 +9,14 @@ import {
 } from "react-native";
 import React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAllSavingsGoals, markSavingsGoalAsDone } from "../../api/savingsGoal";
+import {
+  getAllSavingsGoals,
+  markSavingsGoalAsDone,
+} from "../../api/savingsGoal";
 import * as Progress from "react-native-progress";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const Notifications = () => {
   const navigation = useNavigation();
@@ -59,15 +63,6 @@ const Notifications = () => {
     (goal) => goal.status === "markDone"
   );
 
-  const progressColors = [
-    "#36C3C6",
-    "#B536C6",
-    "#D8686A",
-    "#FFD700",
-    "#FF6347",
-    "#4682B4",
-  ];
-
   const handleMarkAsDone = async (goalId) => {
     try {
       await markSavingsGoalAsDone(goalId);
@@ -82,7 +77,13 @@ const Notifications = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{
+          width: 44,
+          height: 44,
+          justifyContent: "center",
+          alignItems: "center",
+          borderRadius: 17,
+        }}>
           <Ionicons name="arrow-back" size={24} color="#1D1B20" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Notifications</Text>
@@ -96,19 +97,41 @@ const Notifications = () => {
               No savings goals are ready to be collected.
             </Text>
           ) : (
-            markDoneGoals.map((goal, index) => {
+            markDoneGoals.map((goal) => {
               const progress =
                 goal.targetAmount > 0
                   ? goal.currentAmount / goal.targetAmount
                   : 0;
-              const color = progressColors[index % progressColors.length];
+              const color = goal.color || "#093565"; // Default color if null
+              const emoji = goal.emoji || (
+                <MaterialCommunityIcons
+                  name="bullseye-arrow"
+                  size={50}
+                  color="rgba(9, 53, 101, 1)"
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: 5,
+                  }}
+                />
+              ); // Default emoji if null
 
               return (
                 <View key={goal.savingsGoalId} style={styles.goalItem}>
-                  <Text style={styles.emoji}>{goal.emoji || "🎯"}</Text>
+                  <View style={styles.emojiContainer}>
+                    <Text
+                      style={{
+                        fontSize: 44,
+                      }}
+                    >
+                      {emoji}
+                    </Text>
+                  </View>
                   <View style={styles.goalDetails}>
                     <View style={styles.goalHeader}>
-                      <Text style={styles.goalName}>{goal.savingsGoalName}</Text>
+                      <Text style={styles.goalName}>
+                        {goal.savingsGoalName}
+                      </Text>
                     </View>
                     <View style={styles.progressContainer}>
                       <Progress.Bar
@@ -179,12 +202,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "rgba(30, 30, 30, 0.09)",
-    borderRadius: 14,
+    borderRadius: 30,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 10,
   },
-  emoji: {
-    fontSize: 24,
+  emojiContainer: {
     marginRight: 16,
   },
   goalDetails: {
@@ -203,19 +225,18 @@ const styles = StyleSheet.create({
     color: "#000",
     flex: 1,
     marginRight: 8,
-    marginTop: 10,
   },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 12,
+    marginTop: 10,
   },
   button: {
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,
-    minWidth: 100, 
+    minWidth: 100,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -224,9 +245,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
     textAlign: "center",
-  },
-  progressContainer: {
-    marginTop: 8,
   },
   progressText: {
     fontSize: 14,

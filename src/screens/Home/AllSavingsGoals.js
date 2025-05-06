@@ -52,7 +52,8 @@ const AllSavingsGoals = () => {
     );
   }
 
-  const goals = goalsData || [];
+  const goals =
+    goalsData.filter((goal) => goal.status === "inProgress").reverse() || [];
 
   return (
     <SafeAreaView style={styles.container}>

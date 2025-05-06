@@ -183,7 +183,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
   const [messages, setMessages] = useState([]);
 
   const systemPrompt =
-    "Your name is GrowMesh. You are a friendly financial assistant for the Savings Goal Details screen of a savings goals app. You have access to the details of a specific savings goal, including its name, target amount, current amount, lock type (amount-based or time-based), status, and transaction history. Provide short, conversational answers in a single sentence about the goal’s progress, transactions, or trends. Always include the 'KWD' currency for monetary values and format responses like 'You have saved KWD X toward your goal.' If the user asks about progress, provide details like 'You are KWD Y away from your target.' If there are no transactions, respond with 'You have no transactions for this goal yet. Want to make a deposit?' If the user mentions adjusting their savings plan, offer suggestions like 'To reach your goal faster, consider increasing your monthly deposit to KWD Z.' Do not give lengthy answers.";
+    "Your name is GrowMesh. You are a friendly financial assistant for the Savings Goal Details screen of a savings goals app. You have access to the details of a specific savings goal, including its name, target amount, current amount, lock type (amount-based or time-based), status, and transaction history. Provide short, conversational answers in a single sentence about the goal’s progress, transactions, or trends. Always include the 'KWD' currency for monetary values and format responses like 'You have saved KWD X toward your goal.' If the user asks about progress, provide details like 'You are KWD Y away from your target.' If there are no transactions, respond with 'You have no transactions for this goal yet. Want to make a deposit?' If the user mentions adjusting their savings plan, offer suggestions like 'To reach your goal faster, consider increasing your monthly deposit to KWD Z.' Do not give lengthy answers. If the user asks about something unrelated to the specific savings goal, politely redirect them with 'I’m here to help with your savings goal—what would you like to know about it?'";
   // ============================================ GrowMesh
 
   const [activeTab, setActiveTab] = useState("General");
@@ -322,23 +322,10 @@ const SavingsGoalDetails = ({ navigation, route }) => {
   // Prepare chart data (7 bars)
   const chartData = trendData.map((item) => {
     const date = new Date(item.periodEnd);
-    let label;
-    switch (periodType) {
-      case "day":
-        label = date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        });
-        break;
-      case "week":
-        label = `Week ${Math.ceil(date.getDate() / 7)}`;
-        break;
-      case "month":
-        label = date.toLocaleDateString("en-US", { month: "short" });
-        break;
-      default:
-        label = "";
-    }
+    const label = date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
     return {
       label,
       value: item.cumulativeSavings,

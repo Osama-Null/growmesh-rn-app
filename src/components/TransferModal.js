@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   amountInput: {
-    backgroundColor: "#F0F0F0",
+    backgroundColor: "rgba(30, 30, 30, 0.09)",
     color: "#000",
     borderRadius: 8,
     padding: 10,

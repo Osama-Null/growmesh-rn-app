@@ -23,6 +23,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import CustomEmojiPicker from "../../components/CustomEmojiPicker";
 import CustomColorPicker from "../../components/CustomColorPicker";
+import Feather from "@expo/vector-icons/Feather";
 
 const EditSavingsGoal = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -420,7 +421,7 @@ const EditSavingsGoal = () => {
             onPress={() => setEmojiColorModalVisible(true)}
           >
             <View style={styles.editEmojiCircle}>
-              <Ionicons name="create" size={16} color="#FFF" />
+              <Feather name="edit-3" size={24} color="white" />
             </View>
           </TouchableOpacity>
         </View>
@@ -748,9 +749,12 @@ const styles = StyleSheet.create({
     height: 40,
   },
   editEmojiCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    position: "absolute",
+    top: 5,
+    left: 10,
+    width: 45,
+    height: 45,
+    borderRadius: 40,
     backgroundColor: "#2F3039",
     justifyContent: "center",
     alignItems: "center",

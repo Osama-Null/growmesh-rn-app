@@ -57,32 +57,16 @@ const ProfileScreen = () => {
   }, [profileData]);
 
   const handleImagePick = async () => {
-    try {
-      const permissionResult =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        Alert.alert(
-          "Permission Required",
-          "Please allow access to your photo library"
-        );
-        return;
-      }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["photo"], // Updated to use array with 'photo' for SDK 53
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-        allowsMultipleSelection: false,
-        presentationStyle: "fullScreen",
-      });
-
-      if (!result.canceled) {
-        setSelectedImage(result.assets[0].uri);
-        setIsImageChanged(true);
-      }
-    } catch (error) {
-      Alert.alert("Error", "Failed to pick image");
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      setIsImageChanged(true);
     }
   };
 
@@ -133,7 +117,8 @@ const ProfileScreen = () => {
 
   const updateProfileMutation = useMutation({
     mutationFn: ({ userInfo, image }) => editProfile(userInfo, image),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Profile updated:", data);
       queryClient.invalidateQueries(["profile"]);
       Alert.alert("Success", "Profile updated successfully");
       setIsEditing(false);
@@ -143,7 +128,8 @@ const ProfileScreen = () => {
     },
     onError: (error) => {
       const errorMsg =
-        error?.response?.data?.Errors?.[0] || "Failed to update profile";
+        error.response?.data?.Errors?.[0] || "Failed to update profile";
+      console.error("Update failed:", error);
       Alert.alert(
         "Error",
         errorMsg === "Invalid password" ? "Wrong password" : errorMsg
@@ -153,15 +139,15 @@ const ProfileScreen = () => {
   });
 
   const handleConfirmPassword = () => {
-    const changedFields = {};
-    if (profile.email !== originalProfile.email)
-      changedFields.Email = profile.email;
-    if (profile.phone !== originalProfile.phone)
-      changedFields.Phone = profile.phone;
-
-    const userInfo = { ...changedFields, Password: password };
+    // Always include Email and Phone from profileData if not updated
+    const userInfo = {
+      Email: profile.email || originalProfile.email,
+      Phone: profile.phone || originalProfile.phone,
+      Password: password,
+    };
     const image = isImageChanged ? selectedImage : null;
 
+    console.log("Updating profile with:", { userInfo, image });
     updateProfileMutation.mutate({ userInfo, image });
   };
 
@@ -256,14 +242,14 @@ const ProfileScreen = () => {
               onError={() => setSelectedImage(null)}
             />
           ) : (
-            <FontAwesome name="user-circle-o" size={24} color="black" />
+            <FontAwesome name="user-circle-o" size={80} color="black" />
           )}
           {isEditing && (
             <TouchableOpacity
               style={styles.changePhotoButton}
               onPress={handleImagePick}
             >
-              <Feather name="edit-3" size={24} color="black" />
+              <Feather name="edit-3" size={24} color="white" />
             </TouchableOpacity>
           )}
         </View>
@@ -435,17 +421,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: -10,
     marginTop: 16,
-    backgroundColor: "rgba(0, 0, 0, 0.33)",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
     borderRadius: 50,
     padding: 10,
     justifyContent: "center",
     alignItems: "center",
-  },
-  changePhotoText: {
-    color: "#2F3039",
-    fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "Roboto",
   },
   formSection: {
     marginBottom: 24,
@@ -488,12 +468,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#4CAF50",
   },
   actionButtonText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "700",
-    fontFamily: "Roboto",
-  },
-  cancelButtonText: {
     color: "#FFF",
     fontSize: 16,
     fontWeight: "700",

@@ -25,11 +25,11 @@ const IntroAdd = () => {
           <LottieView
             source={require("../../../assets/app/add.json")}
             autoPlay
-            loop={false}
+            loop
             style={{
-              width: 400,
-              height: 400,
-              bottom: 123,
+              width: 500,
+              height: 500,
+              bottom: 150,
             }}
           />
           <Image
@@ -39,7 +39,7 @@ const IntroAdd = () => {
               height: 90,
               width: 90,
               position: "absolute",
-              top: 270,
+              bottom: 300,
               alignSelf: "center",
             }}
           />

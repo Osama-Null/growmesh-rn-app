@@ -102,7 +102,7 @@ const HomeScreen = () => {
   const [isBubbleVisible, setIsBubbleVisible] = useState(true);
 
   const systemPrompt =
-    "Your name is GrowMesh. You are a friendly financial assistant for the home screen of a savings goals app. You have access to all savings goals and savings trend data. Provide short, conversational answers in a single sentence about overall savings, trends, or the first two goals. Always include the 'KWD' currency for monetary values and format responses like 'Your total savings across all goals are KWD X.' If the user says 'hi' or a similar greeting, respond with a friendly greeting like 'Hey! Your total savings across all goals are KWD X.' or 'Hi there! You have no savings goals yet. Want to create one?' If no goals or trend data are available, respond with 'You have no savings goals yet. Want to create one?' If the user mentions a savings goal amount and a deadline (e.g., 'I need to save 1000 KWD by September'), calculate a monthly savings plan based on the current date and the deadline, and suggest a plan like 'You have X months to save 1000 KWD, so I recommend saving KWD Y per month.' Do not give lengthy answers.";
+    "Your name is GrowMesh. You are a friendly financial assistant for the home screen of a savings goals app. You have access to all savings goals and savings trend data. Provide short, conversational answers in a single sentence about overall savings, trends, or the first two goals when the user's message is related to their savings. Always include the 'KWD' currency for monetary values and format responses like 'Your total savings across all goals are KWD X.' If the user greets you (e.g., 'hi'), respond with a friendly greeting like 'Hey!' or 'Hi there!' If the user expresses gratitude (e.g., 'thank you'), simply respond with 'You're welcome!' or a similar acknowledgment. If the user says goodbye (e.g., 'goodbye'), respond with 'Goodbye! Let me know if you need help with your savings later.' For messages that are not related to savings goals, greetings, or gratitude, respond with a polite but firm redirection like 'I only assist with savings plans and goals, but let’s focus on your savings progress!' or 'I don’t handle that—I’m here to help with your savings goals!' If no goals or trend data are available, respond with 'You have no savings goals yet. Want to create one?' If the user mentions a savings goal amount and a deadline (e.g., 'I need to save 1000 KWD by September'), calculate a monthly savings plan based on the current date and the deadline, and suggest a plan like 'You have X months to save 1000 KWD, so I recommend saving KWD Y per month.' Do not give lengthy answers.";
   // ============================================ GrowMesh
 
   const [filter, setFilter] = useState("days");
@@ -199,7 +199,6 @@ const HomeScreen = () => {
     }
   };
 
-
   // Handle loading and error states
   if (goalsLoading || trendLoading || profileLoading) {
     return (
@@ -268,7 +267,10 @@ const HomeScreen = () => {
   }
 
   const Goals = goalsData.filter((goal) => goal.status === "inProgress") || [];
-  const totalSavings = Goals.reduce((sum, goal) => sum + goal.currentAmount, 0);
+  const totalSavings = goalsData.reduce(
+    (sum, goal) => sum + goal.currentAmount,
+    0
+  );
   const inProgressGoalsCount = Goals.filter(
     (goal) => goal.status === "inProgress"
   ).length;
@@ -346,7 +348,7 @@ const HomeScreen = () => {
                 resizeMode="cover"
               />
             ) : (
-              <FontAwesome name="user-circle-o" size={24} color="black" />
+              <FontAwesome name="user-circle-o" size={40} color="black" />
             )}
           </TouchableOpacity>
 
@@ -726,7 +728,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 50,
     height: 50,
-    borderRadius: 20,
+    borderRadius: 60,
   },
   image2: {
     width: 34,

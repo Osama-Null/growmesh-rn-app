@@ -11,18 +11,18 @@ const editProfile = async (userInfo, image) => {
   const formData = new FormData();
 
   // Append user info fields (only if provided)
-  if (userInfo.email) formData.append("Email", userInfo.email);
-  if (userInfo.phone) formData.append("Phone", userInfo.phone);
-  formData.append("Password", userInfo.password);
+  if (userInfo.Email) formData.append("Email", userInfo.Email);
+  if (userInfo.Phone) formData.append("Phone", userInfo.Phone);
+  if (userInfo.Password) formData.append("Password", userInfo.Password);
 
   // Append profile picture if provided
   if (image) {
-    const fileExtension = image.split(".").pop().toLowerCase();
-    const mimeType = fileExtension === "png" ? "image/png" : "image/jpeg";
+    const uriParts = image.split(".");
+    const fileType = uriParts[uriParts.length - 1];
     formData.append("ProfilePicture", {
-      name: `profile.${fileExtension}`,
-      type: mimeType,
       uri: image,
+      name: `profile.${fileType}`,
+      type: `image/${fileType === "png" ? "png" : "jpeg"}`,
     });
   }
 
