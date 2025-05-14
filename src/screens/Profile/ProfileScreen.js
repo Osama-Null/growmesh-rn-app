@@ -22,11 +22,14 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import UserContext from "../../context/UserContext";
 import { deleteToken } from "../../api/storage";
+import Entypo from "@expo/vector-icons/Entypo";
+import { useTheme } from "../../context/ThemeContext";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const queryClient = useQueryClient();
   const { setIsAuth } = useContext(UserContext);
+  const { theme = "light", toggleTheme } = useTheme();
 
   const [isEditing, setIsEditing] = useState(false);
   const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
@@ -199,14 +202,19 @@ const ProfileScreen = () => {
             style={{
               padding: 10,
               borderRadius: 50,
-              backgroundColor: "rgba(255, 0, 0, 0.08)",
+              backgroundColor: "rgba(0, 0, 0, 0.08)",
               justifyContent: "center",
               alignItems: "center",
               width: 50,
+              height: 50,
             }}
-            onPress={handleLogout}
+            onPress={toggleTheme}
           >
-            <MaterialIcons name="logout" size={24} color="red" />
+            {theme === "light" ? (
+              <MaterialIcons name="dark-mode" size={24} color="black" />
+            ) : (
+              <Entypo name="light-up" size={24} color="black" />
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -217,6 +225,7 @@ const ProfileScreen = () => {
               justifyContent: "center",
               alignItems: "center",
               width: 50,
+              height: 50,
             }}
             onPress={() => navigation.navigate("Faq")}
           >
@@ -229,6 +238,20 @@ const ProfileScreen = () => {
             >
               !
             </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              padding: 10,
+              borderRadius: 50,
+              backgroundColor: "rgba(255, 0, 0, 0.08)",
+              justifyContent: "center",
+              alignItems: "center",
+              width: 50,
+              height: 50,
+            }}
+            onPress={handleLogout}
+          >
+            <MaterialIcons name="logout" size={24} color="red" />
           </TouchableOpacity>
         </View>
       </View>

@@ -11,6 +11,7 @@ import Constants from "expo-constants";
 import { saveApiKey } from "./src/utils/secureStorage";
 import { getToken } from "./src/api/storage";
 import * as SecureStore from "expo-secure-store";
+import { ThemeProvider } from "./src/context/ThemeContext";
 
 export default function App() {
   const queryClient = new QueryClient();
@@ -22,9 +23,6 @@ export default function App() {
       try {
         await SecureStore.deleteItemAsync("authToken");
         const token = await getToken();
-        console.log("Token retrieved:", token); // Debug: Log the token
-        console.log("Token type:", typeof token); // Debug: Log the type of token
-        console.log("isAuth will be set to:", !!token); // Debug: Log the boolean value
         setIsAuth(!!token);
         const apiKey = Constants.expoConfig.extra.grokApiKey;
         if (!apiKey) {
@@ -38,7 +36,7 @@ export default function App() {
         setLoading(false);
       }
     };
-    
+
     checkTokenAndSetApiKey();
   }, []);
 
@@ -50,21 +48,21 @@ export default function App() {
     );
   }
 
-  console.log("Rendering navigation, isAuth:", isAuth); // Debug: Log the final isAuth value
-
   return (
-    <NavigationContainer>
-      <QueryClientProvider client={queryClient}>
-        <SafeAreaProvider>
-          <SafeAreaView style={styles.safeArea}>
-            <UserContext.Provider value={{ isAuth, setIsAuth }}>
-              <StatusBar translucent />
-              {isAuth ? <MainNavigation /> : <AuthNavigation />}
-            </UserContext.Provider>
-          </SafeAreaView>
-        </SafeAreaProvider>
-      </QueryClientProvider>
-    </NavigationContainer>
+    <ThemeProvider>
+      <NavigationContainer>
+        <QueryClientProvider client={queryClient}>
+          <SafeAreaProvider>
+            <SafeAreaView style={styles.safeArea}>
+              <UserContext.Provider value={{ isAuth, setIsAuth }}>
+                <StatusBar translucent />
+                {isAuth ? <MainNavigation /> : <AuthNavigation />}
+              </UserContext.Provider>
+            </SafeAreaView>
+          </SafeAreaProvider>
+        </QueryClientProvider>
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }
 

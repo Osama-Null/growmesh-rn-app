@@ -19,13 +19,18 @@ import Svg, { Circle } from "react-native-svg";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import TransferModal from "../../components/TransferModal";
-import { getSavingsGoal, getSavingsGoalTrend } from "../../api/savingsGoal";
+import {
+  getSavingsGoal,
+  getSavingsGoalTransactionTrend,
+  getSavingsGoalTrend,
+} from "../../api/savingsGoal";
 import { getTransactionsBySavingsGoal } from "../../api/transaction";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import GrowMesh from "../../components/GrowMesh";
 import Modal from "react-native-modal";
 import hexToRgba from "hex-to-rgba";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 // Animated Donut Component
 const AnimatedDonut = ({ progress, size, thickness, color }) => {
@@ -42,6 +47,8 @@ const AnimatedDonut = ({ progress, size, thickness, color }) => {
     strokeDashoffset: strokeDashoffset.value,
   }));
 
+  const rotation = -90;
+
   return (
     <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       <Circle
@@ -51,6 +58,7 @@ const AnimatedDonut = ({ progress, size, thickness, color }) => {
         stroke="rgba(120, 120, 128, 0.12)"
         strokeWidth={thickness}
         fill="none"
+        transform={`rotate(${rotation} ${size / 2} ${size / 2})`}
       />
       <AnimatedCircle
         cx={size / 2}
@@ -63,6 +71,7 @@ const AnimatedDonut = ({ progress, size, thickness, color }) => {
         strokeDashoffset={circumference}
         strokeLinecap="round"
         style={[animatedStyle]}
+        transform={`rotate(${rotation} ${size / 2} ${size / 2})`}
       />
     </Svg>
   );
@@ -80,15 +89,10 @@ const AnimatedBar = ({
   maxCumulative,
 }) => {
   const height = useSharedValue(0);
-  {
-    console.log(
-      "\n===============================\nAnimatedBar color:",
-      goalColor
-    );
-  }
+
   useEffect(() => {
     const calculatedHeight =
-      difference === 0 ? 5 : (difference / maxValue) * 150;
+      difference === 0 ? 5 : (Math.abs(difference) / maxValue) * 150;
     height.value = withTiming(calculatedHeight, { duration: 1000 });
   }, [difference, maxValue]);
 
@@ -96,18 +100,17 @@ const AnimatedBar = ({
     height: height.value,
   }));
 
-  const opacity = maxCumulative > 0 ? value / maxCumulative : 0;
-  const barColor = hexToRgba(goalColor, opacity);
+  const barColor =
+    difference === 0
+      ? hexToRgba(goalColor, 0.5)
+      : difference > 0
+      ? "#4CAF50"
+      : "#F44336";
 
   return (
     <View style={styles.barContainer}>
-      {difference !== null && difference !== 0 && (
-        <Text
-          style={[
-            styles.differenceText,
-            { color: difference > 0 ? "#rgb(7, 205, 0)" : "#FF0000" },
-          ]}
-        >
+      {difference !== 0 && (
+        <Text style={[styles.differenceText, { color: barColor }]}>
           {difference > 0 ? `+${difference}` : difference}
         </Text>
       )}
@@ -120,12 +123,9 @@ const AnimatedBar = ({
 };
 
 const BarChartComponent = ({ data, goalColor }) => {
-  {
-    console.log("\n\n\nBarChartComponent color\n:", goalColor);
-  }
-
-  const maxValue = Math.max(...data.map((item) => item.difference), 10) * 1.1;
-  const maxCumulative = Math.max(...data.map((item) => item.value));
+  const maxValue =
+    Math.max(...data.map((item) => Math.abs(item.difference)), 10) * 1.1;
+  const maxCumulative = Math.max(...data.map((item) => item.value), 10);
 
   return (
     <View style={styles.chartContainer}>
@@ -148,26 +148,37 @@ const BarChartComponent = ({ data, goalColor }) => {
 const TransactionList = ({ transactions }) => {
   return (
     <ScrollView style={styles.transactionList}>
-      {transactions.reverse().map((transaction, index) => {
+      {transactions.map((transaction, index) => {
         const date = new Date(transaction.transactionDate);
         const formattedDate = date.toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
           year: "numeric",
         });
+        const isDeposit = transaction.transactionType === "transferToGoal";
+        const sign = isDeposit ? "+" : "-";
+        const amountColor = isDeposit ? "#4CAF50" : "#F44336";
+
         return (
           <View
             key={transaction.transactionId || index}
             style={styles.transactionItem}
           >
-            <Text style={styles.transactionText}>{formattedDate}</Text>
-            <Text style={styles.transactionText}>
-              {transaction.transactionType === "deposit" ? "+" : "-"} KWD{" "}
-              {transaction.amount}
-            </Text>
-            <Text style={styles.transactionText}>
-              {transaction.transactionType}
-            </Text>
+            <View style={styles.transactionRow}>
+              <Icon
+                name={isDeposit ? "arrow-upward" : "arrow-downward"}
+                size={20}
+                color={amountColor}
+              />
+              <Text style={styles.transactionDate}>{formattedDate}</Text>
+              <View style={styles.amountContainer}>
+                <Text
+                  style={[styles.transactionAmount, { color: amountColor }]}
+                >
+                  {sign} {transaction.amount} KWD
+                </Text>
+              </View>
+            </View>
           </View>
         );
       })}
@@ -227,7 +238,24 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     refetchOnMount: "always",
   });
 
-  if (goalLoading || transactionsLoading || trendLoading) {
+  // Fetch transaction trend data (7 bars)
+  const {
+    data: transactionTrendResponse,
+    isLoading: transactionTrendLoading,
+    isError: transactionTrendError,
+    error: transactionTrendErrorDetails,
+  } = useQuery({
+    queryKey: ["fetchSavingsGoalTransactionTrend", goalId],
+    queryFn: () => getSavingsGoalTransactionTrend(goalId, 7),
+    refetchOnMount: "always",
+  });
+
+  if (
+    goalLoading ||
+    transactionsLoading ||
+    trendLoading ||
+    transactionTrendLoading
+  ) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <Text style={styles.loadingText}>Loading...</Text>
@@ -235,7 +263,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     );
   }
 
-  if (goalError || transactionsError || trendError) {
+  if (goalError || transactionsError || trendError || transactionTrendError) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <Text style={styles.errorText}>
@@ -243,14 +271,15 @@ const SavingsGoalDetails = ({ navigation, route }) => {
             ? `Error fetching goal: ${goalErrorDetails?.message}`
             : transactionsError
             ? `Error fetching transactions: ${transactionsErrorDetails?.message}`
-            : `Error fetching trend: ${trendErrorDetails?.message}`}
+            : `Error fetching trend: ${trendErrorDetails?.message} \n\n ${transactionTrendErrorDetails?.message}`}
         </Text>
       </SafeAreaView>
     );
   }
   const goal = goalData || {};
-  const transactions = transactionsData || [];
+  const transactions = transactionsData.reverse() || [];
   const trendData = trendResponse?.trendData || [];
+  const transactionTrendData = transactionTrendResponse?.transactions || [];
   const periodType = trendResponse?.periodType || "day";
 
   {
@@ -265,6 +294,13 @@ const SavingsGoalDetails = ({ navigation, route }) => {
   {
     console.log("\ntransactions:", transactions, "\n==================\n");
   }
+  {
+    console.log(
+      "\ntransactions trend:",
+      transactionTrendData,
+      "\n==================\n"
+    );
+  }
 
   // Extract the goal color with default fallback
   const goalColor = goal.color || "#093565";
@@ -278,7 +314,22 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     progress =
       goal.targetAmount > 0 ? goal.currentAmount / goal.targetAmount : 0;
     percentage = Math.round(progress * 100);
-    progressLabel = `KWD ${goal.currentAmount} / ${goal.targetAmount}`;
+    progressLabel = (
+      <>
+        <Text style={{ color: "#000000", fontSize: 32, fontWeight: "bold" }}>
+          {goal.currentAmount}
+        </Text>
+        <Text
+          style={{
+            color: "rgba(0, 0, 0, 0.47)",
+            fontSize: 23,
+            fontWeight: "bold",
+          }}
+        >
+          /{goal.targetAmount} KWD
+        </Text>
+      </>
+    );
   } else if (goal.lockType === "timeBased") {
     const createdAtTrimmed = goal.createdAt.replace(/(\.\d{3})\d*/, "$1");
     const startDate = new Date(createdAtTrimmed + "Z");
@@ -311,7 +362,35 @@ const SavingsGoalDetails = ({ navigation, route }) => {
         (endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
       )
     );
-    progressLabel = `KWD ${goal.currentAmount} | ${daysRemaining}d left`;
+    progressLabel = (
+      <>
+        <Text style={{ color: "#000000", fontSize: 32, fontWeight: "bold" }}>
+          {`${goal.currentAmount} `}
+        </Text>
+        <Text
+          style={{
+            color: "rgba(0, 0, 0, 0.47)",
+            fontSize: 23,
+            fontWeight: "bold",
+          }}
+        >
+          KWD
+        </Text>
+        <Text style={{ color: "#000000", fontSize: 32, fontWeight: "bold" }}>
+          {` | ${daysRemaining}`}
+        </Text>
+        <Text></Text>
+        <Text
+          style={{
+            color: "rgba(0, 0, 0, 0.47)",
+            fontSize: 23,
+            fontWeight: "bold",
+          }}
+        >
+          d left
+        </Text>
+      </>
+    );
 
     // Pass progress to AnimatedDonut and log it
     console.log("progress sent to donut:", progress);
@@ -320,8 +399,20 @@ const SavingsGoalDetails = ({ navigation, route }) => {
   }
 
   // Prepare chart data (7 bars)
-  const chartData = trendData.map((item) => {
-    const date = new Date(item.periodEnd);
+  // const chartData = trendData.map((item) => {
+  //   const date = new Date(item.periodEnd);
+  //   const label = date.toLocaleDateString("en-US", {
+  //     month: "short",
+  //     day: "numeric",
+  //   });
+  //   return {
+  //     label,
+  //     value: item.cumulativeSavings,
+  //     difference: item.difference,
+  //   };
+  // });
+  const chartData = transactionTrendData.map((item) => {
+    const date = new Date(item.transactionDate);
     const label = date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -410,7 +501,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.view2}>
-          <Text style={styles.text2}>{progressLabel}</Text>
+          <Text>{progressLabel}</Text>
         </View>
         <View style={styles.view3}>
           <TouchableOpacity onPress={() => setActiveTab("General")}>
@@ -420,6 +511,8 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 activeTab === "General" && {
                   color: goalColor,
                   textDecorationLine: "underline",
+                  fontSize: 18,
+                  fontWeight: "bold",
                 },
               ]}
             >
@@ -434,6 +527,8 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 activeTab === "History" && {
                   color: goalColor,
                   textDecorationLine: "underline",
+                  fontSize: 18,
+                  fontWeight: "bold",
                 },
               ]}
             >
@@ -628,20 +723,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginRight: 8,
   },
-  text2: {
-    color: "#000000",
-    fontSize: 32,
-    fontWeight: "bold",
-  },
   text3: {
-    color: "#000000",
-    fontSize: 20,
-    fontWeight: "bold",
+    color: "rgba(0, 0, 0, 0.41)",
+    fontSize: 18,
   },
   view: {
     alignItems: "center",
   },
   view2: {
+    flexDirection: "row",
+    alignSelf: "center",
+    gap: 5,
     alignItems: "center",
   },
   view3: {
@@ -711,13 +803,39 @@ const styles = StyleSheet.create({
   transactionList: {
     flex: 1,
     marginHorizontal: 16,
+    backgroundColor: "rgba(0, 0, 0, 0.09)",
+    borderRadius: 10,
+    padding: 16,
   },
   transactionItem: {
+    paddingVertical: 12,
+  },
+  transactionRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#00000057",
+    alignItems: "center",
+  },
+  transactionDate: {
+    fontSize: 14,
+    color: "#666666",
+  },
+  transactionAmount: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  amountContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  transactionType: {
+    fontSize: 12,
+    color: "#999999",
+    marginTop: 4,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "black",
+    marginTop: 12,
   },
   transactionText: {
     color: "#000",
