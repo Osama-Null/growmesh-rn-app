@@ -250,6 +250,10 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     refetchOnMount: "always",
   });
 
+  useEffect(() => {
+    console.log("SavingsGoalDetails mounted at:", new Date().toISOString());
+  }, []);
+
   if (
     goalLoading ||
     transactionsLoading ||
@@ -276,6 +280,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
       </SafeAreaView>
     );
   }
+  
   const goal = goalData || {};
   const transactions = transactionsData.reverse() || [];
   const trendData = trendResponse?.trendData || [];
@@ -458,7 +463,19 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     transactionsData: transactionsData || [],
   };
 
+  const handleOpenModal2 = () => {
+    console.log(
+      "Opening GrowMesh modal from SavingsGoalDetails at:",
+      new Date().toISOString()
+    );
+    setModalVisible2(true);
+  };
+
   const handleClose = () => {
+    console.log(
+      "Closing GrowMesh modal from SavingsGoalDetails at:",
+      new Date().toISOString()
+    );
     setModalVisible2(false);
   };
   // ============================================ GrowMesh
@@ -629,7 +646,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
 
       {/* GrowMesh ============================================ */}
       <View style={styles.absoluteImage2}>
-        <TouchableOpacity onPress={() => setModalVisible2(true)}>
+        <TouchableOpacity onPress={handleOpenModal2}>
           <Image
             source={require("../../../assets/app/growmesh-light.png")}
             resizeMode={"stretch"}
@@ -638,9 +655,28 @@ const SavingsGoalDetails = ({ navigation, route }) => {
         </TouchableOpacity>
         <Modal
           isVisible={isModalVisible2}
-          onBackdropPress={() => setModalVisible2(false)}
+          onBackdropPress={handleClose}
+          onModalShow={() =>
+            console.log(
+              "SavingsGoalDetails Modal shown at:",
+              new Date().toISOString()
+            )
+          }
         >
-          <View style={styles.modalContent}>
+          <View
+            style={styles.modalContent}
+            onLayout={(event) => {
+              const { width, height } = event.nativeEvent.layout;
+              console.log("SavingsGoalDetails Modal Content Layout:", {
+                width,
+                height,
+              });
+            }}
+          >
+            {console.log(
+              "SavingsGoalDetails modalContent style applied:",
+              styles.modalContent
+            )}
             <GrowMesh
               messages={messages}
               setMessages={setMessages}

@@ -66,9 +66,8 @@ const lightStyles = StyleSheet.create({
     position: "absolute",
     bottom: 80,
     right: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 70,
+    width: "100%",
+    alignItems: "flex-end",
   },
   box2: {
     width: 287,
@@ -327,9 +326,9 @@ const lightStyles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  textIcons:{
+  textIcons: {
     color: "black",
-  }
+  },
 });
 
 const darkStyles = StyleSheet.create({
@@ -350,14 +349,14 @@ const darkStyles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 20,
   },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#292848",
+  },
   modalContent: {
     padding: 10,
     borderRadius: 10,
     height: "80%",
-    flex: 1,
-    backgroundColor: "#292848",
-  },
-  safeArea: {
     flex: 1,
     backgroundColor: "#292848",
   },
@@ -369,9 +368,8 @@ const darkStyles = StyleSheet.create({
     position: "absolute",
     bottom: 80,
     right: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 70,
+    width: "100%",
+    alignItems: "flex-end",
   },
   box2: {
     width: 287,
@@ -799,6 +797,10 @@ const HomeScreen = () => {
     }
   }, [goalsData, trendData, profileData]);
 
+  useEffect(() => {
+    console.log("HomeScreen mounted at:", new Date().toISOString());
+  }, []);
+
   const handleLogout = async () => {
     try {
       await deleteToken();
@@ -934,7 +936,19 @@ const HomeScreen = () => {
     all_goals_data: goalsData || [],
   };
 
+  const handleOpenModal = () => {
+    console.log(
+      "Opening GrowMesh modal from HomeScreen at:",
+      new Date().toISOString()
+    );
+    setModalVisible(true);
+  };
+
   const handleClose = () => {
+    console.log(
+      "Closing GrowMesh modal from HomeScreen at:",
+      new Date().toISOString()
+    );
     setModalVisible(false);
   };
 
@@ -1151,8 +1165,9 @@ const HomeScreen = () => {
           </View>
         </View>
       </View>
+      {/* GrowMesh ============================================ */}
       <View style={styles.absoluteImage2}>
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
+        <TouchableOpacity onPress={handleOpenModal}>
           <Image
             source={require("../../../assets/app/growmesh-light.png")}
             resizeMode={"stretch"}
@@ -1168,9 +1183,25 @@ const HomeScreen = () => {
         )}
         <Modal
           isVisible={isModalVisible}
-          onBackdropPress={() => setModalVisible(false)}
+          onBackdropPress={handleClose}
+          onModalShow={() =>
+            console.log("HomeScreen Modal shown at:", new Date().toISOString())
+          }
         >
-          <View style={styles.modalContent}>
+          <View
+            style={styles.modalContent}
+            onLayout={(event) => {
+              const { width, height } = event.nativeEvent.layout;
+              console.log("HomeScreen Modal Content Layout:", {
+                width,
+                height,
+              });
+            }}
+          >
+            {console.log(
+              "HomeScreen modalContent style applied:",
+              styles.modalContent
+            )}
             <GrowMesh
               messages={messages}
               setMessages={setMessages}
@@ -1182,6 +1213,8 @@ const HomeScreen = () => {
           </View>
         </Modal>
       </View>
+
+      {/* ============================================ GrowMesh */}
     </SafeAreaView>
   );
 };

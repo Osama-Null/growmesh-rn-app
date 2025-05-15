@@ -50,25 +50,23 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <AppContent isAuth={isAuth} queryClient={queryClient} />
+      <AppContent
+        isAuth={isAuth}
+        setIsAuth={setIsAuth}
+        queryClient={queryClient}
+      />
     </ThemeProvider>
   );
 }
 
-const AppContent = ({ isAuth, queryClient }) => {
+const AppContent = ({ isAuth, setIsAuth, queryClient }) => {
   const { theme, themeReady } = useTheme();
 
-  // Wait for theme to be ready before rendering
-  if (!themeReady) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading theme...</Text>
-      </View>
-    );
-  }
-
-  // Dynamically set the background color based on the theme
-  const safeAreaBackgroundColor = theme === "light" ? "#FEF7FF" : "#292848";
+  const safeAreaBackgroundColor = themeReady
+    ? theme === "light"
+      ? "#FEF7FF"
+      : "#292848"
+    : "#FEF7FF";
 
   return (
     <NavigationContainer>
@@ -80,11 +78,17 @@ const AppContent = ({ isAuth, queryClient }) => {
               backgroundColor: safeAreaBackgroundColor,
             }}
           >
-            <UserContext.Provider value={{ isAuth, setIsAuth: () => {} }}>
+            <UserContext.Provider value={{ isAuth, setIsAuth }}>
               <StatusBar
                 translucent
                 backgroundColor="transparent"
-                barStyle={theme === "light" ? "dark-content" : "light-content"}
+                barStyle={
+                  themeReady
+                    ? theme === "light"
+                      ? "dark-content"
+                      : "light-content"
+                    : "dark-content"
+                }
               />
               {isAuth ? <MainNavigation /> : <AuthNavigation />}
             </UserContext.Provider>

@@ -159,6 +159,10 @@ const GrowMesh = ({
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
+      onLayout={(event) => {
+        const { width, height } = event.nativeEvent.layout;
+        console.log("GrowMesh Container Layout:", { width, height });
+      }}
     >
       <View style={styles.header}>
         <View
