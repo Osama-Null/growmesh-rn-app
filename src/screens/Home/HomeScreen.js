@@ -30,7 +30,6 @@ import UserContext from "../../context/UserContext";
 import { deleteToken } from "../../api/storage";
 import { useTheme } from "../../context/ThemeContext";
 
-
 const lightStyles = StyleSheet.create({
   speechBubble: {
     position: "absolute",
@@ -144,6 +143,7 @@ const lightStyles = StyleSheet.create({
     fontSize: 10,
     marginBottom: 5,
     fontWeight: "bold",
+    color: "black", // Default color, overridden dynamically
   },
   placeholderContainer: {
     height: 200,
@@ -327,13 +327,17 @@ const lightStyles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  textIcons:{
+    color: "black",
+  }
 });
+
 const darkStyles = StyleSheet.create({
   speechBubble: {
     position: "absolute",
     bottom: 45,
     right: 65,
-    backgroundColor: "rgba(0, 0, 0, 0.44)",
+    backgroundColor: "rgba(255, 255, 255, 0.44)",
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 20,
@@ -351,10 +355,11 @@ const darkStyles = StyleSheet.create({
     borderRadius: 10,
     height: "80%",
     flex: 1,
+    backgroundColor: "#292848",
   },
   safeArea: {
     flex: 1,
-    backgroundColor: "#FEF7FF",
+    backgroundColor: "#292848",
   },
   absoluteImage: {
     width: 80,
@@ -371,7 +376,7 @@ const darkStyles = StyleSheet.create({
   box2: {
     width: 287,
     height: 1,
-    backgroundColor: "#00000057",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     marginBottom: 13,
     marginLeft: 71,
   },
@@ -383,14 +388,14 @@ const darkStyles = StyleSheet.create({
   dropdownButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(30,30,30,0.09)",
+    backgroundColor: "rgba(255, 255, 255, 0.09)",
     borderRadius: 15,
     paddingVertical: 5,
     paddingHorizontal: 14,
     height: 30,
   },
   dropdownButtonText: {
-    color: "black",
+    color: "#FFFFFF",
     fontSize: 16,
     marginRight: 5,
   },
@@ -404,14 +409,14 @@ const darkStyles = StyleSheet.create({
   },
   dropdownItem: {
     alignItems: "center",
-    backgroundColor: "rgba(30, 30, 30, 0.09)",
+    backgroundColor: "rgba(255, 255, 255, 0.09)",
     borderRadius: 15,
     paddingVertical: 5,
     paddingHorizontal: 19,
     height: 30,
   },
   dropdownItemText: {
-    color: "black",
+    color: "#FFFFFF",
     fontSize: 16,
     marginRight: 5,
   },
@@ -433,7 +438,7 @@ const darkStyles = StyleSheet.create({
     borderRadius: 10,
   },
   barLabel: {
-    color: "rgba(13, 46, 96, 0.6)",
+    color: "rgba(255, 255, 255, 0.6)",
     fontSize: 12,
     marginTop: 5,
   },
@@ -441,6 +446,7 @@ const darkStyles = StyleSheet.create({
     fontSize: 10,
     marginBottom: 5,
     fontWeight: "bold",
+    color: "#FFFFFF",
   },
   placeholderContainer: {
     height: 200,
@@ -448,7 +454,7 @@ const darkStyles = StyleSheet.create({
     alignItems: "center",
   },
   placeholderText: {
-    color: "#000",
+    color: "#FFFFFF",
     fontSize: 16,
     textAlign: "center",
   },
@@ -458,7 +464,7 @@ const darkStyles = StyleSheet.create({
   },
   column3: {
     alignItems: "flex-start",
-    backgroundColor: "rgba(30,30,30,0.09)",
+    backgroundColor: "rgba(255, 255, 255, 0.09)",
     borderRadius: 14,
     paddingVertical: 23,
   },
@@ -520,7 +526,7 @@ const darkStyles = StyleSheet.create({
     marginBottom: 12,
   },
   text: {
-    color: "#000000",
+    color: "#FFFFFF",
     fontSize: 20,
     textAlign: "center",
     marginBottom: 11,
@@ -528,7 +534,7 @@ const darkStyles = StyleSheet.create({
     marginTop: 40,
   },
   text2: {
-    color: "#000000",
+    color: "#FFFFFF",
     fontSize: 25,
     fontWeight: "bold",
     textAlign: "center",
@@ -536,7 +542,7 @@ const darkStyles = StyleSheet.create({
     marginHorizontal: 16,
   },
   text6: {
-    color: "#000000",
+    color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 13,
@@ -544,7 +550,7 @@ const darkStyles = StyleSheet.create({
     marginTop: 20,
   },
   text7: {
-    color: "#000000",
+    color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "left",
@@ -552,13 +558,13 @@ const darkStyles = StyleSheet.create({
     flex: 1,
   },
   text8: {
-    color: "#000000",
+    color: "#FFFFFF",
     fontSize: 16,
     textAlign: "right",
     flex: 1,
   },
   text10: {
-    color: "#000000",
+    color: "#FFFFFF",
     fontSize: 16,
     textAlign: "center",
     alignSelf: "center",
@@ -583,7 +589,7 @@ const darkStyles = StyleSheet.create({
     alignItems: "center",
   },
   loadingText: {
-    color: "black",
+    color: "#FFFFFF",
     fontSize: 16,
   },
   errorContainer: {
@@ -592,7 +598,7 @@ const darkStyles = StyleSheet.create({
     alignItems: "center",
   },
   errorText: {
-    color: "black",
+    color: "#FFFFFF",
     fontSize: 16,
   },
   info: {
@@ -601,7 +607,7 @@ const darkStyles = StyleSheet.create({
     gap: 5,
     borderRadius: 15,
     width: "49%",
-    backgroundColor: "rgba(30, 30, 30, 0.09)",
+    backgroundColor: "rgba(255, 255, 255, 0.09)",
     height: 80,
   },
   notificationWrapper: {
@@ -624,9 +630,12 @@ const darkStyles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  textIcons: {
+    color: "white",
+  },
 });
 
-const AnimatedBar = ({ value, label, maxValue, difference, styles }) => {
+const AnimatedBar = ({ value, label, maxValue, difference, styles, theme }) => {
   const height = useSharedValue(0);
 
   React.useEffect(() => {
@@ -649,7 +658,16 @@ const AnimatedBar = ({ value, label, maxValue, difference, styles }) => {
         <Text
           style={[
             styles.differenceText,
-            { color: difference > 0 ? "rgba(9, 53, 101, 0.79)" : "#FF0000" },
+            {
+              color:
+                difference > 0
+                  ? theme === "light"
+                    ? "green"
+                    : "lightgreen"
+                  : theme === "light"
+                  ? "red"
+                  : "pink",
+            },
           ]}
         >
           {difference > 0 ? `+${difference}` : difference}
@@ -663,7 +681,7 @@ const AnimatedBar = ({ value, label, maxValue, difference, styles }) => {
   );
 };
 
-const BarChartComponent = ({ data, styles }) => {
+const BarChartComponent = ({ data, styles, theme }) => {
   const maxValue = Math.max(...data.map((item) => item.value), 10) * 1.1;
 
   return (
@@ -676,6 +694,7 @@ const BarChartComponent = ({ data, styles }) => {
           maxValue={maxValue}
           difference={item.difference}
           styles={styles}
+          theme={theme}
         />
       ))}
     </View>
@@ -687,14 +706,17 @@ const HomeScreen = () => {
   const { theme, toggleTheme } = useTheme();
   const { setIsAuth } = useContext(UserContext);
   const styles = theme === "light" ? lightStyles : darkStyles;
-  // GrowMesh ============================================
+  const iconColor = theme === "light" ? "black" : "white";
+
+  console.log("HomeScreen rendered with theme:", theme);
+  console.log("Styles applied to box2:", styles.box2);
+
   const [isModalVisible, setModalVisible] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isBubbleVisible, setIsBubbleVisible] = useState(true);
 
   const systemPrompt =
     "Your name is GrowMesh. You are a friendly financial assistant for the home screen of a savings goals app. You have access to all savings goals and savings trend data. Provide short, conversational answers in a single sentence about overall savings, trends, or the first two goals when the user's message is related to their savings. Always include the 'KWD' currency for monetary values and format responses like 'Your total savings across all goals are KWD X.' If the user greets you (e.g., 'hi'), respond with a friendly greeting like 'Hey!' or 'Hi there!' If the user expresses gratitude (e.g., 'thank you'), simply respond with 'You're welcome!' or a similar acknowledgment. If the user says goodbye (e.g., 'goodbye'), respond with 'Goodbye! Let me know if you need help with your savings later.' For messages that are not related to savings goals, greetings, or gratitude, respond with a polite but firm redirection like 'I only assist with savings plans and goals, but let’s focus on your savings progress!' or 'I don’t handle that—I’m here to help with your savings goals!' If no goals or trend data are available, respond with 'You have no savings goals yet. Want to create one?' If the user mentions a savings goal amount and a deadline (e.g., 'I need to save 1000 KWD by September'), calculate a monthly savings plan based on the current date and the deadline, and suggest a plan like 'You have X months to save 1000 KWD, so I recommend saving KWD Y per month.' Do not give lengthy answers.";
-  // ============================================ GrowMesh
 
   const [filter, setFilter] = useState("days");
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -706,6 +728,10 @@ const HomeScreen = () => {
       opacity: bubbleOpacity.value,
     };
   });
+
+  useEffect(() => {
+    console.log("Theme changed to:", theme);
+  }, [theme]);
 
   useEffect(() => {
     bubbleOpacity.value = withTiming(1, { duration: 500 });
@@ -783,7 +809,6 @@ const HomeScreen = () => {
     }
   };
 
-  // Handle loading and error states
   if (goalsLoading || trendLoading || profileLoading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -798,6 +823,7 @@ const HomeScreen = () => {
             justifyContent: "center",
             alignItems: "center",
             width: 50,
+            height: 50,
           }}
           onPress={handleLogout}
         >
@@ -896,7 +922,6 @@ const HomeScreen = () => {
     (goal) => goal.status === "markDone"
   ).length;
 
-  // GrowMesh ============================================
   const handleError = (error) => {
     console.error("Chat error:", error.message);
     Alert.alert(
@@ -912,7 +937,6 @@ const HomeScreen = () => {
   const handleClose = () => {
     setModalVisible(false);
   };
-  // ============================================ GrowMesh
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -931,7 +955,7 @@ const HomeScreen = () => {
                 resizeMode="cover"
               />
             ) : (
-              <FontAwesome name="user-circle-o" size={40} color="black" />
+              <FontAwesome name="user-circle-o" size={40} color={iconColor} />
             )}
           </TouchableOpacity>
 
@@ -943,7 +967,7 @@ const HomeScreen = () => {
                 <Ionicons
                   name="notifications-outline"
                   size={34}
-                  color="black"
+                  color={iconColor}
                 />
                 {notificationCount > 0 && (
                   <View style={styles.notificationBadge}>
@@ -978,7 +1002,7 @@ const HomeScreen = () => {
               <MaterialIcons
                 name={isDropdownVisible ? "arrow-drop-up" : "arrow-drop-down"}
                 size={20}
-                color="black"
+                color={iconColor}
               />
             </TouchableOpacity>
             {isDropdownVisible && (
@@ -1010,7 +1034,7 @@ const HomeScreen = () => {
             </Text>
           </View>
         ) : (
-          <BarChartComponent data={chartData} styles={styles} />
+          <BarChartComponent data={chartData} styles={styles} theme={theme} />
         )}
         <Text style={styles.text6}>{"Savings Goals"}</Text>
         <View style={styles.column2}>
@@ -1115,18 +1139,18 @@ const HomeScreen = () => {
               <MaterialCommunityIcons
                 name="bullseye-arrow"
                 size={30}
-                color="black"
+                color="#1f77b4"
               />
-              <Text>{inProgressGoalsCount}</Text>
+              <Text style={styles.textIcons}>{inProgressGoalsCount}</Text>
             </View>
             <View style={styles.info}>
-              <AntDesign name="checkcircle" size={30} color="black" />
-              <Text>{completedGoalsCount}</Text>
+              <AntDesign name="checkcircle" size={30} color="#1f77b4" />
+
+              <Text style={styles.textIcons}>{completedGoalsCount}</Text>
             </View>
           </View>
         </View>
       </View>
-      {/* GrowMesh ============================================ */}
       <View style={styles.absoluteImage2}>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Image
@@ -1158,307 +1182,8 @@ const HomeScreen = () => {
           </View>
         </Modal>
       </View>
-      {/* ============================================ GrowMesh */}
     </SafeAreaView>
   );
 };
 
 export default HomeScreen;
-
-// const styles = StyleSheet.create({
-//   speechBubble: {
-//     position: "absolute",
-//     bottom: 45,
-//     right: 65,
-//     backgroundColor: "rgba(0, 0, 0, 0.44)",
-//     paddingVertical: 8,
-//     paddingHorizontal: 12,
-//     borderRadius: 20,
-//     width: 230,
-//     zIndex: 10,
-//     borderBottomRightRadius: 10,
-//   },
-//   speechBubbleText: {
-//     color: "#FFF",
-//     fontSize: 13,
-//     lineHeight: 20,
-//   },
-//   modalContent: {
-//     padding: 10,
-//     borderRadius: 10,
-//     height: "80%",
-//     flex: 1,
-//   },
-//   safeArea: {
-//     flex: 1,
-//     backgroundColor: "#FEF7FF",
-//   },
-//   absoluteImage: {
-//     width: 80,
-//     height: 80,
-//   },
-//   absoluteImage2: {
-//     position: "absolute",
-//     bottom: 80,
-//     right: 0,
-//     alignItems: "center",
-//     justifyContent: "center",
-//     borderRadius: 70,
-//   },
-//   box2: {
-//     width: 287,
-//     height: 1,
-//     backgroundColor: "#00000057",
-//     marginBottom: 13,
-//     marginLeft: 71,
-//   },
-//   dropdownContainer: {
-//     position: "relative",
-//     alignItems: "center",
-//     marginBottom: 30,
-//   },
-//   dropdownButton: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     backgroundColor: "rgba(30,30,30,0.09)",
-//     borderRadius: 15,
-//     paddingVertical: 5,
-//     paddingHorizontal: 14,
-//     height: 30,
-//   },
-//   dropdownButtonText: {
-//     color: "black",
-//     fontSize: 16,
-//     marginRight: 5,
-//   },
-//   dropdownMenu: {
-//     position: "absolute",
-//     top: 35,
-//     zIndex: 1000,
-//     paddingVertical: 5,
-//     alignSelf: "center",
-//     gap: 9,
-//   },
-//   dropdownItem: {
-//     alignItems: "center",
-//     backgroundColor: "rgba(30, 30, 30, 0.09)",
-//     borderRadius: 15,
-//     paddingVertical: 5,
-//     paddingHorizontal: 19,
-//     height: 30,
-//   },
-//   dropdownItemText: {
-//     color: "black",
-//     fontSize: 16,
-//     marginRight: 5,
-//   },
-//   chartContainer: {
-//     flexDirection: "row",
-//     justifyContent: "space-around",
-//     alignItems: "flex-end",
-//     height: 200,
-//     paddingHorizontal: 16,
-//     marginBottom: 10,
-//     marginTop: -40,
-//   },
-//   barContainer: {
-//     alignItems: "center",
-//     width: 40,
-//   },
-//   bar: {
-//     width: 40,
-//     borderRadius: 10,
-//   },
-//   barLabel: {
-//     color: "rgba(13, 46, 96, 0.6)",
-//     fontSize: 12,
-//     marginTop: 5,
-//   },
-//   differenceText: {
-//     fontSize: 10,
-//     marginBottom: 5,
-//     fontWeight: "bold",
-//   },
-//   placeholderContainer: {
-//     height: 200,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   placeholderText: {
-//     color: "#000",
-//     fontSize: 16,
-//     textAlign: "center",
-//   },
-//   column2: {
-//     marginBottom: 133,
-//     marginHorizontal: 16,
-//   },
-//   column3: {
-//     alignItems: "flex-start",
-//     backgroundColor: "rgba(30,30,30,0.09)",
-//     borderRadius: 14,
-//     paddingVertical: 23,
-//   },
-//   column4: {
-//     flex: 1,
-//   },
-//   image: {
-//     width: 41,
-//     height: 41,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   profileImage: {
-//     width: 50,
-//     height: 50,
-//     borderRadius: 60,
-//   },
-//   image2: {
-//     width: 34,
-//     height: 41,
-//   },
-//   row: {
-//     flexDirection: "row",
-//     paddingVertical: 6,
-//     marginTop: 8,
-//     marginBottom: 9,
-//     marginHorizontal: 16,
-//     position: "absolute",
-//     justifyContent: "space-between",
-//     width: "100%",
-//     alignSelf: "center",
-//     paddingHorizontal: 10,
-//   },
-//   row2: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     borderRadius: 14,
-//     paddingVertical: 10,
-//     paddingHorizontal: 23,
-//     marginBottom: 14,
-//   },
-//   row3: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     marginBottom: 9,
-//   },
-//   row4: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     paddingVertical: 9,
-//     paddingHorizontal: 23,
-//     marginBottom: 14,
-//   },
-//   row5: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     marginBottom: 12,
-//   },
-//   text: {
-//     color: "#000000",
-//     fontSize: 20,
-//     textAlign: "center",
-//     marginBottom: 11,
-//     marginHorizontal: 16,
-//     marginTop: 40,
-//   },
-//   text2: {
-//     color: "#000000",
-//     fontSize: 25,
-//     fontWeight: "bold",
-//     textAlign: "center",
-//     marginBottom: 11,
-//     marginHorizontal: 16,
-//   },
-//   text6: {
-//     color: "#000000",
-//     fontSize: 16,
-//     fontWeight: "bold",
-//     marginBottom: 13,
-//     marginLeft: 16,
-//     marginTop: 20,
-//   },
-//   text7: {
-//     color: "#000000",
-//     fontSize: 16,
-//     fontWeight: "bold",
-//     textAlign: "left",
-//     marginRight: 4,
-//     flex: 1,
-//   },
-//   text8: {
-//     color: "#000000",
-//     fontSize: 16,
-//     textAlign: "right",
-//     flex: 1,
-//   },
-//   text10: {
-//     color: "#000000",
-//     fontSize: 16,
-//     textAlign: "center",
-//     alignSelf: "center",
-//     fontWeight: "bold",
-//   },
-//   seeAll: {
-//     alignItems: "center",
-//     alignSelf: "center",
-//   },
-//   emoji: {
-//     fontSize: 40,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     right: 10,
-//   },
-//   view: {
-//     alignItems: "center",
-//   },
-//   loadingContainer: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   loadingText: {
-//     color: "black",
-//     fontSize: 16,
-//   },
-//   errorContainer: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   errorText: {
-//     color: "black",
-//     fontSize: 16,
-//   },
-//   info: {
-//     alignItems: "center",
-//     justifyContent: "center",
-//     gap: 5,
-//     borderRadius: 15,
-//     width: "49%",
-//     backgroundColor: "rgba(30, 30, 30, 0.09)",
-//     height: 80,
-//   },
-//   notificationWrapper: {
-//     position: "relative",
-//   },
-//   notificationBadge: {
-//     position: "absolute",
-//     top: 0,
-//     right: -3,
-//     backgroundColor: "red",
-//     borderRadius: 10,
-//     minWidth: 20,
-//     height: 20,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   notificationBadgeText: {
-//     color: "white",
-//     fontSize: 12,
-//     fontWeight: "bold",
-//     textAlign: "center",
-//   },
-// });

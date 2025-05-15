@@ -74,7 +74,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             ]}
           >
             {options.tabBarIcon({
-              color: isFocused ? "white" : "#2F3039",
+              color: isFocused ? "white" : "#1f77b4",
               size: 24,
             })}
           </TouchableOpacity>
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bubbleFocused: {
-    backgroundColor: "rgba(9, 53, 101, 0.54)",
+    backgroundColor: "#1f77b4",
     transform: [{ scale: 1.1 }],
   },
   bubbleInactive: {

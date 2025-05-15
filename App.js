@@ -11,7 +11,7 @@ import Constants from "expo-constants";
 import { saveApiKey } from "./src/utils/secureStorage";
 import { getToken } from "./src/api/storage";
 import * as SecureStore from "expo-secure-store";
-import { ThemeProvider } from "./src/context/ThemeContext";
+import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 
 export default function App() {
   const queryClient = new QueryClient();
@@ -50,27 +50,52 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <NavigationContainer>
-        <QueryClientProvider client={queryClient}>
-          <SafeAreaProvider>
-            <SafeAreaView style={styles.safeArea}>
-              <UserContext.Provider value={{ isAuth, setIsAuth }}>
-                <StatusBar translucent />
-                {isAuth ? <MainNavigation /> : <AuthNavigation />}
-              </UserContext.Provider>
-            </SafeAreaView>
-          </SafeAreaProvider>
-        </QueryClientProvider>
-      </NavigationContainer>
+      <AppContent isAuth={isAuth} queryClient={queryClient} />
     </ThemeProvider>
   );
 }
 
+const AppContent = ({ isAuth, queryClient }) => {
+  const { theme, themeReady } = useTheme();
+
+  // Wait for theme to be ready before rendering
+  if (!themeReady) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading theme...</Text>
+      </View>
+    );
+  }
+
+  // Dynamically set the background color based on the theme
+  const safeAreaBackgroundColor = theme === "light" ? "#FEF7FF" : "#292848";
+
+  return (
+    <NavigationContainer>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaProvider>
+          <SafeAreaView
+            style={{
+              flex: 1,
+              backgroundColor: safeAreaBackgroundColor,
+            }}
+          >
+            <UserContext.Provider value={{ isAuth, setIsAuth: () => {} }}>
+              <StatusBar
+                translucent
+                backgroundColor="transparent"
+                barStyle={theme === "light" ? "dark-content" : "light-content"}
+              />
+              {isAuth ? <MainNavigation /> : <AuthNavigation />}
+            </UserContext.Provider>
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </QueryClientProvider>
+    </NavigationContainer>
+  );
+};
+
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#FEF7FF",
-  },
   loadingContainer: {
     flex: 1,
     alignSelf: "center",
