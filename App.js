@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthNavigation from "./src/navigations/AuthNavigation/AuthNavigation";
@@ -12,6 +12,8 @@ import { saveApiKey } from "./src/utils/secureStorage";
 import { getToken } from "./src/api/storage";
 import * as SecureStore from "expo-secure-store";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
+
+LogBox.ignoreAllLogs(true);
 
 export default function App() {
   const queryClient = new QueryClient();
