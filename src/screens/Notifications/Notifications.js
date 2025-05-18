@@ -17,6 +17,7 @@ import * as Progress from "react-native-progress";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import LottieView from "lottie-react-native";
 
 const Notifications = () => {
   const navigation = useNavigation();
@@ -77,27 +78,38 @@ const Notifications = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{
-          width: 44,
-          height: 44,
-          justifyContent: "center",
-          alignItems: "center",
-          borderRadius: 17,
-        }}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{
+            width: 44,
+            height: 44,
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: 17,
+          }}
+        >
           <Ionicons name="arrow-back" size={24} color="#1D1B20" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Notifications</Text>
         <View style={styles.headerRight} />
       </View>
 
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.goalsContainer}>
-          {markDoneGoals.length === 0 ? (
-            <Text style={styles.noGoalsText}>
-              No savings goals are ready to be collected.
-            </Text>
-          ) : (
-            markDoneGoals.map((goal) => {
+      {markDoneGoals.length === 0 ? (
+        <View style={styles.noGoalsContainer}>
+          <LottieView
+            source={require("../../../assets/app/empty.json")}
+            autoPlay
+            loop
+            style={styles.lottie}
+          />
+          <Text style={styles.noGoalsText}>
+            No savings goals are ready to be collected.
+          </Text>
+        </View>
+      ) : (
+        <ScrollView style={styles.scrollView}>
+          <View style={styles.goalsContainer}>
+            {markDoneGoals.map((goal) => {
               const progress =
                 goal.targetAmount > 0
                   ? goal.currentAmount / goal.targetAmount
@@ -158,10 +170,10 @@ const Notifications = () => {
                   </View>
                 </View>
               );
-            })
-          )}
-        </View>
-      </ScrollView>
+            })}
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -172,14 +184,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FEF7FF",
+    overflow: "hidden",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0, 0, 0, 0.1)",
   },
   headerTitle: {
     flex: 1,
@@ -194,6 +205,8 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    borderRadius: 55,
+    marginBottom: 50,
   },
   goalsContainer: {
     padding: 16,
@@ -266,6 +279,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#FF0000",
     textAlign: "center",
+  },
+  noGoalsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+    marginBottom: 190,
+  },
+  lottie: {
+    width: 200,
+    height: 200,
+    alignSelf: "center",
   },
   noGoalsText: {
     fontSize: 16,

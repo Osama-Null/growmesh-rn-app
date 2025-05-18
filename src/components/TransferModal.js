@@ -22,6 +22,9 @@ const TransferModal = ({ visible, onClose, goalId, actionType }) => {
   const [amount, setAmount] = useState("");
   const queryClient = useQueryClient();
   const textInputRef = useRef(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successVisible, setSuccessVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const transferMutation = useMutation({
     mutationFn: (amount) => {
@@ -36,37 +39,45 @@ const TransferModal = ({ visible, onClose, goalId, actionType }) => {
       queryClient.invalidateQueries(["fetchSavingsGoalDetails", goalId]);
       queryClient.invalidateQueries(["fetchTransactionsBySavingsGoal", goalId]);
       queryClient.invalidateQueries(["fetchSavingsGoalTrend", goalId]);
-      alert(
+      setSuccessMessage(
         `${actionType === "deposit" ? "Deposited" : "Withdrawn"} successfully.`
       );
+      setSuccessVisible(true);
       setAmount("");
       Keyboard.dismiss();
       if (textInputRef.current) {
         textInputRef.current.blur();
       }
-      onClose();
     },
     onError: (error) => {
       const errorMessage = error.response?.data || "An error occurred.";
-      alert(`Error: ${errorMessage}`);
+      setErrorMessage(`Error: ${errorMessage}`);
     },
   });
 
   const handleSubmit = () => {
     if (!amount || isNaN(amount) || Number(amount) <= 0) {
-      alert("Please enter a valid amount.");
+      setErrorMessage("Please enter a valid amount.");
       return;
     }
+    setErrorMessage("");
     transferMutation.mutate(Number(amount));
   };
 
   const handleClose = () => {
     Keyboard.dismiss();
     setAmount("");
+    setErrorMessage("");
     if (textInputRef.current) {
       textInputRef.current.blur();
     }
     onClose();
+  };
+
+  const handleCloseSuccess = () => {
+    setSuccessVisible(false);
+    setSuccessMessage("");
+    handleClose();
   };
 
   const dismissKeyboard = () => {
@@ -97,7 +108,10 @@ const TransferModal = ({ visible, onClose, goalId, actionType }) => {
             style={styles.keyboardAvoidingView}
           >
             <View style={styles.modalContent}>
-              <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={handleClose}
+              >
                 <Ionicons name="close" size={28} color="#000" />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>{title}</Text>
@@ -107,12 +121,18 @@ const TransferModal = ({ visible, onClose, goalId, actionType }) => {
                 placeholder={placeholder}
                 placeholderTextColor="#7E8D85"
                 value={amount}
-                onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ""))}
+                onChangeText={(text) => {
+                  setAmount(text.replace(/[^0-9.]/g, ""));
+                  setErrorMessage("");
+                }}
                 keyboardType="numeric"
                 returnKeyType="done"
                 onSubmitEditing={handleSubmit}
                 autoFocus={true}
               />
+              {errorMessage && (
+                <Text style={styles.transferModalErrorTxt}>{errorMessage}</Text>
+              )}
               <TouchableOpacity
                 style={[
                   styles.submitButton,
@@ -127,6 +147,21 @@ const TransferModal = ({ visible, onClose, goalId, actionType }) => {
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
+          {successVisible && (
+            <View style={styles.transferModalPopUpOverlay}>
+              <View style={styles.transferModalPopUpContent}>
+                <Text style={styles.transferModalPopUpMessageTxt}>
+                  {successMessage}
+                </Text>
+                <TouchableOpacity
+                  style={styles.transferModalPopUpSuccessBtn}
+                  onPress={handleCloseSuccess}
+                >
+                  <Text style={styles.transferModalPopUpSuccessBtnTxt}>OK</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
         </View>
       </TouchableWithoutFeedback>
     </Modal>
@@ -180,6 +215,53 @@ const styles = StyleSheet.create({
   disabledButton: {
     backgroundColor: "#A0A0A0",
     opacity: 0.7,
+  },
+  transferModalPopUpOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  transferModalPopUpContent: {
+    backgroundColor: "#FEF7FF",
+    borderRadius: 15,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "80%",
+    height: "20%",
+  },
+  transferModalPopUpMessageTxt: {
+    fontSize: 18,
+    color: "#000",
+    textAlign: "center",
+    margin: 20,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+  },
+  transferModalPopUpSuccessBtn: {
+    backgroundColor: "rgba(9, 53, 101, 0.62)",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    minWidth: 100,
+    alignItems: "center",
+  },
+  transferModalPopUpSuccessBtnTxt: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#FFF",
+  },
+  transferModalErrorTxt: {
+    color: "red",
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: "center",
+    fontFamily: "Roboto",
   },
 });
 

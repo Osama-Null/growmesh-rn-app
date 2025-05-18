@@ -11,6 +11,7 @@ import Constants from "expo-constants";
 import { saveApiKey } from "./src/utils/secureStorage";
 import { getToken } from "./src/api/storage";
 import * as SecureStore from "expo-secure-store";
+import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 
 export default function App() {
   const queryClient = new QueryClient();
@@ -22,9 +23,6 @@ export default function App() {
       try {
         await SecureStore.deleteItemAsync("authToken");
         const token = await getToken();
-        console.log("Token retrieved:", token); // Debug: Log the token
-        console.log("Token type:", typeof token); // Debug: Log the type of token
-        console.log("isAuth will be set to:", !!token); // Debug: Log the boolean value
         setIsAuth(!!token);
         const apiKey = Constants.expoConfig.extra.grokApiKey;
         if (!apiKey) {
@@ -38,7 +36,7 @@ export default function App() {
         setLoading(false);
       }
     };
-    
+
     checkTokenAndSetApiKey();
   }, []);
 
@@ -50,15 +48,48 @@ export default function App() {
     );
   }
 
-  console.log("Rendering navigation, isAuth:", isAuth); // Debug: Log the final isAuth value
+  return (
+    <ThemeProvider>
+      <AppContent
+        isAuth={isAuth}
+        setIsAuth={setIsAuth}
+        queryClient={queryClient}
+      />
+    </ThemeProvider>
+  );
+}
+
+const AppContent = ({ isAuth, setIsAuth, queryClient }) => {
+  const { theme, themeReady } = useTheme();
+
+  const safeAreaBackgroundColor = themeReady
+    ? theme === "light"
+      ? "#FEF7FF"
+      : "#292848"
+    : "#FEF7FF";
 
   return (
     <NavigationContainer>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          <SafeAreaView style={styles.safeArea}>
+          <SafeAreaView
+            style={{
+              flex: 1,
+              backgroundColor: safeAreaBackgroundColor,
+            }}
+          >
             <UserContext.Provider value={{ isAuth, setIsAuth }}>
-              <StatusBar translucent />
+              <StatusBar
+                translucent
+                backgroundColor="transparent"
+                barStyle={
+                  themeReady
+                    ? theme === "light"
+                      ? "dark-content"
+                      : "light-content"
+                    : "dark-content"
+                }
+              />
               {isAuth ? <MainNavigation /> : <AuthNavigation />}
             </UserContext.Provider>
           </SafeAreaView>
@@ -66,13 +97,9 @@ export default function App() {
       </QueryClientProvider>
     </NavigationContainer>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#FEF7FF",
-  },
   loadingContainer: {
     flex: 1,
     alignSelf: "center",

@@ -14,18 +14,24 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  log,
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
 import Feather from "@expo/vector-icons/Feather";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import TransferModal from "../../components/TransferModal";
-import { getSavingsGoal, getSavingsGoalTrend } from "../../api/savingsGoal";
+import {
+  getSavingsGoal,
+  getSavingsGoalTransactionTrend,
+  getSavingsGoalTrend,
+} from "../../api/savingsGoal";
 import { getTransactionsBySavingsGoal } from "../../api/transaction";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import GrowMesh from "../../components/GrowMesh";
 import Modal from "react-native-modal";
 import hexToRgba from "hex-to-rgba";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import LottieView from "lottie-react-native";
 
 // Animated Donut Component
 const AnimatedDonut = ({ progress, size, thickness, color }) => {
@@ -42,6 +48,8 @@ const AnimatedDonut = ({ progress, size, thickness, color }) => {
     strokeDashoffset: strokeDashoffset.value,
   }));
 
+  const rotation = -90;
+
   return (
     <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       <Circle
@@ -51,6 +59,7 @@ const AnimatedDonut = ({ progress, size, thickness, color }) => {
         stroke="rgba(120, 120, 128, 0.12)"
         strokeWidth={thickness}
         fill="none"
+        transform={`rotate(${rotation} ${size / 2} ${size / 2})`}
       />
       <AnimatedCircle
         cx={size / 2}
@@ -63,6 +72,7 @@ const AnimatedDonut = ({ progress, size, thickness, color }) => {
         strokeDashoffset={circumference}
         strokeLinecap="round"
         style={[animatedStyle]}
+        transform={`rotate(${rotation} ${size / 2} ${size / 2})`}
       />
     </Svg>
   );
@@ -80,15 +90,10 @@ const AnimatedBar = ({
   maxCumulative,
 }) => {
   const height = useSharedValue(0);
-  {
-    console.log(
-      "\n===============================\nAnimatedBar color:",
-      goalColor
-    );
-  }
+
   useEffect(() => {
     const calculatedHeight =
-      difference === 0 ? 5 : (difference / maxValue) * 150;
+      difference === 0 ? 5 : (Math.abs(difference) / maxValue) * 150;
     height.value = withTiming(calculatedHeight, { duration: 1000 });
   }, [difference, maxValue]);
 
@@ -96,18 +101,17 @@ const AnimatedBar = ({
     height: height.value,
   }));
 
-  const opacity = maxCumulative > 0 ? value / maxCumulative : 0;
-  const barColor = hexToRgba(goalColor, opacity);
+  const barColor =
+    difference === 0
+      ? hexToRgba(goalColor, 0.5)
+      : difference > 0
+      ? "#4CAF50"
+      : "#F44336";
 
   return (
     <View style={styles.barContainer}>
-      {difference !== null && difference !== 0 && (
-        <Text
-          style={[
-            styles.differenceText,
-            { color: difference > 0 ? "#rgb(7, 205, 0)" : "#FF0000" },
-          ]}
-        >
+      {difference !== 0 && (
+        <Text style={[styles.differenceText, { color: barColor }]}>
           {difference > 0 ? `+${difference}` : difference}
         </Text>
       )}
@@ -120,12 +124,9 @@ const AnimatedBar = ({
 };
 
 const BarChartComponent = ({ data, goalColor }) => {
-  {
-    console.log("\n\n\nBarChartComponent color\n:", goalColor);
-  }
-
-  const maxValue = Math.max(...data.map((item) => item.difference), 10) * 1.1;
-  const maxCumulative = Math.max(...data.map((item) => item.value));
+  const maxValue =
+    Math.max(...data.map((item) => Math.abs(item.difference)), 10) * 1.1;
+  const maxCumulative = Math.max(...data.map((item) => item.value), 10);
 
   return (
     <View style={styles.chartContainer}>
@@ -148,29 +149,64 @@ const BarChartComponent = ({ data, goalColor }) => {
 const TransactionList = ({ transactions }) => {
   return (
     <ScrollView style={styles.transactionList}>
-      {transactions.reverse().map((transaction, index) => {
+      {transactions.map((transaction, index) => {
         const date = new Date(transaction.transactionDate);
         const formattedDate = date.toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
           year: "numeric",
         });
+        const isDeposit = transaction.transactionType === "transferToGoal";
+        const sign = isDeposit ? "+" : "-";
+        const amountColor = isDeposit ? "#4CAF50" : "#F44336";
+
         return (
           <View
             key={transaction.transactionId || index}
             style={styles.transactionItem}
           >
-            <Text style={styles.transactionText}>{formattedDate}</Text>
-            <Text style={styles.transactionText}>
-              {transaction.transactionType === "deposit" ? "+" : "-"} KWD{" "}
-              {transaction.amount}
-            </Text>
-            <Text style={styles.transactionText}>
-              {transaction.transactionType}
-            </Text>
+            <View style={styles.transactionRow}>
+              <Icon
+                name={isDeposit ? "arrow-upward" : "arrow-downward"}
+                size={20}
+                color={amountColor}
+              />
+              <Text style={styles.transactionDate}>{formattedDate}</Text>
+              <View style={styles.amountContainer}>
+                <Text
+                  style={[styles.transactionAmount, { color: amountColor }]}
+                >
+                  {sign} {transaction.amount} KWD
+                </Text>
+              </View>
+            </View>
           </View>
         );
       })}
+      {transactions.length === 0 && (
+        <>
+          <LottieView
+            source={require("../../../assets/app/empty.json")}
+            autoPlay
+            loop
+            style={{
+              width: 200,
+              height: 200,
+              alignSelf: "center",
+            }}
+          />
+          <Text
+            style={{
+              color: "#000",
+              fontSize: 16,
+              textAlign: "center",
+              marginTop: 20,
+            }}
+          >
+            You have no transactions for this goal yet.
+          </Text>
+        </>
+      )}
     </ScrollView>
   );
 };
@@ -190,6 +226,8 @@ const SavingsGoalDetails = ({ navigation, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [actionType, setActionType] = useState("deposit");
   const [unlockPopupVisible, setUnlockPopupVisible] = useState(false);
+  const [notificationVisible, setNotificationVisible] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   // Fetch goal details
   const {
@@ -227,7 +265,28 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     refetchOnMount: "always",
   });
 
-  if (goalLoading || transactionsLoading || trendLoading) {
+  // Fetch transaction trend data (7 bars)
+  const {
+    data: transactionTrendResponse,
+    isLoading: transactionTrendLoading,
+    isError: transactionTrendError,
+    error: transactionTrendErrorDetails,
+  } = useQuery({
+    queryKey: ["fetchSavingsGoalTransactionTrend", goalId],
+    queryFn: () => getSavingsGoalTransactionTrend(goalId, 7),
+    refetchOnMount: "always",
+  });
+
+  useEffect(() => {
+    console.log("SavingsGoalDetails mounted at:", new Date().toISOString());
+  }, []);
+
+  if (
+    goalLoading ||
+    transactionsLoading ||
+    trendLoading ||
+    transactionTrendLoading
+  ) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <Text style={styles.loadingText}>Loading...</Text>
@@ -235,7 +294,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     );
   }
 
-  if (goalError || transactionsError || trendError) {
+  if (goalError || transactionsError || trendError || transactionTrendError) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <Text style={styles.errorText}>
@@ -243,33 +302,25 @@ const SavingsGoalDetails = ({ navigation, route }) => {
             ? `Error fetching goal: ${goalErrorDetails?.message}`
             : transactionsError
             ? `Error fetching transactions: ${transactionsErrorDetails?.message}`
-            : `Error fetching trend: ${trendErrorDetails?.message}`}
+            : `Error fetching trend: ${trendErrorDetails?.message} \n\n ${transactionTrendErrorDetails?.message}`}
         </Text>
       </SafeAreaView>
     );
   }
+
   const goal = goalData || {};
-  const transactions = transactionsData || [];
+  const transactions = transactionsData.reverse() || [];
   const trendData = trendResponse?.trendData || [];
+  const transactionTrendData = transactionTrendResponse?.transactions || [];
   const periodType = trendResponse?.periodType || "day";
 
-  {
-    console.log("==================\ntrendData:", trendData);
-  }
-  {
-    console.log("\nperiodType:", periodType);
-  }
-  {
-    console.log("\ngoal:", goal);
-  }
-  {
-    console.log("\ntransactions:", transactions, "\n==================\n");
-  }
-
-  // Extract the goal color with default fallback
   const goalColor = goal.color || "#093565";
+  const goalCompleted =
+    goal.status === "Completed" ||
+    (goal.lockType === "amountBased" &&
+      goal.currentAmount >= goal.targetAmount) ||
+    (goal.lockType === "timeBased" && new Date(goal.targetDate) <= new Date());
 
-  // Calculate progress
   let progress = 0;
   let percentage = 0;
   let progressLabel = "";
@@ -278,7 +329,22 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     progress =
       goal.targetAmount > 0 ? goal.currentAmount / goal.targetAmount : 0;
     percentage = Math.round(progress * 100);
-    progressLabel = `KWD ${goal.currentAmount} / ${goal.targetAmount}`;
+    progressLabel = (
+      <>
+        <Text style={{ color: "#000000", fontSize: 32, fontWeight: "bold" }}>
+          {goal.currentAmount}
+        </Text>
+        <Text
+          style={{
+            color: "rgba(0, 0, 0, 0.47)",
+            fontSize: 23,
+            fontWeight: "bold",
+          }}
+        >
+          /{goal.targetAmount} KWD
+        </Text>
+      </>
+    );
   } else if (goal.lockType === "timeBased") {
     const createdAtTrimmed = goal.createdAt.replace(/(\.\d{3})\d*/, "$1");
     const startDate = new Date(createdAtTrimmed + "Z");
@@ -311,7 +377,35 @@ const SavingsGoalDetails = ({ navigation, route }) => {
         (endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
       )
     );
-    progressLabel = `KWD ${goal.currentAmount} | ${daysRemaining}d left`;
+    progressLabel = (
+      <>
+        <Text style={{ color: "#000000", fontSize: 32, fontWeight: "bold" }}>
+          {`${goal.currentAmount} `}
+        </Text>
+        <Text
+          style={{
+            color: "rgba(0, 0, 0, 0.47)",
+            fontSize: 23,
+            fontWeight: "bold",
+          }}
+        >
+          KWD
+        </Text>
+        <Text style={{ color: "#000000", fontSize: 32, fontWeight: "bold" }}>
+          {` | ${daysRemaining}`}
+        </Text>
+        <Text></Text>
+        <Text
+          style={{
+            color: "rgba(0, 0, 0, 0.47)",
+            fontSize: 23,
+            fontWeight: "bold",
+          }}
+        >
+          d left
+        </Text>
+      </>
+    );
 
     // Pass progress to AnimatedDonut and log it
     console.log("progress sent to donut:", progress);
@@ -319,9 +413,8 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     console.error(`Unexpected lockType: ${goal.lockType}`);
   }
 
-  // Prepare chart data (7 bars)
-  const chartData = trendData.map((item) => {
-    const date = new Date(item.periodEnd);
+  const chartData = transactionTrendData.map((item) => {
+    const date = new Date(item.transactionDate);
     const label = date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -333,7 +426,6 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     };
   });
 
-  // Button handlers
   const handleDeposit = () => {
     setActionType("deposit");
     setModalVisible(true);
@@ -353,13 +445,20 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     setUnlockPopupVisible(false);
   };
 
+  const handleCloseNotification = () => {
+    setNotificationVisible(false);
+    setNotificationMessage("");
+  };
+
+  const historyCount = transactions.length;
+
   // GrowMesh ============================================
   const handleError = (error) => {
     console.error("Chat error:", error.message);
-    Alert.alert(
-      "Error",
+    setNotificationMessage(
       "Failed to get a response from the chatbot. Please try again."
     );
+    setNotificationVisible(true);
   };
 
   const contextData = {
@@ -367,7 +466,19 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     transactionsData: transactionsData || [],
   };
 
+  const handleOpenModal2 = () => {
+    console.log(
+      "Opening GrowMesh modal from SavingsGoalDetails at:",
+      new Date().toISOString()
+    );
+    setModalVisible2(true);
+  };
+
   const handleClose = () => {
+    console.log(
+      "Closing GrowMesh modal from SavingsGoalDetails at:",
+      new Date().toISOString()
+    );
     setModalVisible2(false);
   };
   // ============================================ GrowMesh
@@ -410,7 +521,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.view2}>
-          <Text style={styles.text2}>{progressLabel}</Text>
+          <Text>{progressLabel}</Text>
         </View>
         <View style={styles.view3}>
           <TouchableOpacity onPress={() => setActiveTab("General")}>
@@ -420,6 +531,8 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 activeTab === "General" && {
                   color: goalColor,
                   textDecorationLine: "underline",
+                  fontSize: 18,
+                  fontWeight: "bold",
                 },
               ]}
             >
@@ -434,6 +547,8 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 activeTab === "History" && {
                   color: goalColor,
                   textDecorationLine: "underline",
+                  fontSize: 18,
+                  fontWeight: "bold",
                 },
               ]}
             >
@@ -453,79 +568,144 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 thickness={23}
                 color={goalColor}
               />
-              <View style={styles.percentageContainer}>
-                <Text style={[styles.percentageText, { color: goalColor }]}>
-                  {`${percentage}%`}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.view5}>
-              {chartData.length > 0 ? (
-                <BarChartComponent data={chartData} goalColor={goalColor} />
+              {goalCompleted ? (
+                <LottieView
+                  source={require("../../../assets/app/success2.json")}
+                  autoPlay
+                  loop={false}
+                  style={{
+                    position: "absolute",
+                    alignSelf: "center",
+                    width: 200,
+                    height: 200,
+                  }}
+                />
               ) : (
-                <Text style={styles.placeholderText}>
-                  No trend data available.
-                </Text>
+                <View style={styles.percentageContainer}>
+                  <Text style={[styles.percentageText, { color: goalColor }]}>
+                    {`${percentage}%`}
+                  </Text>
+                </View>
               )}
             </View>
-
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.icon} onPress={handleDeposit}>
-                <MaterialCommunityIcons
-                  name="arrow-up-thick"
-                  size={35}
-                  color="#rgb(49, 154, 46)"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.icon} onPress={handleEdit}>
-                <Feather name="edit" size={26} color="black" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.icon} onPress={handleWithdraw}>
-                <MaterialCommunityIcons
-                  name="arrow-down-thick"
-                  size={35}
-                  color="#rgb(222, 12, 12)"
-                />
-              </TouchableOpacity>
-
-              <TransferModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                goalId={goalId}
-                actionType={actionType}
+            {goalCompleted ? (
+              <View
                 style={{
-                  zIndex: 1000,
+                  height: "50%",
+                  width: "100%",
+                  alignSelf: "center",
+                  alignItems: "center",
                 }}
-              />
-
-              <Modal
-                transparent={true}
-                visible={unlockPopupVisible}
-                onRequestClose={() => setUnlockPopupVisible(false)}
               >
-                <View style={styles.popupContainer}>
-                  <View style={styles.popupContent}>
-                    <Text style={styles.popupText}>
-                      Are you sure you want to unlock this goal?
-                    </Text>
-                    <View style={styles.popupButtons}>
-                      <TouchableOpacity
-                        style={[styles.popupButton, styles.cancelButton]}
-                        onPress={() => setUnlockPopupVisible(false)}
-                      >
-                        <Text style={styles.popupButtonText}>Cancel</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={[styles.popupButton, styles.confirmButton]}
-                        onPress={handleUnlockConfirm}
-                      >
-                        <Text style={styles.popupButtonText}>Confirm</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
+                <Text
+                  style={[
+                    styles.percentageText,
+                    { color: goalColor, alignSelf: "center" },
+                  ]}
+                >
+                  {`${percentage}%`}
+                </Text>
+                <LottieView
+                  source={require("../../../assets/app/success_btn.json")} // Adjust path to your success animation
+                  autoPlay
+                  loop
+                  style={{
+                    position: "absolute",
+                    width: 300,
+                    height: 300,
+                    bottom:50,
+                  }}
+                />
+                <Text style={styles.goalDetailsCongratsMessageTxt}>
+                  Congratulations! You've completed your goal! {"\n\n"}Check
+                  your notifications 🔔 to collect it.
+                </Text>
+              </View>
+            ) : (
+              <>
+                <View style={styles.view5}>
+                  {chartData.length > 0 ? (
+                    <BarChartComponent data={chartData} goalColor={goalColor} />
+                  ) : (
+                    <>
+                      <LottieView
+                        source={require("../../../assets/app/empty.json")}
+                        autoPlay
+                        loop
+                        style={{
+                          width: 100,
+                          height: 100,
+                          alignSelf: "center",
+                        }}
+                      />
+                      <Text style={styles.placeholderText}>
+                        No trend data available.
+                      </Text>
+                    </>
+                  )}
                 </View>
-              </Modal>
-            </View>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity style={styles.icon} onPress={handleDeposit}>
+                    <MaterialCommunityIcons
+                      name="arrow-up-thick"
+                      size={35}
+                      color="#rgb(49, 154, 46)"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.icon} onPress={handleEdit}>
+                    <Feather name="edit" size={26} color="black" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.icon}
+                    onPress={handleWithdraw}
+                  >
+                    <MaterialCommunityIcons
+                      name="arrow-down-thick"
+                      size={35}
+                      color="#rgb(222, 12, 12)"
+                    />
+                  </TouchableOpacity>
+
+                  <TransferModal
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    goalId={goalId}
+                    actionType={actionType}
+                    style={{
+                      zIndex: 1000,
+                    }}
+                  />
+
+                  <Modal
+                    transparent={true}
+                    visible={unlockPopupVisible}
+                    onRequestClose={() => setUnlockPopupVisible(false)}
+                  >
+                    <View style={styles.popupContainer}>
+                      <View style={styles.popupContent}>
+                        <Text style={styles.popupText}>
+                          Are you sure you want to unlock this goal?
+                        </Text>
+                        <View style={styles.popupButtons}>
+                          <TouchableOpacity
+                            style={[styles.popupButton, styles.cancelButton]}
+                            onPress={() => setUnlockPopupVisible(false)}
+                          >
+                            <Text style={styles.popupButtonText}>Cancel</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={[styles.popupButton, styles.confirmButton]}
+                            onPress={handleUnlockConfirm}
+                          >
+                            <Text style={styles.popupButtonText}>Confirm</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </Modal>
+                </View>
+              </>
+            )}
           </>
         ) : (
           <TransactionList transactions={transactions} />
@@ -534,7 +714,7 @@ const SavingsGoalDetails = ({ navigation, route }) => {
 
       {/* GrowMesh ============================================ */}
       <View style={styles.absoluteImage2}>
-        <TouchableOpacity onPress={() => setModalVisible2(true)}>
+        <TouchableOpacity onPress={handleOpenModal2}>
           <Image
             source={require("../../../assets/app/growmesh-light.png")}
             resizeMode={"stretch"}
@@ -543,9 +723,28 @@ const SavingsGoalDetails = ({ navigation, route }) => {
         </TouchableOpacity>
         <Modal
           isVisible={isModalVisible2}
-          onBackdropPress={() => setModalVisible2(false)}
+          onBackdropPress={handleClose}
+          onModalShow={() =>
+            console.log(
+              "SavingsGoalDetails Modal shown at:",
+              new Date().toISOString()
+            )
+          }
         >
-          <View style={styles.modalContent}>
+          <View
+            style={styles.modalContent}
+            onLayout={(event) => {
+              const { width, height } = event.nativeEvent.layout;
+              console.log("SavingsGoalDetails Modal Content Layout:", {
+                width,
+                height,
+              });
+            }}
+          >
+            {console.log(
+              "SavingsGoalDetails modalContent style applied:",
+              styles.modalContent
+            )}
             <GrowMesh
               messages={messages}
               setMessages={setMessages}
@@ -558,11 +757,85 @@ const SavingsGoalDetails = ({ navigation, route }) => {
         </Modal>
       </View>
       {/* ============================================ GrowMesh */}
+      {notificationVisible && (
+        <View style={styles.goalDetailsPopUpOverlay}>
+          <View style={styles.goalDetailsPopUpContent}>
+            <Text style={styles.goalDetailsPopUpMessageTxt}>
+              {notificationMessage}
+            </Text>
+            <TouchableOpacity
+              style={styles.goalDetailsPopUpOkBtn}
+              onPress={handleCloseNotification}
+            >
+              <Text style={styles.goalDetailsPopUpOkBtnTxt}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  goalDetailsPopUpOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  goalDetailsPopUpContent: {
+    backgroundColor: "#FEF7FF",
+    borderRadius: 15,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "80%",
+    height: "20%",
+  },
+  goalDetailsPopUpMessageTxt: {
+    fontSize: 18,
+    color: "#000",
+    textAlign: "center",
+    margin: 20,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+  },
+  goalDetailsPopUpOkBtn: {
+    backgroundColor: "#00F8BE",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    minWidth: 100,
+    alignItems: "center",
+  },
+  goalDetailsPopUpOkBtnTxt: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  goalDetailsCongratsWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 400,
+    marginHorizontal: 16,
+  },
+  goalDetailsCongratsLottie: {
+    width: 200,
+    height: 200,
+    alignSelf: "center",
+  },
+  goalDetailsCongratsMessageTxt: {
+    fontSize: 18,
+    color: "#000",
+    textAlign: "center",
+    marginTop: 70,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+  },
   modalContent: {
     padding: 10,
     borderRadius: 10,
@@ -628,20 +901,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginRight: 8,
   },
-  text2: {
-    color: "#000000",
-    fontSize: 32,
-    fontWeight: "bold",
-  },
   text3: {
-    color: "#000000",
-    fontSize: 20,
-    fontWeight: "bold",
+    color: "rgba(0, 0, 0, 0.41)",
+    fontSize: 18,
   },
   view: {
     alignItems: "center",
   },
   view2: {
+    flexDirection: "row",
+    alignSelf: "center",
+    gap: 5,
     alignItems: "center",
   },
   view3: {
@@ -707,17 +977,44 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 16,
     textAlign: "center",
+    marginTop: 20,
   },
   transactionList: {
     flex: 1,
     marginHorizontal: 16,
+    backgroundColor: "rgba(0, 0, 0, 0.09)",
+    borderRadius: 10,
+    padding: 16,
   },
   transactionItem: {
+    paddingVertical: 12,
+  },
+  transactionRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#00000057",
+    alignItems: "center",
+  },
+  transactionDate: {
+    fontSize: 14,
+    color: "#666666",
+  },
+  transactionAmount: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  amountContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  transactionType: {
+    fontSize: 12,
+    color: "#999999",
+    marginTop: 4,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "black",
+    marginTop: 12,
   },
   transactionText: {
     color: "#000",

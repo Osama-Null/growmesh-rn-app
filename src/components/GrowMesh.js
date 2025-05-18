@@ -10,11 +10,14 @@ import {
   Platform,
   Keyboard,
   Image,
+  Dimensions,
 } from "react-native";
 import { sendGrokMessage } from "../api/grok";
 import Entypo from "@expo/vector-icons/Entypo";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import LottieView from "lottie-react-native";
+
+const { height: windowHeight } = Dimensions.get("window");
 
 const GrowMesh = ({
   messages,
@@ -22,9 +25,11 @@ const GrowMesh = ({
   onClose,
   systemPrompt,
   contextData,
+  onError,
 }) => {
   const [inputText, setInputText] = useState("");
   const [isThinking, setIsThinking] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const flatListRef = useRef(null);
 
   // Ensure messages is an array
@@ -42,6 +47,14 @@ const GrowMesh = ({
       setMessages([welcomeMessage]);
     }
   }, [setMessages, safeMessages.length]);
+
+  useEffect(() => {
+    // Force a re-render after the modal mounts to ensure layout is calculated correctly
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSend = async () => {
     if (inputText.trim() === "") return;
@@ -88,7 +101,7 @@ const GrowMesh = ({
         contextData,
         messagesForApi // Pass the full chat history
       );
-      console.log("Grok API response:", botResponse);
+      console.log("GrowMesh Llama 3.1 API response:", botResponse);
 
       const botMessage = {
         id: Math.random().toString(36).substring(7),
@@ -155,10 +168,18 @@ const GrowMesh = ({
     );
   };
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
+      onLayout={(event) => {
+        const { width, height } = event.nativeEvent.layout;
+        console.log("GrowMesh Container Layout:", { width, height });
+      }}
     >
       <View style={styles.header}>
         <View
@@ -191,6 +212,7 @@ const GrowMesh = ({
         keyExtractor={(item) => item.id}
         inverted
         style={styles.messageList}
+        contentContainerStyle={styles.growMeshMessageListContent}
       />
       {renderThinkingAnimation()}
       <View style={styles.inputToolbar}>
@@ -215,6 +237,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.83)",
     borderRadius: 15,
     padding: 10,
+    height: windowHeight * 0.8,
   },
   header: {
     flexDirection: "row",
@@ -230,9 +253,18 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: 5,
+    position: "absolute",
+    left: 300,
+    top: 10,
+    borderRadius: 50,
+    zIndex: 9999,
   },
   messageList: {
     flex: 1,
+    minHeight: windowHeight * 0.6,
+  },
+  growMeshMessageListContent: {
+    flexGrow: 1,
   },
   messageContainer: {
     padding: 10,

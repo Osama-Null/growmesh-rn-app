@@ -97,6 +97,16 @@ const getSavingsGoalTrend = async (id, periods = 7) => {
   return response.data;
 };
 
+const getSavingsGoalTransactionTrend = async (id, count = 7) => {
+  const response = await instance.get(
+    `/SavingsGoal/get-last-transactions-trend/${id}`,
+    {
+      params: { count },
+    }
+  );
+  return response.data;
+};
+
 const homeAgent = async (message) => {
   const response = await instance.post("/SavingsGoal/home-agent", { message });
   return response.data;
@@ -131,6 +141,7 @@ export {
   getSavingsTrend,
   markSavingsGoalAsDone,
   getSavingsGoalTrend,
+  getSavingsGoalTransactionTrend,
   homeAgent,
   allGoalsAgent,
   goalDetailsAgent,
