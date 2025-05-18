@@ -19,9 +19,11 @@ const { width } = Dimensions.get("window");
 const AddGoal = () => {
   const navigation = useNavigation();
   const [selectedColumn, setSelectedColumn] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleColumnPress = (type) => {
-    setSelectedColumn(type); // Set the selected column
+    setSelectedColumn(type);
+    setErrorMessage("");
   };
 
   const handleNextPress = () => {
@@ -30,7 +32,7 @@ const AddGoal = () => {
     } else if (selectedColumn === "time") {
       navigation.navigate("TimeBased");
     } else {
-      alert("Please select a savings goal type.");
+      setErrorMessage("Please select a savings goal type.");
     }
   };
 
@@ -143,6 +145,9 @@ const AddGoal = () => {
             </View>
           </Shadow>
         </TouchableOpacity>
+        {errorMessage ? (
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        ) : null}
       </View>
       <TouchableOpacity
         style={styles.footer}
@@ -248,5 +253,12 @@ const styles = StyleSheet.create({
   view: {
     alignItems: "flex-end",
     marginBottom: 80,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+    marginHorizontal: 16,
+    marginBottom: 20,
+    textAlign: "center",
   },
 });

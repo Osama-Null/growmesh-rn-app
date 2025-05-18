@@ -14,10 +14,10 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  log,
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
 import Feather from "@expo/vector-icons/Feather";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import TransferModal from "../../components/TransferModal";
 import {
   getSavingsGoal,
@@ -31,6 +31,7 @@ import Modal from "react-native-modal";
 import hexToRgba from "hex-to-rgba";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import LottieView from "lottie-react-native";
 
 // Animated Donut Component
 const AnimatedDonut = ({ progress, size, thickness, color }) => {
@@ -182,6 +183,30 @@ const TransactionList = ({ transactions }) => {
           </View>
         );
       })}
+      {transactions.length === 0 && (
+        <>
+          <LottieView
+            source={require("../../../assets/app/empty.json")}
+            autoPlay
+            loop
+            style={{
+              width: 200,
+              height: 200,
+              alignSelf: "center",
+            }}
+          />
+          <Text
+            style={{
+              color: "#000",
+              fontSize: 16,
+              textAlign: "center",
+              marginTop: 20,
+            }}
+          >
+            You have no transactions for this goal yet.
+          </Text>
+        </>
+      )}
     </ScrollView>
   );
 };
@@ -201,6 +226,8 @@ const SavingsGoalDetails = ({ navigation, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [actionType, setActionType] = useState("deposit");
   const [unlockPopupVisible, setUnlockPopupVisible] = useState(false);
+  const [notificationVisible, setNotificationVisible] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   // Fetch goal details
   const {
@@ -280,37 +307,20 @@ const SavingsGoalDetails = ({ navigation, route }) => {
       </SafeAreaView>
     );
   }
-  
+
   const goal = goalData || {};
   const transactions = transactionsData.reverse() || [];
   const trendData = trendResponse?.trendData || [];
   const transactionTrendData = transactionTrendResponse?.transactions || [];
   const periodType = trendResponse?.periodType || "day";
 
-  {
-    console.log("==================\ntrendData:", trendData);
-  }
-  {
-    console.log("\nperiodType:", periodType);
-  }
-  {
-    console.log("\ngoal:", goal);
-  }
-  {
-    console.log("\ntransactions:", transactions, "\n==================\n");
-  }
-  {
-    console.log(
-      "\ntransactions trend:",
-      transactionTrendData,
-      "\n==================\n"
-    );
-  }
-
-  // Extract the goal color with default fallback
   const goalColor = goal.color || "#093565";
+  const goalCompleted =
+    goal.status === "Completed" ||
+    (goal.lockType === "amountBased" &&
+      goal.currentAmount >= goal.targetAmount) ||
+    (goal.lockType === "timeBased" && new Date(goal.targetDate) <= new Date());
 
-  // Calculate progress
   let progress = 0;
   let percentage = 0;
   let progressLabel = "";
@@ -403,19 +413,6 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     console.error(`Unexpected lockType: ${goal.lockType}`);
   }
 
-  // Prepare chart data (7 bars)
-  // const chartData = trendData.map((item) => {
-  //   const date = new Date(item.periodEnd);
-  //   const label = date.toLocaleDateString("en-US", {
-  //     month: "short",
-  //     day: "numeric",
-  //   });
-  //   return {
-  //     label,
-  //     value: item.cumulativeSavings,
-  //     difference: item.difference,
-  //   };
-  // });
   const chartData = transactionTrendData.map((item) => {
     const date = new Date(item.transactionDate);
     const label = date.toLocaleDateString("en-US", {
@@ -429,7 +426,6 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     };
   });
 
-  // Button handlers
   const handleDeposit = () => {
     setActionType("deposit");
     setModalVisible(true);
@@ -449,13 +445,20 @@ const SavingsGoalDetails = ({ navigation, route }) => {
     setUnlockPopupVisible(false);
   };
 
+  const handleCloseNotification = () => {
+    setNotificationVisible(false);
+    setNotificationMessage("");
+  };
+
+  const historyCount = transactions.length;
+
   // GrowMesh ============================================
   const handleError = (error) => {
     console.error("Chat error:", error.message);
-    Alert.alert(
-      "Error",
+    setNotificationMessage(
       "Failed to get a response from the chatbot. Please try again."
     );
+    setNotificationVisible(true);
   };
 
   const contextData = {
@@ -565,79 +568,144 @@ const SavingsGoalDetails = ({ navigation, route }) => {
                 thickness={23}
                 color={goalColor}
               />
-              <View style={styles.percentageContainer}>
-                <Text style={[styles.percentageText, { color: goalColor }]}>
-                  {`${percentage}%`}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.view5}>
-              {chartData.length > 0 ? (
-                <BarChartComponent data={chartData} goalColor={goalColor} />
+              {goalCompleted ? (
+                <LottieView
+                  source={require("../../../assets/app/success2.json")}
+                  autoPlay
+                  loop={false}
+                  style={{
+                    position: "absolute",
+                    alignSelf: "center",
+                    width: 200,
+                    height: 200,
+                  }}
+                />
               ) : (
-                <Text style={styles.placeholderText}>
-                  No trend data available.
-                </Text>
+                <View style={styles.percentageContainer}>
+                  <Text style={[styles.percentageText, { color: goalColor }]}>
+                    {`${percentage}%`}
+                  </Text>
+                </View>
               )}
             </View>
-
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.icon} onPress={handleDeposit}>
-                <MaterialCommunityIcons
-                  name="arrow-up-thick"
-                  size={35}
-                  color="#rgb(49, 154, 46)"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.icon} onPress={handleEdit}>
-                <Feather name="edit" size={26} color="black" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.icon} onPress={handleWithdraw}>
-                <MaterialCommunityIcons
-                  name="arrow-down-thick"
-                  size={35}
-                  color="#rgb(222, 12, 12)"
-                />
-              </TouchableOpacity>
-
-              <TransferModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                goalId={goalId}
-                actionType={actionType}
+            {goalCompleted ? (
+              <View
                 style={{
-                  zIndex: 1000,
+                  height: "50%",
+                  width: "100%",
+                  alignSelf: "center",
+                  alignItems: "center",
                 }}
-              />
-
-              <Modal
-                transparent={true}
-                visible={unlockPopupVisible}
-                onRequestClose={() => setUnlockPopupVisible(false)}
               >
-                <View style={styles.popupContainer}>
-                  <View style={styles.popupContent}>
-                    <Text style={styles.popupText}>
-                      Are you sure you want to unlock this goal?
-                    </Text>
-                    <View style={styles.popupButtons}>
-                      <TouchableOpacity
-                        style={[styles.popupButton, styles.cancelButton]}
-                        onPress={() => setUnlockPopupVisible(false)}
-                      >
-                        <Text style={styles.popupButtonText}>Cancel</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={[styles.popupButton, styles.confirmButton]}
-                        onPress={handleUnlockConfirm}
-                      >
-                        <Text style={styles.popupButtonText}>Confirm</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
+                <Text
+                  style={[
+                    styles.percentageText,
+                    { color: goalColor, alignSelf: "center" },
+                  ]}
+                >
+                  {`${percentage}%`}
+                </Text>
+                <LottieView
+                  source={require("../../../assets/app/success_btn.json")} // Adjust path to your success animation
+                  autoPlay
+                  loop
+                  style={{
+                    position: "absolute",
+                    width: 300,
+                    height: 300,
+                    bottom:50,
+                  }}
+                />
+                <Text style={styles.goalDetailsCongratsMessageTxt}>
+                  Congratulations! You've completed your goal! {"\n\n"}Check
+                  your notifications 🔔 to collect it.
+                </Text>
+              </View>
+            ) : (
+              <>
+                <View style={styles.view5}>
+                  {chartData.length > 0 ? (
+                    <BarChartComponent data={chartData} goalColor={goalColor} />
+                  ) : (
+                    <>
+                      <LottieView
+                        source={require("../../../assets/app/empty.json")}
+                        autoPlay
+                        loop
+                        style={{
+                          width: 100,
+                          height: 100,
+                          alignSelf: "center",
+                        }}
+                      />
+                      <Text style={styles.placeholderText}>
+                        No trend data available.
+                      </Text>
+                    </>
+                  )}
                 </View>
-              </Modal>
-            </View>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity style={styles.icon} onPress={handleDeposit}>
+                    <MaterialCommunityIcons
+                      name="arrow-up-thick"
+                      size={35}
+                      color="#rgb(49, 154, 46)"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.icon} onPress={handleEdit}>
+                    <Feather name="edit" size={26} color="black" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.icon}
+                    onPress={handleWithdraw}
+                  >
+                    <MaterialCommunityIcons
+                      name="arrow-down-thick"
+                      size={35}
+                      color="#rgb(222, 12, 12)"
+                    />
+                  </TouchableOpacity>
+
+                  <TransferModal
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    goalId={goalId}
+                    actionType={actionType}
+                    style={{
+                      zIndex: 1000,
+                    }}
+                  />
+
+                  <Modal
+                    transparent={true}
+                    visible={unlockPopupVisible}
+                    onRequestClose={() => setUnlockPopupVisible(false)}
+                  >
+                    <View style={styles.popupContainer}>
+                      <View style={styles.popupContent}>
+                        <Text style={styles.popupText}>
+                          Are you sure you want to unlock this goal?
+                        </Text>
+                        <View style={styles.popupButtons}>
+                          <TouchableOpacity
+                            style={[styles.popupButton, styles.cancelButton]}
+                            onPress={() => setUnlockPopupVisible(false)}
+                          >
+                            <Text style={styles.popupButtonText}>Cancel</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={[styles.popupButton, styles.confirmButton]}
+                            onPress={handleUnlockConfirm}
+                          >
+                            <Text style={styles.popupButtonText}>Confirm</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </Modal>
+                </View>
+              </>
+            )}
           </>
         ) : (
           <TransactionList transactions={transactions} />
@@ -689,11 +757,85 @@ const SavingsGoalDetails = ({ navigation, route }) => {
         </Modal>
       </View>
       {/* ============================================ GrowMesh */}
+      {notificationVisible && (
+        <View style={styles.goalDetailsPopUpOverlay}>
+          <View style={styles.goalDetailsPopUpContent}>
+            <Text style={styles.goalDetailsPopUpMessageTxt}>
+              {notificationMessage}
+            </Text>
+            <TouchableOpacity
+              style={styles.goalDetailsPopUpOkBtn}
+              onPress={handleCloseNotification}
+            >
+              <Text style={styles.goalDetailsPopUpOkBtnTxt}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  goalDetailsPopUpOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  goalDetailsPopUpContent: {
+    backgroundColor: "#FEF7FF",
+    borderRadius: 15,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "80%",
+    height: "20%",
+  },
+  goalDetailsPopUpMessageTxt: {
+    fontSize: 18,
+    color: "#000",
+    textAlign: "center",
+    margin: 20,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+  },
+  goalDetailsPopUpOkBtn: {
+    backgroundColor: "#00F8BE",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    minWidth: 100,
+    alignItems: "center",
+  },
+  goalDetailsPopUpOkBtnTxt: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  goalDetailsCongratsWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 400,
+    marginHorizontal: 16,
+  },
+  goalDetailsCongratsLottie: {
+    width: 200,
+    height: 200,
+    alignSelf: "center",
+  },
+  goalDetailsCongratsMessageTxt: {
+    fontSize: 18,
+    color: "#000",
+    textAlign: "center",
+    marginTop: 70,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+  },
   modalContent: {
     padding: 10,
     borderRadius: 10,
@@ -835,6 +977,7 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 16,
     textAlign: "center",
+    marginTop: 20,
   },
   transactionList: {
     flex: 1,

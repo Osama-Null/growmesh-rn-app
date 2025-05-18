@@ -16,6 +16,7 @@ import {
   createTimeBasedSavingsGoal,
   createAmountBasedSavingsGoal,
 } from "../../api/savingsGoal";
+import LottieView from "lottie-react-native";
 
 const Step3Final = () => {
   const navigation = useNavigation();
@@ -29,6 +30,10 @@ const Step3Final = () => {
   const [paymentMethodError, setPaymentMethodError] = useState("");
   const [paymentAmountError, setPaymentAmountError] = useState("");
   const [backendError, setBackendError] = useState(""); // For backend error messages
+
+  const [notificationVisible, setNotificationVisible] = useState(false);
+  const [notificationType, setNotificationType] = useState(""); // "success" or "error"
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   // Determine goal type based on goalData
   const isTimeBased = !!goalData.targetDate;
@@ -92,10 +97,10 @@ const Step3Final = () => {
     onSuccess: () => {
       console.log("Mutation Success: Goal created successfully");
       queryClient.invalidateQueries(["savingsGoals"]);
-      alert("Success", "Goal created successfully", [{ text: "OK" }]);
-      navigation.reset({
-        routes: [{ name: "HomeNav" }],
-      });
+
+      setNotificationType("success");
+      setNotificationMessage("Goal created successfully");
+      setNotificationVisible(true);
     },
     onError: (error) => {
       console.error("Mutation Error:", {
@@ -112,9 +117,20 @@ const Step3Final = () => {
           : error.response?.data?.message ||
             error.message ||
             "Failed to create goal";
+
+      setNotificationType("error");
+      setNotificationMessage(errorMessage);
+      setNotificationVisible(true);
       setBackendError(errorMessage);
     },
   });
+
+  const handleNotificationAction = () => {
+    setNotificationVisible(false);
+    if (notificationType === "success") {
+      navigation.reset({ routes: [{ name: "HomeNav" }] });
+    }
+  };
 
   const handleCreate = () => {
     // Reset all errors
@@ -420,6 +436,66 @@ const Step3Final = () => {
           <Text style={styles.next}>{"Create"}</Text>
         </TouchableOpacity>
       </View>
+      {/* Success/Error Notification View */}
+      {notificationVisible && (
+        <View style={styles.notificationOverlay}>
+          <View style={styles.notificationContent}>
+            {notificationType === "success" ? (
+              <>
+                <LottieView
+                  source={require("../../../assets/app/success2.json")} // Adjust path to your success animation
+                  autoPlay
+                  loop={false}
+                  style={styles.lottieSuccess}
+                />
+                <LottieView
+                  source={require("../../../assets/app/success_btn.json")} // Adjust path to your success animation
+                  autoPlay
+                  loop
+                  style={{
+                    position: "absolute",
+                    width: 200,
+                    height: 200,
+                    bottom: 70,
+                  }}
+                />
+              </>
+            ) : (
+              <LottieView
+                source={require("../../../assets/app/error.json")} // Adjust path to your error animation
+                autoPlay
+                loop={false}
+                style={styles.lottieError}
+              />
+            )}
+            <View style={styles.footer}>
+              <Text
+                style={[
+                  styles.notificationMessage,
+                  notificationType === "success"
+                    ? styles.success
+                    : styles.error,
+                ]}
+              >
+                {notificationMessage}
+              </Text>
+              <TouchableOpacity
+                style={[
+                  styles.nextButton,
+                  notificationType === "success"
+                    ? styles.successButton
+                    : styles.errorButton,
+                ]}
+                onPress={handleNotificationAction}
+              >
+                <Text style={styles.next}>
+                  {notificationType === "success" ? "Uraa" : "Try Again"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -622,6 +698,64 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   next: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  notificationOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  notificationContent: {
+    backgroundColor: "#FEF7FF",
+    borderRadius: 15,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    height: "50%",
+  },
+  lottieSuccess: {
+    width: 200,
+    height: 200,
+    bottom: 90,
+  },
+  lottieError: {
+    width: 400,
+    height: 400,
+    bottom: 80,
+  },
+  notificationMessage: {
+    fontSize: 18,
+    textAlign: "center",
+    marginBottom: 20,
+    fontWeight: "bold",
+  },
+  success: {
+    color: "#5cb85c",
+  },
+  error: {
+    color: "#FF4444",
+  },
+  notificationButton: {
+    alignItems: "center",
+    backgroundColor: "#2E3039",
+    borderRadius: 39,
+    paddingVertical: 22,
+    width: "100%",
+  },
+  successButton: {
+    backgroundColor: "#5cb85c",
+  },
+  errorButton: {
+    backgroundColor: "#FF4444",
+  },
+  notificationButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",

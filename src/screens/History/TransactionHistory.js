@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllTransactions } from "../../api/transaction";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import LottieView from "lottie-react-native";
 
 const TransactionHistory = () => {
   const navigation = useNavigation();
@@ -193,6 +194,16 @@ const TransactionHistory = () => {
           [...filteredTransactions].reverse().map(renderTransaction)
         ) : (
           <View style={styles.emptyContainer}>
+            <LottieView
+              source={require("../../../assets/app/empty.json")}
+              autoPlay
+              loop
+              style={{
+                width: 200,
+                height: 200,
+                alignSelf: "center",
+              }}
+            />
             <Text style={styles.emptyText}>No transactions found</Text>
           </View>
         )}
@@ -337,6 +348,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: "rgba(0, 0, 0, 0.6)",
+    marginTop: 16,
   },
 });
 

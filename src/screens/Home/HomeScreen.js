@@ -13,7 +13,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Progress from "react-native-progress";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllSavingsGoals, getSavingsTrend } from "../../api/savingsGoal";
 import Animated, {
   useSharedValue,
@@ -25,12 +25,89 @@ import { getProfile } from "../../api/user";
 import Modal from "react-native-modal";
 import GrowMesh from "../../components/GrowMesh";
 import LottieView from "lottie-react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import UserContext from "../../context/UserContext";
 import { deleteToken } from "../../api/storage";
 import { useTheme } from "../../context/ThemeContext";
+import Entypo from "@expo/vector-icons/Entypo";
 
 const lightStyles = StyleSheet.create({
+  homeScreenCloseGrowMeshBtnWrapper: {
+    homeScreenCloseGrowMeshBtn: {
+      backgroundColor: "rgba(255, 0, 0, 0.8)",
+      borderRadius: 50,
+      padding: 10,
+      marginLeft: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      width: 80,
+      height: 80,
+    },
+    homeScreenCloseGrowMeshBtnTxt: {
+      color: "#FFF",
+      fontSize: 14,
+      fontWeight: "bold",
+      textAlign: "center",
+    },
+    position: "absolute",
+    bottom: 80,
+    left: 0,
+    width: "100%",
+    alignItems: "flex-start",
+  },
+  homeScreenPopUpContent: {
+    backgroundColor: "#FEF7FF",
+    borderRadius: 15,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "80%",
+    height: "20%",
+  },
+  homeScreenPopUpMessageTxt: {
+    fontSize: 18,
+    color: "#000",
+    textAlign: "center",
+    margin: 20,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+  },
+  homeScreenPopUpOkBtn: {
+    backgroundColor: "rgba(9, 53, 101, 0.62)",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    minWidth: 100,
+    alignItems: "center",
+  },
+  homeScreenPopUpOkBtnTxt: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#FFF",
+  },
+  homeScreenPopUpOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  homeScreenGrowMeshModalContent: {
+    padding: 10,
+    borderRadius: 10,
+    height: "80%",
+    flex: 1,
+  },
+  homeScreenGrowMeshWrapper: {
+    position: "absolute",
+    bottom: 80,
+    right: 0,
+    width: "100%",
+    alignItems: "flex-end",
+  },
   speechBubble: {
     position: "absolute",
     bottom: 45,
@@ -142,7 +219,7 @@ const lightStyles = StyleSheet.create({
     fontSize: 10,
     marginBottom: 5,
     fontWeight: "bold",
-    color: "black", // Default color, overridden dynamically
+    color: "black",
   },
   placeholderContainer: {
     height: 200,
@@ -332,6 +409,83 @@ const lightStyles = StyleSheet.create({
 });
 
 const darkStyles = StyleSheet.create({
+  homeScreenCloseGrowMeshBtn: {
+    backgroundColor: "rgba(255, 0, 0, 0.8)",
+    borderRadius: 50,
+    padding: 10,
+    marginLeft: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 80,
+    height: 80,
+  },
+  homeScreenCloseGrowMeshBtnTxt: {
+    color: "#FFF",
+    fontSize: 14,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  homeScreenCloseGrowMeshBtnWrapper: {
+    position: "absolute",
+    bottom: 80,
+    left: 0,
+    width: "100%",
+    alignItems: "flex-start",
+  },
+  homeScreenPopUpMessageTxt: {
+    fontSize: 18,
+    color: "#FFF",
+    textAlign: "center",
+    margin: 20,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+  },
+  homeScreenPopUpOkBtn: {
+    backgroundColor: "rgba(9, 53, 101, 0.62)",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    minWidth: 100,
+    alignItems: "center",
+  },
+  homeScreenPopUpOkBtnTxt: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#FFF",
+  },
+  homeScreenPopUpContent: {
+    backgroundColor: "#292848",
+    borderRadius: 15,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "80%",
+    height: "20%",
+  },
+  homeScreenPopUpOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  homeScreenGrowMeshModalContent: {
+    padding: 10,
+    borderRadius: 10,
+    height: "80%",
+    flex: 1,
+    backgroundColor: "#292848",
+  },
+  homeScreenGrowMeshWrapper: {
+    position: "absolute",
+    bottom: 80,
+    right: 0,
+    width: "100%",
+    alignItems: "flex-end",
+  },
   speechBubble: {
     position: "absolute",
     bottom: 45,
@@ -355,10 +509,10 @@ const darkStyles = StyleSheet.create({
   },
   modalContent: {
     padding: 10,
-    borderRadius: 10,
     height: "80%",
     flex: 1,
     backgroundColor: "#292848",
+    borderRadius: 20,
   },
   absoluteImage: {
     width: 80,
@@ -705,6 +859,8 @@ const HomeScreen = () => {
   const { setIsAuth } = useContext(UserContext);
   const styles = theme === "light" ? lightStyles : darkStyles;
   const iconColor = theme === "light" ? "black" : "white";
+  const isFocused = useIsFocused();
+  const queryClient = useQueryClient();
 
   console.log("HomeScreen rendered with theme:", theme);
   console.log("Styles applied to box2:", styles.box2);
@@ -712,12 +868,20 @@ const HomeScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isBubbleVisible, setIsBubbleVisible] = useState(true);
+  const [filter, setFilter] = useState("days");
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [trendDataMap, setTrendDataMap] = useState({
+    day: [],
+    month: [],
+    year: [],
+  });
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const [notificationVisible, setNotificationVisible] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   const systemPrompt =
     "Your name is GrowMesh. You are a friendly financial assistant for the home screen of a savings goals app. You have access to all savings goals and savings trend data. Provide short, conversational answers in a single sentence about overall savings, trends, or the first two goals when the user's message is related to their savings. Always include the 'KWD' currency for monetary values and format responses like 'Your total savings across all goals are KWD X.' If the user greets you (e.g., 'hi'), respond with a friendly greeting like 'Hey!' or 'Hi there!' If the user expresses gratitude (e.g., 'thank you'), simply respond with 'You're welcome!' or a similar acknowledgment. If the user says goodbye (e.g., 'goodbye'), respond with 'Goodbye! Let me know if you need help with your savings later.' For messages that are not related to savings goals, greetings, or gratitude, respond with a polite but firm redirection like 'I only assist with savings plans and goals, but let’s focus on your savings progress!' or 'I don’t handle that—I’m here to help with your savings goals!' If no goals or trend data are available, respond with 'You have no savings goals yet. Want to create one?' If the user mentions a savings goal amount and a deadline (e.g., 'I need to save 1000 KWD by September'), calculate a monthly savings plan based on the current date and the deadline, and suggest a plan like 'You have X months to save 1000 KWD, so I recommend saving KWD Y per month.' Do not give lengthy answers.";
-
-  const [filter, setFilter] = useState("days");
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
   const bubbleOpacity = useSharedValue(0);
 
@@ -746,6 +910,12 @@ const HomeScreen = () => {
   const filterOptions = ["days", "months", "years"];
   const displayedFilter = filter.charAt(0).toUpperCase() + filter.slice(1);
 
+  const periodTypeMap = {
+    days: "day",
+    months: "month",
+    years: "year",
+  };
+
   const {
     data: goalsData,
     isLoading: goalsLoading,
@@ -754,24 +924,8 @@ const HomeScreen = () => {
   } = useQuery({
     queryKey: ["fetchAllSavingsGoals"],
     queryFn: () => getAllSavingsGoals(),
-    refetchOnMount: "always",
-  });
-
-  const periodTypeMap = {
-    days: "day",
-    months: "month",
-    years: "year",
-  };
-  const periodType = periodTypeMap[filter] || "day";
-
-  const {
-    data: trendData,
-    isLoading: trendLoading,
-    isError: trendError,
-    error: trendErrorDetails,
-  } = useQuery({
-    queryKey: ["fetchSavingsTrend", filter],
-    queryFn: () => getSavingsTrend(periodType),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   const {
@@ -782,20 +936,45 @@ const HomeScreen = () => {
   } = useQuery({
     queryKey: ["profile"],
     queryFn: getProfile,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
+
+  const fetchAllTrends = async () => {
+    try {
+      const trendPromises = Object.values(periodTypeMap).map((period) =>
+        getSavingsTrend(period)
+      );
+      const [dayData, monthData, yearData] = await Promise.all(trendPromises);
+      setTrendDataMap({
+        day: dayData || [],
+        month: monthData || [],
+        year: yearData || [],
+      });
+    } catch (error) {
+      console.error("Error fetching trend data:", error);
+      setTrendDataMap({ day: [], month: [], year: [] });
+    }
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      queryClient.invalidateQueries(["fetchAllSavingsGoals"]);
+      queryClient.invalidateQueries(["profile"]);
+      fetchAllTrends();
+    }
+  }, [isFocused, queryClient]);
 
   useEffect(() => {
     console.log("\ngoals data:\n", goalsData);
-    console.log("\ntrend data:\n", trendData);
+    console.log("\ntrend data:\n", trendDataMap);
     console.log("\nProfile data:\n", profileData);
     if (goalsError) {
       console.log("\ngoals error\n", goalsErrorDetails);
-    } else if (trendError) {
-      console.log("\ntrend error:\n", trendErrorDetails);
     } else if (profileError) {
       console.log("\nprofile error\n", profileErrorDetails);
     }
-  }, [goalsData, trendData, profileData]);
+  }, [goalsData, trendDataMap, profileData, goalsError, profileError]);
 
   useEffect(() => {
     console.log("HomeScreen mounted at:", new Date().toISOString());
@@ -807,11 +986,20 @@ const HomeScreen = () => {
       setIsAuth(false);
     } catch (error) {
       console.error("Error during logout:", error);
-      Alert.alert("Error", "Failed to log out. Please try again.");
+      setErrorMessage("Failed to log out. Please try again.");
     }
   };
 
-  if (goalsLoading || trendLoading || profileLoading) {
+  const handleCloseNotification = () => {
+    setNotificationVisible(false);
+    setNotificationMessage("");
+  };
+
+  const handleCloseGrowMeshModal = () => {
+    setModalVisible(false);
+  };
+
+  if (goalsLoading || profileLoading) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <TouchableOpacity
@@ -838,7 +1026,7 @@ const HomeScreen = () => {
     );
   }
 
-  if (goalsError || trendError || profileError) {
+  if (goalsError || profileError) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <TouchableOpacity
@@ -863,16 +1051,15 @@ const HomeScreen = () => {
               ? `Error fetching goals: ${
                   goalsErrorDetails?.message || "Unknown error"
                 }`
-              : trendError
-              ? `Error fetching trend: ${
-                  trendErrorDetails?.message || "Unknown error"
-                }`
               : profileError
               ? `Error fetching profile: ${
                   profileErrorDetails?.message || "Unknown error"
                 }`
               : "Error fetching data"}
           </Text>
+          {errorMessage && (
+            <Text style={styles.homeScreenErrorInlineTxt}>{errorMessage}</Text>
+          )}
         </View>
       </SafeAreaView>
     );
@@ -890,7 +1077,9 @@ const HomeScreen = () => {
     (goal) => goal.status === "Completed"
   ).length;
 
-  const chartData = (trendData || []).map((item) => {
+  const currentTrendData = trendDataMap[periodTypeMap[filter]] || [];
+
+  const chartData = currentTrendData.map((item) => {
     const date = new Date(item.periodEnd);
     let label;
     switch (filter) {
@@ -926,8 +1115,7 @@ const HomeScreen = () => {
 
   const handleError = (error) => {
     console.error("Chat error:", error.message);
-    Alert.alert(
-      "Error",
+    setErrorMessage(
       "Failed to get a response from the chatbot. Please try again."
     );
   };
@@ -1006,49 +1194,66 @@ const HomeScreen = () => {
         </View>
         <Text style={styles.text}>{"Total saving"}</Text>
         <Text style={styles.text2}>{`KWD ${totalSavings}`}</Text>
-        <View style={styles.view}>
-          <View style={styles.dropdownContainer}>
-            <TouchableOpacity
-              style={styles.dropdownButton}
-              onPress={() => setIsDropdownVisible(!isDropdownVisible)}
-            >
-              <Text style={styles.dropdownButtonText}>{displayedFilter}</Text>
-              <MaterialIcons
-                name={isDropdownVisible ? "arrow-drop-up" : "arrow-drop-down"}
-                size={20}
-                color={iconColor}
-              />
-            </TouchableOpacity>
-            {isDropdownVisible && (
-              <View style={styles.dropdownMenu}>
-                {filterOptions
-                  .filter((option) => option !== filter)
-                  .map((option) => (
-                    <TouchableOpacity
-                      key={option}
-                      style={styles.dropdownItem}
-                      onPress={() => {
-                        setFilter(option);
-                        setIsDropdownVisible(false);
-                      }}
-                    >
-                      <Text style={styles.dropdownItemText}>
-                        {option.charAt(0).toUpperCase() + option.slice(1)}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-              </View>
-            )}
-          </View>
-        </View>
+
         {allZeros ? (
           <View style={styles.placeholderContainer}>
+            <LottieView
+              source={require("../../../assets/app/bar.json")}
+              autoPlay
+              loop={false}
+              style={{
+                width: 150,
+                height: 150,
+                alignSelf: "center",
+              }}
+            />
             <Text style={styles.placeholderText}>
               Start saving to see your progress!
             </Text>
           </View>
         ) : (
-          <BarChartComponent data={chartData} styles={styles} theme={theme} />
+          <>
+            <View style={styles.view}>
+              <View style={styles.dropdownContainer}>
+                <TouchableOpacity
+                  style={styles.dropdownButton}
+                  onPress={() => setIsDropdownVisible(!isDropdownVisible)}
+                >
+                  <Text style={styles.dropdownButtonText}>
+                    {displayedFilter}
+                  </Text>
+                  <MaterialIcons
+                    name={
+                      isDropdownVisible ? "arrow-drop-up" : "arrow-drop-down"
+                    }
+                    size={20}
+                    color={iconColor}
+                  />
+                </TouchableOpacity>
+                {isDropdownVisible && (
+                  <View style={styles.dropdownMenu}>
+                    {filterOptions
+                      .filter((option) => option !== filter)
+                      .map((option) => (
+                        <TouchableOpacity
+                          key={option}
+                          style={styles.dropdownItem}
+                          onPress={() => {
+                            setFilter(option);
+                            setIsDropdownVisible(false);
+                          }}
+                        >
+                          <Text style={styles.dropdownItemText}>
+                            {option.charAt(0).toUpperCase() + option.slice(1)}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                  </View>
+                )}
+              </View>
+            </View>
+            <BarChartComponent data={chartData} styles={styles} theme={theme} />
+          </>
         )}
         <Text style={styles.text6}>{"Savings Goals"}</Text>
         <View style={styles.column2}>
@@ -1132,12 +1337,38 @@ const HomeScreen = () => {
                   </React.Fragment>
                 );
               })}
-            <TouchableOpacity
-              onPress={() => navigation.navigate("AllSavingsGoals")}
-              style={styles.seeAll}
-            >
-              <Text style={styles.text10}>{"See All"}</Text>
-            </TouchableOpacity>
+            {inProgressGoalsCount === 0 ? (
+              <>
+                <LottieView
+                  source={require("../../../assets/app/empty.json")}
+                  autoPlay
+                  loop
+                  style={{
+                    height: 100,
+                    width: 100,
+                    alignSelf: "center",
+                    marginBottom: 10,
+                  }}
+                />
+                <Text
+                  style={{
+                    color: theme === "light" ? "black" : "white",
+                    fontSize: 16,
+                    margin: 10,
+                    alignSelf: "center",
+                  }}
+                >
+                  No savings goals yet. Create a new goal to start saving!
+                </Text>
+              </>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.navigate("AllSavingsGoals")}
+                style={styles.seeAll}
+              >
+                <Text style={styles.text10}>{"See All"}</Text>
+              </TouchableOpacity>
+            )}
           </View>
           <View
             style={{
@@ -1215,6 +1446,21 @@ const HomeScreen = () => {
       </View>
 
       {/* ============================================ GrowMesh */}
+      {notificationVisible && (
+        <View style={styles.homeScreenPopUpOverlay}>
+          <View style={styles.homeScreenPopUpContent}>
+            <Text style={styles.homeScreenPopUpMessageTxt}>
+              {notificationMessage}
+            </Text>
+            <TouchableOpacity
+              style={styles.homeScreenPopUpOkBtn}
+              onPress={handleCloseNotification}
+            >
+              <Text style={styles.homeScreenPopUpOkBtnTxt}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
